@@ -1,0 +1,50 @@
+@room 23
+@playable
+@title The Kitchen
+@conn 0 22 0 24
+@spawn 44 104
+@border GRN
+@belt 0
+
+@guardiansprites
+; entity 48: page 183 sprite 0 f=0..1
+10,160,21,80,10,160,5,66,5,69,5,69,7,194,13,98,15,227,60,127,123,191,239,227,174,226,71,194,206,192,192,224
+192,0,202,160,213,80,202,160,69,64,69,66,167,197,205,101,111,226,124,122,58,191,15,239,14,227,7,194,6,226,14,2
+
+@tilemap
+                        
+         +              
+                        
+                        
+                        
+FF  FF  FF             
+                        
+             F           
+FF  FF                /W
+        FF           /WW
+                    /WWW
+                   /      
+FF  FF  FF        /       
+            FFF  /        
+                /WWWWWWW
+WWWWWWWWWWWWWWWWWWWWWWWW
+
+@floorcolor GRN
+@wallcolor CYN
+@nastycolor WHT
+@rampcolor WHT
+@beltcolor WHT
+@itemcolor YEL
+
+@guardians
+x=2 y=32(8..104) v=3 f=0..1 PUR
+x=6 y=96(0..104) v=2 f=0..1 YEL
+x=10 y=64(0..104) v=-4 f=0..1 GRN
+x=15 y=30(12..90) v=3 f=0..1 PUR
+
+@floorudg 254,1,125,133,129,129,129,1
+@walludg 66,165,90,36,36,90,165,66 ; invert
+@nastyudg 0,0,0,0,0,0,0,0 ; invert
+@rampudg 3,0,12,0,48,0,192,0
+@beltudg 0,0,0,0,0,0,0,0 ; invert
+@itemudg 32,64,160,24,22,9,8,4 ; bottle opener

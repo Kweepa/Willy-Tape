@@ -1,0 +1,53 @@
+@room 35
+@playable
+@title Master Bedroom
+@conn 255 34 255 255
+@spawn 44 16
+@border PUR
+@belt 0
+
+@guardiansprites
+; maria
+3,0,3,192,1,224,1,64,1,224,7,128,31,248,63,252	
+55,108,20,152,15,240,15,240,15,240,2,64,2,64,6,96	
+3,0,3,192,1,224,1,64,1,224,7,128,31,248,63,252	
+55,108,20,152,15,240,15,240,15,240,2,64,6,64,2,96	
+3,0,3,192,1,224,1,64,1,224,7,128,31,252,63,254	
+55,102,20,146,15,240,15,240,15,240,2,64,2,64,6,96	
+3,0,3,192,1,224,1,64,1,224,7,128,31,255,63,254	
+55,96,20,144,15,240,15,240,15,240,2,64,2,64,6,96	
+
+
+@tilemap
+WWWWWWWWWWWWWWWWWWWWWWWW
+WW        WW            
+WW        WW            
+WW        WW            
+WW        WW            
+WW        WW            
+WW        WW            
+WW        WW            
+WW        WW            
+WW        WW            
+WW        WW            
+WW*                     
+WW>>>                   
+WFFFFFFFFFFFF\          
+WWWWWWWWWWWWWW\         
+WWWWWWWWWWWWWWWFFFFFFFFF
+
+@floorcolor YEL
+@wallcolor PUR
+@nastycolor WHT
+@rampcolor YEL
+@beltcolor CYN
+@itemcolor YEL
+
+@guardians
+x=10 y=88(88..88) v=0 f=0..1 WHT
+
+@floorudg 255,107,181,0,173,0,74,0	# Floor
+@walludg 0,81,251,81,0,170,191,170 ; invert
+@nastyudg 0,0,0,0,124,254,127,62 #	Nasty
+@rampudg 192,64,176,0,172,0,83,0 #	Ramp
+@beltudg 85,85,85,85,81,95,64,170

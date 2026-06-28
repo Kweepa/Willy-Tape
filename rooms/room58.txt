@@ -1,0 +1,43 @@
+@room 58
+@playable
+@title The Beach
+@conn 255 51 255 59
+@spawn 91 48
+@border RED
+@background BLU
+@belt -1
+@rope
+
+@guardiansprites
+
+@tilemap
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                   WWWWW
+                   WWWWW
+WWWWW              WWWWW
+                   WWWWW
+                   WWWWW
+                 + WWWWW
+    /F*FFF*FF*FF*FFWWWWW
+<<<<FFFFFFFFFFFFFFFWWWWW
+
+@floorcolor YEL
+@wallcolor CYN
+@nastycolor YEL
+@rampcolor YEL
+@beltcolor CYN
+@itemcolor PUR
+
+@floorudg 0,0,64,4,0,16,0,1 ; invert
+@walludg 68,0,146,36,128,40,130,80 ; invert
+@nastyudg 66,129,231,129,90,126,60,66 ; invert
+@rampudg 1,3,7,15,30,55,127,251
+@beltudg 78,170,0,64,64,68,170,255 ; invert
+@itemudg 4,5,11,11,23,55,111,239

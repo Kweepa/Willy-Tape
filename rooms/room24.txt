@@ -1,0 +1,50 @@
+@room 24
+@playable
+@title West of Kitchen
+@conn 30 23 0 25
+@spawn 44 104
+@border BLU
+@belt -1
+
+@guardiansprites
+; entity 49: page 183 sprite 0 f=0..1
+10,160,21,80,10,160,5,66,5,69,5,69,7,194,13,98,15,227,60,127,123,191,239,227,174,226,71,194,206,192,192,224
+192,0,202,160,213,80,202,160,69,64,69,66,167,197,205,101,111,226,124,122,58,191,15,239,14,227,7,194,6,226,14,2
+
+@tilemap
+        F               
+        F               
+        F               
+        F               
+        F               
+        F   F   FFFF  FF
+                        
+                        
+W\              F     FF
+WW\         FF   +FF    
+WWW\    FF              
+WWWW\                   
+WWWWW\      FF  <<<<  FF
+WWWWWW\                 
+WWWWWWW\                
+WWWWWWWWWWWWWWWWWWWWWWWW
+
+@floorcolor CYN
+@wallcolor GRN
+@nastycolor WHT
+@rampcolor WHT
+@beltcolor RED
+@itemcolor CYN
+
+@guardians
+x=6 y=48(0..88) v=2 f=0..1 YEL
+x=10 y=64(0..104) v=-4 f=0..1 GRN
+x=14 y=96(0..104) v=2 f=0..1 YEL
+x=20 y=32(8..104) v=3 f=0..1 PUR
+
+@floorudg 255,189,165,165,165,66,0,0
+@walludg 9,66,144,36,9,66,144,36
+@nastyudg 0,0,0,0,0,0,0,0
+@rampudg 192,64,176,80,172,84,171,85
+@beltudg 240,85,170,85,85,170,42,8
+@itemudg 6,11,21,26,28,32,64,128

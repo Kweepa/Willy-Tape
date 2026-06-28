@@ -1,0 +1,37 @@
+@room 47
+@playable
+@title [
+@conn 255 255 255 255
+@spawn 44 104
+@border BLK
+@belt 0
+
+@guardiansprites
+
+@tilemap
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                       
+
+@floorcolor BLK
+@wallcolor BLK
+@nastycolor BLK
+@rampcolor BLK
+@beltcolor BLK
+@itemcolor BLK
+
+@walludg 0,0,0,0,0,0,0,0
+@nastyudg 0,0,0,0,0,0,0,0

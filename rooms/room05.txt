@@ -1,0 +1,50 @@
+@room 5
+@playable
+@title The Security Guard
+@conn 10 4 6 19
+@spawn 1 104
+@border BLU
+@belt 1
+
+@guardiansprites
+; entity 2: page 191 sprite 4 f=0..1
+2,4,5,14,10,132,21,196,23,68,43,228,47,224,18,68,8,130,7,44,21,80,42,164,85,68,170,132,69,0,29,192
+2,0,5,0,10,132,21,206,23,68,43,228,47,228,18,68,8,128,7,4,21,82,42,172,85,64,170,132,69,4,29,196
+
+@tilemap
+W\                       
+WW\                      
+WWW\                     
+WWWW\                    
+WWWWW\                   
+WWWWWW\                  
+WW  +  \                 
+WW      \                
+WW   FFFF  F  F  F  FFFF
+WW   WWWW  W  W  W  WWWW
+     WWWW  W  W  W  WWWW
+        W  W  W  W  W    
+        W  W  W  W  W    
+                       >
+                       W
+WW  WWWWWWWWWWWWWWWWWWWW
+
+@floorcolor GRN
+@wallcolor CYN
+@nastycolor WHT
+@rampcolor WHT
+@beltcolor RED
+@itemcolor YEL
+
+@guardians
+x=9 y=80(44..104) v=2 f=0..1 RED
+x=12 y=64(40..104) v=1 f=0..1 GRN
+x=15 y=48(48..96) v=4 f=0..1 YEL
+x=18 y=80(44..104) v=2 f=0..1 RED
+
+@floorudg 255,255,170,85,170,85,170,85
+@walludg 14,198,149,176,54,134,192,237
+@nastyudg 0,0,0,0,0,0,0,0
+@rampudg 224,64,32,16,14,4,2,1
+@beltudg 111,0,183,0,170,85,170,85
+@itemudg 0,25,34,124,170,170,68,0 ; glasses

@@ -1,0 +1,51 @@
+@room 17
+@playable
+@title On the Battlements
+@conn 255 16 255 18
+@spawn 1 56
+@border BLU
+@belt -1
+@arrow y=66 x=40 v=-1 sound=36
+
+
+@guardiansprites
+; entity 2: page 191 sprite 4 f=0..1
+2,4,5,14,10,132,21,196,23,68,43,228,47,224,18,68,8,130,7,44,21,80,42,164,85,68,170,132,69,0,29,192
+2,0,5,0,10,132,21,206,23,68,43,228,47,228,18,68,8,128,7,4,21,82,42,172,85,64,170,132,69,4,29,196
+
+@tilemap
+                        
+                        
+                        
+                        
+                       +
+                        
+                        
+                        
+                        
+WWWF  WWF  <<<F  WWF  WW
+WWW*  WW*  WWW*  WW*  WW
+WWW*  WW*  WWW*  WW*  WW
+WWW*  WW*  WWW*  WW*  WW
+WWW*  WW*  WWW*  WW*  WW
+WWW*  WW*  WWW*  WW*  WW
+WWWWWWWWWWWWWWWWWWWWWWWW
+
+@floorcolor GRN
+@wallcolor YEL
+@nastycolor GRN
+@rampcolor GRN
+@beltcolor RED
+@itemcolor CYN
+
+@guardians
+x=4 y=64(40..104) v=1 f=0..1 GRN
+x=9 y=80(44..104) v=2 f=0..1 RED
+x=15 y=48(48..96) v=4 f=0..1 YEL
+x=20 y=34(34..104) v=5 f=0..1 CYN
+
+@floorudg 128,192,224,176,144,148,214,119
+@walludg 127,127,99,107,99,127,127,0
+@nastyudg 74,42,26,72,108,106,41,136 ; invert
+@beltudg 40,170,10,0,85,85,85,255
+@itemudg 24,36,24,44,94,94,231,102

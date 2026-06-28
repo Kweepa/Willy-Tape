@@ -1,0 +1,36 @@
+# Reference port (not part of build; copy from ../JSW if missing)
+Miner-main/
+
+# VIC-20 Assembler & Emulator Build Outputs
+*.prg
+*.lbl
+*.d64
+*.tap
+/rooms/out/
+bake/.tmp/
+bake/*.bin
+tools/vice_test.log
+AcmeLabelSorter.exe
+
+# Python caching
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# SkoolKit HTML cache (jswimport)
+tools/jswcache/
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# OS Files
+Thumbs.db
+Desktop.ini
+.DS_Store
