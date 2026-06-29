@@ -37,10 +37,10 @@ WWWWWWWWWWWWWWWWWWWWWWWW
 @itemcolor CYN
 
 @guardians
-x=6 y=48(0..88) v=2 f=0..1 YEL
-x=10 y=64(0..104) v=-4 f=0..1 GRN
-x=14 y=96(0..104) v=2 f=0..1 YEL
-x=20 y=32(8..104) v=3 f=0..1 PUR
+x=6 y=48(0..88) v=2 f=0..1 yellow chef
+x=10 y=64(0..104) v=-4 f=0..1 green chef
+x=14 y=96(0..104) v=2 f=0..1 yellow chef
+x=20 y=32(8..104) v=3 f=0..1 purple chef
 
 @floorudg 255,189,165,165,165,66,0,0
 @walludg 9,66,144,36,9,66,144,36

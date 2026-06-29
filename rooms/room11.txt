@@ -47,9 +47,9 @@ WWWWWWWWWWWWWWWWWWWWWWWW
 @itemcolor YEL
 
 @guardians
-x=8 y=48(40..56) v=0 f=8 YEL
-y=24 x=13(1..23) v=-1 f=0..7 RED
-y=80 x=14(8..15) v=-1 f=0..7 YEL
+x=8 y=48(40..56) v=0 f=8 yellow chandelier
+y=24 x=13(1..23) v=-1 f=0..7 red bat
+y=80 x=14(8..15) v=-1 f=0..7 yellow bird
 
 @floorudg 255,255,0,0,0,0,0,0
 @walludg 32,16,14,193,48,9,198,32 ; invert

@@ -44,8 +44,8 @@ WWWWWWWWWWWWWWWWWWWWWWWW
 @itemcolor YEL
 
 @guardians
-y=16 x=5(2..10) v=-1 f=0..7 RED
-y=16 x=18(14..21) v=1 f=0..7 PUR
+y=16 x=5(2..10) v=-1 f=0..7 red bird
+y=16 x=18(14..21) v=1 f=0..7 purple bird
 
 @floorudg 102,102,102,102,102,102,102,102 ; invert
 @walludg 191,21,0,81,251,81,0,21 ; invert

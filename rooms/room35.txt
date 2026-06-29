@@ -44,10 +44,10 @@ WWWWWWWWWWWWWWWFFFFFFFFF
 @itemcolor YEL
 
 @guardians
-x=10 y=88(88..88) v=0 f=0..1 WHT
+x=10 y=88(88..88) v=0 f=0..1 white maria
 
-@floorudg 255,107,181,0,173,0,74,0	# Floor
+@floorudg 255,107,181,0,173,0,74,0
 @walludg 0,81,251,81,0,170,191,170 ; invert
-@nastyudg 0,0,0,0,124,254,127,62 #	Nasty
-@rampudg 192,64,176,0,172,0,83,0 #	Ramp
+@nastyudg 0,0,0,0,124,254,127,62
+@rampudg 192,64,176,0,172,0,83,0
 @beltudg 85,85,85,85,81,95,64,170

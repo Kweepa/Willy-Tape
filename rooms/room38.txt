@@ -49,10 +49,10 @@ WW     F  WW
 @itemcolor PUR
 
 @guardians
-x=6 y=64(16..104) v=1 f=2..3 GRN ; draw jaw first, upper head overwrites
-x=5 y=48(0..88) v=1 f=0..0 GRN
-x=6 y=48(0..88) v=1 f=1..1 GRN
-y=80 x=14(8..16) v=-1 f=4..7 RED
+x=6 y=64(16..104) v=1 f=2..3 green demonC ; draw jaw first, upper head overwrites
+x=5 y=48(0..88) v=1 f=0..0 green demonA
+x=6 y=48(0..88) v=1 f=1..1 green demonB
+y=80 x=14(8..16) v=-1 f=4..7 red bird
 
 @floorudg 85,85,93,215,112,0,0,0
 @walludg 34,17,68,136,34,17,68,136; invert

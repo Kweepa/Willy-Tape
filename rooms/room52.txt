@@ -47,9 +47,9 @@ FF  FFFFFFFFFFFFFFFFFFFF
 @itemcolor YEL
 
 @guardians
-y=104 x=17(9..23) v=1 f=0..3 CYN
-y=48 x=15(11..17) v=-1 f=4..7 WHT
-x=2 y=24(0..64) v=2 f=8..8 CYN
+y=104 x=17(9..23) v=1 f=0..3 cyan egg
+y=48 x=15(11..17) v=-1 f=4..7 white tambourine
+x=2 y=24(0..64) v=2 f=8..8 cyan moon
 
 @floorudg 255,68,68,255,17,17,255,0
 @walludg 21,241,143,168,138,248,31,21

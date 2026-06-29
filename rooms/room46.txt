@@ -45,10 +45,10 @@ WWWWWWWWWWWWWWWWWWWWWWWW
 @itemcolor WHT
 
 @guardians
-x=2 y=32(0..64) v=-2 f=8 CYN
-x=9 y=56(48..96) v=2 f=8 CYN
-y=72 x=11(11..18) v=1 f=0..7 RED
-x=19 y=72(32..80) v=2 f=8 PUR
+x=2 y=32(0..64) v=-2 f=8 cyan razor
+x=9 y=56(48..96) v=2 f=8 cyan pinhead
+y=72 x=11(11..18) v=1 f=0..7 red rabbit
+x=19 y=72(32..80) v=2 f=8 purple jelly
 
 @floorudg 255,255,0,0,0,0,0,0
 @walludg 102,153,36,36,119,136,141,114

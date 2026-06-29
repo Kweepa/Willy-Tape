@@ -56,9 +56,9 @@ FFFFFFFFFFFFFF  FFFFFFFF
 @itemcolor YEL
 
 @guardians
-x=4 y=32(16..104) v=+2 f=4..7 WHT # y velocity is in pixels
-x=9 y=16(16..48) v=+1 f=8 RED
-y=104 x=12(10..22) v=+1 f=0..3 CYN # x velocity is always +1 or -1
+x=4 y=32(16..104) v=+2 f=4..7 white razor
+x=9 y=16(16..48) v=+1 f=8 red barrel
+y=104 x=12(10..22) v=+1 f=0..3 cyan multitool
 
 @floorudg 255,170,85,255,0,0,0,0	; Floor
 @walludg 105,144,144,105,150,105,105,150	; Wall

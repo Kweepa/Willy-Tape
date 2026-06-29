@@ -55,10 +55,10 @@ WWWWWFFFFFFFFFFFFFFFFWWW
 @itemcolor PUR
 
 @guardians
-x=8 y=64(56..80) v=-1 f=8 GRN
-x=11 y=48(40..80) v=2 f=8 PUR
-x=14 y=76(40..80) v=1 f=4..7 CYN
-y=80 x=18(17..23) v=-1 f=0..3 YEL
+x=8 y=64(56..80) v=-1 f=8 green spiral
+x=11 y=48(40..80) v=2 f=8 purple elf
+x=14 y=76(40..80) v=1 f=4..7 cyan chip
+y=80 x=18(17..23) v=-1 f=0..3 yellow saw
 
 @floorudg 0,162,0,0,0,70,0,147 ; invert
 @walludg 74,41,37,73,146,164,37,148 ; invert

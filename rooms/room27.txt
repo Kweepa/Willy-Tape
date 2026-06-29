@@ -50,11 +50,12 @@ WWWWWWWWWWWWWWWWWWWW  WW
 @itemcolor CYN
 
 @guardians
-x=20 y=64(16..104) v=1 f=2 GRN
-x=19 y=48(0..88) v=1 f=0 GRN
-x=20 y=48(0..88) v=1 f=1 GRN
-x=6 y=64(56..80) v=-1 f=3 GRN
-y=96 x=8(0..9) v=-1 f=4..7 PUR
+x=20 y=64(16..104) v=1 f=2 green demonC
+x=19 y=48(0..88) v=1 f=0 green demonA
+x=20 y=48(0..88) v=1 f=1 green demonB
+x=6 y=64(56..80) v=-1 f=3 green scroll
+y=96 x=8(0..9) v=-1 f=4..7 purple monk
+# needs an elf
 
 @floorudg 73,73,73,73,73,73,73,73 ; invert
 @walludg 168,37,0,37,168,64,221,64 ; invert

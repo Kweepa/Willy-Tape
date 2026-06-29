@@ -42,8 +42,8 @@
 @itemcolor YEL
 
 @guardians
-x=7 y=32(0..64) v=-2 f=0..3 CYN
-x=10 y=24(0..80) v=1 f=4..5 RED
+x=7 y=32(0..64) v=-2 f=0..3 cyan razor
+x=10 y=24(0..80) v=1 f=4..5 red jelly
 
 @floorudg 170,85,130,65,130,65,130,65
 @walludg 168,85,168,86,207,46,38,193 ; invert

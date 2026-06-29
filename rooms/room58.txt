@@ -35,6 +35,8 @@ WWWWW              WWWWW
 @beltcolor CYN
 @itemcolor PUR
 
+# no guardians
+
 @floorudg 0,0,64,4,0,16,0,1 ; invert
 @walludg 68,0,146,36,128,40,130,80 ; invert
 @nastyudg 66,129,231,129,90,126,60,66 ; invert

@@ -45,8 +45,8 @@ F   FFFF  W  FWW    \
 @itemcolor WHT
 
 @guardians
-x=16 y=72(64..104) v=-2 f=0..3 RED
-x=8 y=96(56..96) v=-2 f=4..7 YEL
+x=16 y=72(64..104) v=-2 f=0..3 red moon
+x=8 y=96(56..96) v=-2 f=4..7 yellow ewok
 
 @floorudg 254,85,42,170,85,170,170,255
 @walludg 17,68,34,136,17,68,34,136 ; invert

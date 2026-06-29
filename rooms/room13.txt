@@ -45,8 +45,9 @@
 @itemcolor YEL
 
 @guardians
-x=8 y=88(0..104) v=4 f=8 CYN
-y=80 x=15(14..22) v=-1 f=0..7 YEL
+x=8 y=88(0..104) v=4 f=8 cyan pinhead
+y=80 x=15(14..22) v=-1 f=0..7 yellow saw
+# needs a cyan bird
 
 @floorudg 1,30,6,122,26,232,104,160
 @walludg 7,255,252,56,24,16,32,0

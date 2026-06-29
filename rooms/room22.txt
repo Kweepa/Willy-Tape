@@ -45,12 +45,12 @@ WWWWWWWWWWWWWWWWWWWWWWWW
 @itemcolor YEL
 
 @guardians
-y=24 x=2(0..7) v=1 f=0..3 PUR
-y=24 x=12(9..14) v=-1 f=0..3 YEL
-y=48 x=16(8..16) v=-1 f=4..7 WHT
-y=72 x=2(1..3) v=1 f=4..7 RED
-y=80 x=7(5..12) v=-1 f=4..7 YEL
-y=96 x=16(0..23) v=-1 f=0..3 GRN
+y=24 x=2(0..7) v=1 f=0..3 purple wirecutter
+y=24 x=12(9..14) v=-1 f=0..3 yellow hootbot
+y=48 x=16(8..16) v=-1 f=4..7 white tambourine
+y=72 x=2(1..3) v=1 f=4..7 red globes
+y=80 x=7(5..12) v=-1 f=4..7 yellow bird
+y=96 x=16(0..23) v=-1 f=0..3 green egg
 
 @floorudg 255,255,0,255,0,0,0,0
 @walludg 0,21,191,21,0,81,251,81 ; invert

@@ -51,7 +51,7 @@ FFFFFFFFFFFFFFF  WWWWWWW
 @itemcolor YEL
 
 @guardians
-y=96 x=19(17..23) v=-1 f=0..7 YEL
+y=96 x=19(17..23) v=-1 f=0..7 yellow monk
 
 @floorudg 255,170,85,128,93,148,93,128
 @walludg 4,85,0,85,136,85,0,34 ; invert

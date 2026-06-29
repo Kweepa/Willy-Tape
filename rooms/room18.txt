@@ -44,7 +44,7 @@ WWWWWWWWWWWW>>>>>WWWWWWW
 @itemcolor CYN
 
 @guardians
-y=104 x=18(11..18) v=-1 f=0..7 CYN
+y=104 x=18(11..18) v=-1 f=0..7 cyan rabbit
 
 @emptyudg 0,0,0,0,0,0,0,0
 @floorudg 128,192,224,208,88,156,222,205

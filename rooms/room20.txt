@@ -42,10 +42,11 @@ WWWWWWWWWWWWWWWWWWWWWWWW
 @itemcolor WHT
 
 @guardians
-x=5 y=72(48..87) v=-3 f=3 PUR
-x=7 y=56(48..96) v=2 f=3 CYN
-x=11 y=75(72..96) v=1 f=0..1 YEL
-x=13 y=16(16..48) v=1 f=2 RED
+x=5 y=72(48..87) v=-3 f=3 purple head
+x=7 y=56(48..96) v=2 f=3 cyan head
+x=11 y=75(72..96) v=1 f=0..1 yellow head
+x=13 y=16(16..48) v=1 f=2 red barrel
+# needs a bird
 
 @floorudg 170,85,34,68,34,68,34,68
 @walludg 68,68,255,17,17,255,85,170 ; invert

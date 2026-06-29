@@ -44,7 +44,7 @@ WWWWF**************WWWWW
 @itemcolor RED
 
 @guardians
-y=32 x=5(0..7) v=-1 f=0..7 GRN
+y=32 x=5(0..7) v=-1 f=0..7 green bird
 
 @floorudg 51,187,221,204,85,153,221,238 ; invert
 @walludg 39,246,0,220,209,4,119,128 ; invert

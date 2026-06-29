@@ -47,9 +47,10 @@
 @itemcolor GRN
 
 @guardians
-x=4 y=72(64..110) v=-2 f=0..3 RED
-x=9 y=48(0..56) v=1 f=0..3 CYN
-y=40 x=14(12..23) v=1 f=4..7 YEL
+x=4 y=72(64..110) v=-2 f=0..3 red moon
+x=9 y=48(0..56) v=1 f=0..3 cyan moon
+y=40 x=14(12..23) v=1 f=4..7 yellow shears
+# needs a purple ewok
 
 @floorudg 31,243,225,96,48,44,64,128
 @walludg 9,18,10,31,228,8,8,8

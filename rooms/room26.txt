@@ -41,8 +41,8 @@ WW  F     WW
 @itemcolor WHT
 
 @guardians
-x=3 y=72(0..96) v=-2 f=0..3 RED
-x=7 y=88(0..104) v=4 f=4 CYN
+x=3 y=72(0..96) v=-2 f=0..3 red scroll
+x=7 y=88(0..104) v=4 f=4 cyan pinhead
 
 @floorudg 91,164,164,85,10,0,0,0
 @walludg 89,37,38,217,41,214,84,150

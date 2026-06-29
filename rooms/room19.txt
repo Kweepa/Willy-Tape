@@ -43,12 +43,12 @@ WWWWWWWWWWWWWWWWWWWWWWWW
 @itemcolor YEL
 
 @guardians
-y=40 x=4(4..16) v=1 f=0..7 GRN
-y=40 x=10(10..22) v=1 f=0..7 YEL
-y=72 x=8(7..12) v=-1 f=0..7 RED
-y=72 x=16(14..19) v=1 f=0..7 WHT
-y=104 x=5(4..8) v=-1 f=0..7 YEL
-y=104 x=11(10..20) v=-1 f=0..7 BLU
+y=40 x=4(4..16) v=1 f=0..7 green monk
+y=40 x=10(10..22) v=1 f=0..7 yellow monk
+y=72 x=8(7..12) v=-1 f=0..7 red monk
+y=72 x=16(14..19) v=1 f=0..7 white monk
+y=104 x=5(4..8) v=-1 f=0..7 yellow monk
+y=104 x=11(10..20) v=-1 f=0..7 blue monk
 
 @floorudg 255,255,242,36,64,2,0,136
 @walludg 68,170,17,68,17,170,68,17

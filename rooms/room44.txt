@@ -40,7 +40,7 @@ WWWWWWWWWWWW
 @itemcolor CYN
 
 @guardians
-x=20 y=24(0..64) v=2 f=0..3 CYN
+x=20 y=24(0..64) v=2 f=0..3 cyan flag
 
 @floorudg 160,64,128,0,0,0,0,0
 @walludg 81,170,0,170,21,170,0,170 ; invert

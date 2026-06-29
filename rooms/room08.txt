@@ -48,10 +48,11 @@ WWWWWWWW       W      +
 @itemcolor YEL
 
 @guardians
-x=9 y=32(0..104) v=2 f=4..7 RED ; head
-y=40 x=6(0..8) v=-1 f=0..3 CYN ; flower
-y=88 x=19(13..23) v=-1 f=0..3 GRN ; flower
-y=24 x=18(14..23) v=-1 f=0..3 YEL ; flower
+x=9 y=32(0..104) v=2 f=4..7 red pinhead
+y=40 x=6(0..8) v=-1 f=0..3 cyan bird
+y=88 x=19(13..23) v=-1 f=0..3 green bird
+y=24 x=18(14..23) v=-1 f=0..3 yellow flower
+# needs a purple ewok or two
 
 @floorudg 245,250,191,31,38,20,34,16
 @walludg 171,171,173,170,170,174,85,85

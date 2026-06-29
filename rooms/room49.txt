@@ -43,10 +43,10 @@ WWWWWWWWWWWWWWWWWWWWWWWW
 @itemcolor GRN
 
 @guardians
-y=104 x=12(6..15) v=-1 f=0..7 PUR
-y=24 x=17(0..19) v=-1 f=0..7 PUR
-y=48 x=7(4..19) v=1 f=0..7 YEL
-y=72 x=12(3..19) v=-1 f=0..7 GRN
+y=104 x=12(6..15) v=-1 f=0..7 purple monk
+y=24 x=17(0..19) v=-1 f=0..7 purple monk
+y=48 x=7(4..19) v=1 f=0..7 yellow monk
+y=72 x=12(3..19) v=-1 f=0..7 green monk
 
 @floorudg 255,24,231,16,199,56,0,0
 @walludg 10,65,40,5,160,20,130,80 ; invert

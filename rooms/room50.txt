@@ -45,8 +45,8 @@
 @itemcolor YEL
 
 @guardians
-y=72 x=13(7..15) v=1 f=0..3 PUR
-y=56 x=7(5..22) v=-1 f=4..7 YEL
+y=72 x=13(7..15) v=1 f=0..3 purple flower
+y=56 x=7(5..22) v=-1 f=4..7 yellow bird
 
 @floorudg 255,255,170,85,170,85,0,0
 @walludg 170,85,85,170,85,170,170,85

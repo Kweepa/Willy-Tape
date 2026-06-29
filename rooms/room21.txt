@@ -54,9 +54,9 @@ WWWWWWWWWWWWWWWWWWWWWWWW
 @itemcolor GRN
 
 @guardians
-y=88 x=18(12..19) v=-1 f=0..7 CYN
-x=9 y=56(48..96) v=2 f=8 CYN
-x=4 y=72(48..87) v=-3 f=8 PUR
+y=88 x=18(12..19) v=-1 f=0..7 purple rabbit
+x=9 y=56(48..96) v=2 f=8 cyan pinhead
+x=4 y=72(48..87) v=-3 f=8 purple pinhead
 
 @floorudg 170,168,173,175,32,170,85,85
 @walludg 17,34,136,17,68,136,34,68 ; invert

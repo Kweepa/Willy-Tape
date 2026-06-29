@@ -48,9 +48,9 @@ FFFFFFFFF   /FFFFFFFFFFW
 @itemcolor YEL
 
 @guardians
-x=9 y=32(0..96) v=4 f=0..1 CYN
-x=3 y=48(40..56) v=0 f=2..3 YEL
-y=80 x=6(0..6) v=-1 f=4..7 RED
+x=9 y=32(0..96) v=4 f=0..1 cyan scroll
+x=3 y=48(40..56) v=0 f=2..3 yellow chandelier
+y=80 x=6(0..6) v=-1 f=4..7 red bird
 
 @floorudg 249,255,63,213,170,21,74,132
 @walludg 172,174,1,173,173,2,172,232

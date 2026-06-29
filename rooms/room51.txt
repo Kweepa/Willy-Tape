@@ -44,9 +44,9 @@ WWWW>>>>>>>>>>>>>>>>WWWW
 @itemcolor CYN
 
 @guardians
-y=48 x=15(5..15) v=-1 f=4..7 GRN
-y=72 x=7(5..18) v=1 f=4..7 YEL
-y=104 x=14(5..18) v=-1 f=0..3 PUR
+y=48 x=15(5..15) v=-1 f=4..7 green shears
+y=72 x=7(5..18) v=1 f=4..7 yellow multitool
+y=104 x=14(5..18) v=-1 f=0..3 purple saw
 
 @floorudg 90,255,34,68,34,64,0,0
 @walludg 85,170,68,34,85,170,68,34 ; invert

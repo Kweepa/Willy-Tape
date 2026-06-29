@@ -46,8 +46,8 @@ WWWWWWWW   FF
 @itemcolor YEL
 
 @guardians
-x=15 y=32(0..96) v=4 f=0..3 CYN
-x=9 y=72(64..104) v=-2 f=4..7 RED
+x=15 y=32(0..96) v=4 f=0..3 cyan spiral
+x=9 y=72(64..104) v=-2 f=4..7 red moon
 
 @floorudg 165,74,36,2,4,0,2,0
 @walludg 21,85,85,36,37,85,73,34

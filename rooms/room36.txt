@@ -47,8 +47,8 @@ FFFF      WWFF         *
 @itemcolor YEL
 
 @guardians
-y=16 x=1(0..9) v=-1 f=0..7 YEL
-x=5 y=48(40..80) v=2 f=8..8 PUR
+y=16 x=1(0..9) v=-1 f=0..7 yellow bird
+x=5 y=48(40..80) v=2 f=8..8 purple chip
 
 @floorudg 173,82,41,0,1,2,0,0
 @walludg 214,107,102,219,105,107,217,109

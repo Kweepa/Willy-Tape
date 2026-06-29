@@ -7,8 +7,6 @@
 @background CYN
 @belt 0
 
-@guardiansprites
-
 @tilemap
                         
                         
@@ -33,6 +31,8 @@ WWW\
 @rampcolor WHT
 @beltcolor WHT
 @itemcolor PUR
+
+# no guardians
 
 @floorudg 255,170,119,170,119,170,85,170
 @walludg 32,16,14,193,48,9,198,32 ; invert

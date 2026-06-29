@@ -47,8 +47,8 @@ FF       FWW
 @itemcolor WHT
 
 @guardians
-y=72 x=3(0..6) v=1 f=0..3 WHT
-y=64 x=10(10..16) v=1 f=4..7 CYN
+y=72 x=3(0..6) v=1 f=0..3 white cone
+y=64 x=10(10..16) v=1 f=4..7 cyan multitool
 
 @floorudg 181,170,85,74,37,66,1,2
 @walludg 102,182,109,187,102,185,109,182

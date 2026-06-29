@@ -52,7 +52,7 @@ WWWWWWFWWWWWWWWWWWWWWWWW
 @itemcolor PUR
 
 @guardians
-y=104 x=8(4..8) v=-1 f=0..7 YEL
+y=104 x=8(4..8) v=-1 f=0..7 yellow monk
 
 @floorudg 126,255,24,24,90,189,60,24
 @walludg 68,68,187,68,68,68,187,68 ; invert

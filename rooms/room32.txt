@@ -39,7 +39,7 @@ WW       FWW
 @itemcolor YEL
 
 @guardians
-y=48 x=3(2..8) v=-1 f=0..3 YEL
+y=48 x=3(2..8) v=-1 f=0..3 yellow wirecutter
 
 @floorudg 255,255,90,153,189,90,60,90
 @walludg 51,17,68,204,51,17,68,204 ; invert

@@ -44,8 +44,8 @@ WWWWWWWWWWWWWWWW<<<<<<<<
 @itemcolor RED
 
 @guardians
-y=104 x=4(3..11) v=-1 f=0..3 PUR
-x=16 y=72(64..104) v=-2 f=4..7 RED
+y=104 x=4(3..11) v=-1 f=0..3 purple saw
+x=16 y=72(64..104) v=-2 f=4..7 red flag
 
 @floorudg 187,221,221,238,0,0,0,0
 @walludg 187,119,238,221,187,119,238,221

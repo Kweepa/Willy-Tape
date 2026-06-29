@@ -44,8 +44,9 @@ WWWWWWWWWWWWWWWWWWWWWWWW
 @itemcolor BLU
 
 @guardians
-x=12 y=24(0..64) v=2 f=0..3 CYN
-y=64 x=16(15..22) v=-1 f=4..7 PUR
+x=12 y=24(0..64) v=2 f=0..3 cyan moon
+y=64 x=16(15..22) v=-1 f=4..7 purple domebot
+# needs a yellow bird
 
 @floorudg 255,255,165,88,36,66,32,0
 @walludg 16,42,85,160,16,32,16,8 ; invert

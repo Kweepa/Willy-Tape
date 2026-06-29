@@ -39,10 +39,10 @@ WWWWWWWWWWWWWWWWWWWWWWWW
 @itemcolor CYN
 
 @guardians
-x=4 y=64(40..104) v=1 f=0..1 GRN
-x=9 y=80(44..104) v=2 f=0..1 RED
-x=15 y=48(48..96) v=4 f=0..1 YEL
-x=20 y=34(34..104) v=5 f=0..1 CYN
+x=4 y=64(40..104) v=1 f=0..1 green guard
+x=9 y=80(44..104) v=2 f=0..1 red guard
+x=15 y=48(48..96) v=4 f=0..1 yellow guard
+x=20 y=34(34..104) v=5 f=0..1 cyan guard
 
 @floorudg 128,192,224,176,144,148,214,119
 @walludg 127,127,99,107,99,127,127,0

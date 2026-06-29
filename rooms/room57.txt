@@ -40,8 +40,8 @@
 @itemcolor CYN
 
 @guardians
-x=7 y=50(15..80) v=-5 f=0..1 CYN
-x=10 y=24(0..80) v=1 f=2..3 RED
+x=7 y=50(15..80) v=-5 f=0..1 cyan clive
+x=10 y=24(0..80) v=1 f=2..3 red jelly
 
 @floorudg 247,170,85,239,0,0,0,0
 @walludg 170,85,170,85,170,85,170,85

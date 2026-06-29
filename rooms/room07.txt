@@ -46,8 +46,8 @@ WWWWWWWWWWWWFFFF
 @itemcolor WHT
 
 @guardians
-y=64 x=12(9..16) v=-1 f=0..3 CYN
-y=88 x=6(0..8) v=-1 f=4..7 PUR
+y=64 x=12(9..16) v=-1 f=0..3 cyan egg
+y=88 x=6(0..8) v=-1 f=4..7 purple saw
 
 @floorudg 4,3,201,216,48,54,35,1
 @walludg 255,96,14,240,3,60,199,56

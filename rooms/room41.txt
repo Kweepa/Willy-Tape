@@ -42,10 +42,10 @@ FFFFFWFFFWFFWFFWFFFFWFFF
 @itemcolor BLU
 
 @guardians
-x=3 y=66(56..88) v=2 f=0..1 PUR
-x=5 y=70(56..88) v=2 f=0..1 YEL
-x=7 y=74(56..88) v=2 f=0..1 BLU
-x=9 y=78(56..88) v=2 f=2..3 CYN
+x=3 y=66(56..88) v=2 f=0..1 purple pacbody
+x=5 y=70(56..88) v=2 f=0..1 yellow pacbody
+x=7 y=74(56..88) v=2 f=0..1 blue pacbody
+x=9 y=78(56..88) v=2 f=2..3 cyan pachead
 
 @floorudg 206,255,0,231,0,127,0,251
 @walludg 238,17,108,146,17,201,34,156 ; invert

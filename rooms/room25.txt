@@ -46,8 +46,9 @@ FFFFFFFFFFFFFFFFFFFFWWWW
 @itemcolor GRN
 
 @guardians
-y=48 x=3(0..5) v=1 f=0..3 GRN
-y=24 x=6(0..8) v=1 f=4..7 PUR
+y=48 x=3(0..5) v=1 f=0..3 green penguin
+y=24 x=6(0..8) v=1 f=4..7 purple cone
+# needs another penguin? surely rope rooms can support three guardians...
 
 @floorudg 255,255,85,170,85,170,0,0
 @walludg 146,82,74,73,41,37,164,146

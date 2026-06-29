@@ -45,9 +45,9 @@ FFFFFFFF       W
 @itemcolor YEL
 
 @guardians
-y=24 x=18(4..23) v=-1 f=0..7 RED
-y=40 x=7(0..10) v=-1 f=0..7 CYN
-y=80 x=8(0..17) v=-1 f=0..7 YEL
+y=24 x=18(4..23) v=-1 f=0..7 red bat
+y=40 x=7(0..10) v=-1 f=0..7 cyan bird
+y=80 x=8(0..17) v=-1 f=0..7 yellow flower
 
 @floorudg 170,85,170,88,48,16,16,8
 @walludg 165,40,82,85,85,73,162,181

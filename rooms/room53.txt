@@ -33,6 +33,8 @@
 @beltcolor RED
 @itemcolor YEL
 
+# no guardians
+
 @floorudg 255,255,255,170,85,170,85,0
 @walludg 105,210,165,75,150,45,90,180
 @nastyudg 0,0,0,0,0,0,0,0

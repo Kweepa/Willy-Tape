@@ -51,10 +51,10 @@ WWWWWWWWWWWWWWWW  F   WW
 @itemcolor BLU
 
 @guardians
-x=2 y=48(48..96) v=4 f=0..1 YEL
-x=7 y=64(40..104) v=1 f=0..1 GRN
-y=32 x=5(0..9) v=-1 f=4..7 GRN
-x=16 y=8(0..16) v=2 f=2..3 WHT
+x=2 y=48(48..96) v=4 f=0..1 yellow clive
+x=7 y=64(40..104) v=1 f=0..1 green clive
+y=32 x=5(0..9) v=-1 f=4..7 green bird
+x=16 y=8(0..16) v=2 f=2..3 white esmerelda
 
 @floorudg 3,3,12,12,49,50,196,200
 @walludg 238,0,187,0,238,0,187,0

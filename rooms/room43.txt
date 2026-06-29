@@ -44,8 +44,8 @@
 @itemcolor GRN
 
 @guardians
-y=88 x=16(13..23) v=-1 f=0..3 RED
-y=40 x=17(15..23) v=1 f=4..7 YEL
+y=88 x=16(13..23) v=-1 f=0..3 red wirecutter
+y=40 x=17(15..23) v=1 f=4..7 yellow shears
 
 @floorudg 172,83,42,208,138,36,34,4
 @walludg 247,239,0,0,0,102,102,0

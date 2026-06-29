@@ -47,10 +47,10 @@
 @itemcolor RED
 
 @guardians
-y=16 x=1(0..6) v=-1 f=0..3 YEL
-y=24 x=15(13..18) v=1 f=0..3 GRN
-x=17 y=96(56..96) v=-1 f=4..7 YEL
-x=11 y=24(0..64) v=2 f=8 CYN
+y=16 x=1(0..6) v=-1 f=0..3 yellow bird
+y=24 x=15(13..18) v=1 f=0..3 green hootbot
+x=17 y=96(56..96) v=-1 f=4..7 yellow ewok
+x=11 y=24(0..64) v=2 f=8 cyan moon
 
 @floorudg 255,34,68,136,85,34,0,0
 @walludg 170,112,170,108,177,95,170,85 ; invert

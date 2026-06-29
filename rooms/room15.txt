@@ -48,10 +48,10 @@ WWWWWWWWWWWWWWWWWWWWWWWW
 @itemcolor RED
 
 @guardians
-x=4 y=48(48..104) v=4 f=8 YEL
-x=15 y=34(34..104) v=5 f=8 CYN
-x=20 y=64(40..104) v=1 f=8 GRN
-y=32 x=5(0..9) v=-1 f=0..7 GRN
+x=4 y=48(48..104) v=4 f=8 yellow guard
+x=15 y=34(34..104) v=5 f=8 cyan guard
+x=20 y=64(40..104) v=1 f=8 green guard
+y=32 x=5(0..9) v=-1 f=0..7 green bird
 
 @floorudg 128,64,32,80,72,84,82,85
 @walludg 102,102,102,0,102,102,102,102 ; invert

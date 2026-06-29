@@ -44,8 +44,8 @@
 @itemcolor PUR
 
 @guardians
-y=24 x=17(16..22) v=-1 f=0..3 YEL
-y=104 x=12(11..22) v=-1 f=4..7 PUR
+y=24 x=17(16..22) v=-1 f=0..3 yellow hootbot
+y=104 x=12(11..22) v=-1 f=4..7 purple wirecutter
 
 @floorudg 255,170,85,255,0,0,0,0
 @walludg 201,201,201,201,201,201,201,201
