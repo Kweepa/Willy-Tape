@@ -215,3 +215,22 @@ EndGuardianLoop
     bne --
 move_guardians_done
     rts
+
+ShouldMoveHorizontalGuardianThisFrame
+    lda hguard_count
+    and #3
+    cmp left_right_ctr
+    rts
+
+ShouldMoveVerticalGuardianThisFrame
+    lda vguard_count
+    cmp up_down_ctr
+    beq +
+    sec
+    sbc #3
+    cmp up_down_ctr
++
+    rts
+
+draw_vguard_chrs
+    !byte 0, 3, 1, 4, 2, 5                            ; DrawGuardian

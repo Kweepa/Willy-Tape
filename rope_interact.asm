@@ -4,7 +4,14 @@ rope_near_key   !byte rightIsPressed, leftIsPressed  ; descend toward rope side 
 rope_far_key    !byte leftIsPressed, rightIsPressed  ; climb
 rope_jump_flip  !byte $fe, $00                      ; side 0 right: invert ±1; side 1 left: no-op
 
-; rope_release — reloc block E @ $01B6 (see relocated_code.asm)
+; rope_release
+
+rope_release
+    lda #0
+    sta rope_willy_is_holding
+    lda #ROPE_GRAB_COOLDOWN_MAX
+    sta rope_grab_cooldown
+    rts
 
 ; clear rope only on draw frames (left_right_ctr even: every other frame)
 rope_pre_draw

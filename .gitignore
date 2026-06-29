@@ -4,6 +4,8 @@ Miner-main/
 # VIC-20 Assembler & Emulator Build Outputs
 *.prg
 *.lbl
+catalogue.bin
+catalogue.map
 *.d64
 *.tap
 /rooms/out/

@@ -27,14 +27,12 @@ Screen at **`$1000`** flips the VIC colour pairing vs the disk build (`$1E00` sc
 | **Engine** | **$1200**+ | ~3.5 KB | Code, decompress, flip, font, music |
 | **udg_base** | **$1800** | **1024 B** | 128 character slots |
 | **fontchars** | program | 512 B | Proportional glyph defs (Miner-main) |
-| **Guardian pool** | **$2000** | 4096 B | Deduped unique frames (127×32 B) |
-| **Room catalogue** | **$3000** | ~7 KB | Compressed rooms + indices |
-| **Entity table** | **~$4C00** | ~1160 B | Spectrum-style 8 B templates |
-| **Palettes / titles / tunes** | **~$5080** | ~2 KB | Shared lookup tables |
+| **Guardian pool** | **$2000** | ~10.9 KB | Contiguous frame sets (incl. bidir 8-frame sets) |
+| **Room catalogue** | **$4B00**+ | ~9 KB | Compressed rooms (base follows pool; see `catalogue.map`) |
+| **Palettes / tunes** | **~$5080** | ~2 KB | Shared lookup tables |
 | **color_base** | **$9400** | 408 B | Active colour (paired with $1000 screen) |
 | **map_base** | **$9600** | 408 B | Ghost colour RAM — collision map |
 | **INGAME_TUNE_SEQ** | **$97C0** | 64 B | Optional tail spare in map block |
-| **Resident guardian gfx** | **$5E00**+ | ≤896 B | Per-room frames + 128 B h8 flip |
 
 No separate `$5C00` map (Miner-style) — ghost colour RAM reuse saves 512 B.
 
@@ -54,29 +52,55 @@ No separate `$5C00` map (Miner-style) — ghost colour RAM reuse saves 512 B.
 
 ## Room catalogue (not per-room PRGs)
 
-~**115 B average** per room record:
+~**130 B average** per room record:
 
-- Packed meta (~8 B): conn, palette index, flags, pickup, spawn override, title index
-- RLE tilemap (base types 0–3) + optional 3 B ramp + 3 B conveyor overlays
-- Guardian refs: **2 B × N** (`entity_id` + `spec`)
-- Room UDG bytes (~48 B avg, unique per room)
+- Packed meta (8 B), palette index, null-terminated title, RLE tilemap
+- Optional pickup / ramp / conveyor overlays
+- Room UDG bytes (~48 B avg)
+- Guardians: **count byte** + N × **8 B** (x, y, min, max, vel, color, axis, set_idx)
 
 Global tables (loaded once):
 
-- Entity templates (~848–1160 B)
-- Guardian frame pool (4096 B)
-- 55 palette × 6 B, 61 title strings, tune data
+- Guardian frame pool (~220 slots / unique blobs, no flip scratch)
+- Set descriptor table (start + count per unique animation)
+- 55 palette × 6 B, tune data
 
-Tools: `tools/mkcatalogue.py` (TBD), `tools/audit_room_compress.py`, `tools/audit_guardian_frames.py`.
+Tools: `tools/mkcatalogue.py`, `tools/audit_room_compress.py`, `tools/audit_guardian_frames.py`.
+
+### PRG layout (engine binary)
+
+| Region | Range | Contents |
+|--------|-------|----------|
+| Low bank | `$1201–$17FF` | Boot stub, gameloop, map, loader, ramp, `willy_collide.asm` |
+| UDG hole | `$1800–$1BFF` | **No code** — charset RAM at runtime |
+| High bank | `$1C00+` | `willy_draw`, util, guardians, music, rope, `warm.asm` |
+
+Const tables live in the modules that use them (not a separate reloc file).
+
+### catalogue.bin format (version 6)
+
+Built by `tools/mkcatalogue.py`. Little-endian. Phase 3 loader copies sections to the RAM bases below.
+
+**Header (64 B @ file $0000)** — version **6**; sets offset @ 32; byte 46 reserved (0).
+
+**Per-room guardians** — `8×N` bytes each: **x, y, min, max, vel, color, axis, set_idx**. No frame/fmin/fctl in catalogue (loader fills runtime 10 B AoS from set table).
+
+**Set table** — `set_count × 4 B`: u16 **start_frame**, u8 **frame_count**, u8 **flags** (`SET_FLAG_H_BIDIR` = horizontal bidir: 8 frames in pool, 0–3 left / 4–7 right).
+
+**Flat pool** — unique animation sets appended contiguously. Horizontal bidir stores **8 frames** (left 4 + right 4 from room gfx or parent entity). Split saw sprites expand to bidir. Runtime uses `eor #4` on anim index when facing right.
+
+Loader derives runtime AoS bytes 6–7: `fmin=0`; `fctl=1` if `SET_FLAG_H_BIDIR`, else `fctl=frame_count−1` for vertical wrap.
+
+Measured build: ~8.6 KB room records + sets + pool ≈ **17 KB** file; pool RAM **~7 KB**.
 
 ---
 
 ## Guardians
 
-- **Entity table** + room **`(id, spec)`** refs (Spectrum model)
-- **h8 → 4** unique frames; **128 B flip** contiguous after that sprite set at room load
-- **One bidirectional sprite set per room**; multiple instances share frames (colour from entity)
-- Runtime uses frame index only — no per-frame flip in game loop
+- **165 instances** across 61 rooms; **8 B** catalogue bytes each (+ set_idx)
+- **`set_idx`** → set table (gfx only; not entities)
+- Bidir horizontal: **8 frames in pool** (0–3 left, 4–7 right from source gfx); `eor #4` at runtime
+- Runtime 10 B AoS built at load from set flags + count
 
 ---
 
@@ -93,10 +117,10 @@ Tools: `tools/mkcatalogue.py` (TBD), `tools/audit_room_compress.py`, `tools/audi
 | Phase | Status | Content |
 |-------|--------|---------|
 | 0 | **Done** | Repo split, `rooms/` copy, this doc |
-| 1 | Pending | Header equates, `$1000` screen, `make_tape.bat` |
-| 2 | Pending | `mkcatalogue.py` |
+| 1 | **Done** | Header equates, `$1000` screen, `make.bat`, blank-room boot stub |
+| 2 | **Done** | PRG UDG-hole split; `mkcatalogue.py` v6 → `catalogue.bin` |
 | 3 | Pending | `decompress.asm`, catalogue loader |
-| 4 | Pending | Entity guardians + load-time flip |
+| 4 | Pending | Pool-direct gfx (`guardian_pool` + set table) |
 | 5 | Pending | Miner font/music + `title.asm` |
 | 6 | Pending | `mktape.py`, VICE test |
 
@@ -107,8 +131,8 @@ Tools: `tools/mkcatalogue.py` (TBD), `tools/audit_room_compress.py`, `tools/audi
 | Block | ~Size |
 |-------|------:|
 | Engine + helpers | 3.5 KB |
-| Guardian pool | 4 KB |
-| Catalogue + globals | 10 KB |
+| Guardian pool | ~7 KB |
+| Catalogue + globals | ~17 KB |
 | UDG workspace | 1 KB |
 | Screen + map + resident gfx | 1.7 KB |
 | ZP + rope + scratch | 0.7 KB |

@@ -19,12 +19,12 @@
 ;   $A0-$A5   player_overlap (6 B)
 ;   $A6-$D5   player_touch (48 B) — DrawPlayer clears $A0-$D5 each frame
 ;   $D6-$DB   (gap) — arrow_x_zp $D6 in arrow rooms; rope block unused there
-;   $DC-$E1   cell_off_2x3 (boot)
-;   $E2-$E7   lr_touch_a/b/c (boot)
-;   $E8-$ED   draw_vguard_chrs (boot)
-;   $EE-$F6   ingame_tune_pitch (9 B; WarmStart copy)
-;   $37-$3C   draw_player_offsets (boot) — off $F5 KERNAL keyboard ptr during LOAD
-;   $3D-$42   draw_player_chrs (boot) — off $F6 KERNAL keyboard ptr during LOAD
+;   $DC-$E1   cell_off_2x3 — util.asm (PRG)
+;   $E2-$E7   lr_touch_a/b/c — willy_collide.asm (PRG)
+;   $E8-$ED   draw_vguard_chrs — guardians.asm (PRG)
+;   $EE-$F6   ingame_tune_pitch — ingame_tune.asm (PRG)
+;   $37-$3C   draw_player_offsets — willy_draw.asm (PRG)
+;   $3D-$42   draw_player_chrs — willy_draw.asm (PRG)
 ;   $33-$35   title scroll/hold scratch (title only)
 ;   $D7-$D9   title_scroll_ctr / title_music_step / title_mpack (title only)
 ;   $4d       music_key_prev (last ADGJL scan mask; 0 = released)
@@ -39,9 +39,8 @@
 ;   $90   ST       serial status (LOAD / IEC)
 ;   $93           load/verify flag (LOAD)
 ;   $AE-$AF       load end pointer (tape buffer end; used during LOAD)
-;   $033C-$35B     ROPE_SEGMENT_Y (32 B; cassette buffer, rope rooms only)
-;   $35C-$391     rope_xadd (54 B; copied from PRG at WarmStart)
-;   $392-$3FB     relocated code block B (see relocated_code.asm)
+;   $033C-$35B  ROPE_SEGMENT_Y (32 B; cassette buffer, rope rooms only)
+;   boot_rope_xadd_pack — rope_draw.asm (PRG; disk copied to $35C at WarmStart)
 ;   $B7   FNLEN    filename length (SETNAM)
 ;   $BB-$BC FNADR  filename pointer low/high (SETNAM)
 ;   $B8   LFN      logical file number (SETLFS)
@@ -50,8 +49,7 @@
 ;   $C1-$C2 STAL  I/O start address low/high (LOAD) — not $AE/$AF
 ;   $C3-$C4       KERNAL setup pointer (LOAD)
 ; Reserve for KERNAL during disk I/O: $90-$93, $AE-$AF, $B7-$C4.
-; CRITICAL: never place game ZP that is written during play in $90-$93.
-; $90 (ST) is read by LOAD; a stray value there (bit6/bit7 set) makes LOAD
+; CRITICAL: never place game ZP that is written during play in $90-$93. a stray value there (bit6/bit7 set) makes LOAD
 ; think the transfer hit EOF/error and abort early, so the room never loads —
 ; the screen keeps the stale chars from before the load, and PaintColors then
 ; reads those as colour-table indices -> garbage / multicolour corruption.
@@ -80,25 +78,14 @@
 ; Candidate per-room gameplay scratch — rope erase, character
 ; clear temp buffer, etc. Do not persist state there across LoadRoom.
 ;
-; Relocated resident code (WarmStart; survives KERNAL disk LOAD):
-;   $0200-$258  reloc block A (FormatRoomName, DrawHud, ShouldMove*, SaveSpawn)
-;   $0334-$33B  reloc block C (GetCollision)
-;   $0392-$3FB  reloc block B (ConvertXYToScreenAddr, GetSpriteFrameAddr, CalcGuardian*)
-;   $1000-$100C  reloc block D (ResetMap; overwrites BASIC stub after WarmStart entry)
-;   $01B6-$01BE  reloc block E (rope_release)
-;
-; Stack page ($100-$1FF) copied tables (WarmStart; stack must stay above $01C0):
+; Stack page ($100-$1FF) — pickup_got at $100; tune/map tables in PRG on tape port:
 ;   $100-$13D  pickup_got
-;   $140-$163  x24rowtab (36 B)
-;   $164-$199  jumptab (54 B)
-;   $19A-$1B4  jumpnotes (27 B)
-;   $01BF       guard byte before stack
+;   $140-$163  x24rowtab (36 B) — util.asm
+;   $164-$199  jumptab (54 B) — willy_collide.asm
+;   $19A-$1B4  jumpnotes (27 B) — willy_collide.asm
 ;   $01C0-$01FF CPU stack
 ;
-; Copied const tables (WarmStart; see runtime_const.asm boot pack):
-;   $D6-$EF  belt..draw_vguard (26 B); $37-$42 draw_player tables (12 B)
-;   must avoid $A0-$D5 (DrawPlayer overlap clear)
-; Rope: $68-$87 old_screen_pos; $88-$8F draw temps; $96-$9F state; $67 grab_cooldown
+; Const tables in PRG (disk copied at WarmStart; tape reads directly from source modules).
 
 tmp             = $02
 arr             = $03
@@ -152,15 +139,12 @@ totalinairtime  = $51
 
 rasterline      = $36
 
-draw_player_offsets = $37
-draw_player_chrs    = $3d
-
 music_index     = $43
 music_delay     = $44
 music_enabled   = $45          ; $FF = in-game music on, $0 = off
 music_key_prev  = $4d          ; last ADGJL scan mask (0 = released)
 
-jumpIsPressed   = $0f          ; was $3C — freed $37-$42 for draw tables
+jumpIsPressed   = $0f
 leftIsPressed   = $12
 rightIsPressed  = $2d
 
@@ -222,20 +206,8 @@ rope_segment_cur_y  = $9d
 rope_seg_skip_above = $9e
 rope_loop_count     = $9f
 
-cell_off_2x3        = $dc
-lr_touch_a          = $e2
-lr_touch_b          = $e4
-lr_touch_c          = $e6
-draw_vguard_chrs    = $e8
-ingame_tune_pitch   = $ee        ; 9 B VIC freq table; copied at WarmStart
-
 left_right_ctr  = $46          ; moved off $9D so rope_old_screen_pos clears $90-$93
 up_down_ctr     = $47
 
 player_overlap  = $a0
 player_touch    = $a6
-
-; Stack page ($100-$1FF) copied tables (WarmStart; stack must stay above $01C0)
-x24rowtab       = $140
-jumptab         = $164
-jumpnotes       = $19a

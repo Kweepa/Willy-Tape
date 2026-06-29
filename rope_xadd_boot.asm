@@ -1,4 +1,4 @@
-; Rope horizontal shift table — copied to cassette buffer $35C at WarmStart.
+; Rope horizontal shift table — read directly from PRG in tape port.
 ; Same bytes as tools/rope_table.py / original Spectrum rope table.
 
 boot_rope_xadd_pack
@@ -12,3 +12,8 @@ boot_rope_xadd_pack
 boot_rope_xadd_pack_end = *
 
 boot_rope_xadd_size = boot_rope_xadd_pack_end - boot_rope_xadd_pack
+!if boot_rope_xadd_size <> ROPE_XADD_BYTES {
+!error "boot_rope_xadd_size must match ROPE_XADD_BYTES"
+}
+
+rope_xadd = boot_rope_xadd_pack

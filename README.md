@@ -18,9 +18,13 @@
 - **Miner-main/** — local reference for proportional font, music player, and 16K memory layout (gitignored; copy from sibling JSW checkout if missing).
 - **tools/jswcache/** — SkoolKit HTML cache for Spectrum data audits (gitignored; populated by `tools/jswimport.py`).
 
-## Build (Phase 1+)
+## Build
 
-Tape build tooling is not wired yet. Disk-era `make.bat` / `mkroom.py` / `mkdisk.py` remain in the tree as reference until replaced by `make_tape.bat`, `mkcatalogue.py`, and `mktape.py`.
+```bat
+make.bat
+```
+
+Produces `jsw.prg` (loads at `$1201`) and `catalogue.bin` (room catalogue for Phase 3 loader). Phase 6 adds `mktape.py` for TAP output. Disk-era `mkroom.py` / `mkdisk.py` remain as reference only.
 
 See [docs/tape-16k.md](docs/tape-16k.md) for the target memory map and catalogue design.
 

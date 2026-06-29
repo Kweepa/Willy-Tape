@@ -27,7 +27,7 @@ PlayInGameMusic
 	and #$3f
 	sta music_index
 	tax
-	lda INGAME_TUNE_SEQ,x
+	lda ingame_tune_idx_rom,x
 	and #$0f
 	tay
 	lda ingame_tune_pitch,y

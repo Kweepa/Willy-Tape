@@ -27,14 +27,6 @@ SIZE_OVERRIDES: dict[str, int] = {
     "rope_old_screen_pos": 32,
     "player_overlap": 6,
     "player_touch": 48,
-    "cell_off_2x3": 6,
-    "lr_touch_a": 6,
-    "lr_touch_b": 6,
-    "lr_touch_c": 6,
-    "draw_vguard_chrs": 6,
-    "draw_player_offsets": 6,
-    "draw_player_chrs": 6,
-    "ingame_tune_pitch": 9,
 }
 
 # Aliases / sub-fields — skip duplicate overlap reports.
@@ -49,11 +41,6 @@ SKIP_OVERLAP = {
     "g_fctl",
     "hc",
     "guard_axis",  # $21-$28 via hx,y base at $20
-    "lr_touch_b",
-    "lr_touch_c",
-    "cell_off_2x3",
-    "lr_touch_a",
-    "draw_vguard_chrs",
     "player_overlap",
     "player_touch",
 }
@@ -61,17 +48,13 @@ SKIP_OVERLAP = {
 # Intentional multi-byte writes (symbol, extent bytes, reason)
 INTENTIONAL_WRITES: dict[str, tuple[int, str]] = {
     "player_overlap": (54, "DrawPlayer clears overlap+touch via player_overlap,x"),
-    "cell_off_2x3": (18, "WarmStart copies boot_zp_pack room tables to $DC-$ED"),
-    "draw_player_offsets": (6, "WarmStart RelocateDrawPlayerTables"),
-    "draw_player_chrs": (6, "WarmStart RelocateDrawPlayerTables"),
 }
 
 # Stack-page symbols (not low ZP) — skip in ZP asm scan
-STACK_PAGE_SYMBOLS = {"x24rowtab", "jumptab", "jumpnotes", "pickup_got", "pickup_got_last"}
+STACK_PAGE_SYMBOLS = {"pickup_got", "pickup_got_last"}
 
 VIRTUAL_REGIONS: list[tuple[str, int, int]] = [
     ("DrawPlayer_clear", 0xA0, 54),
-    ("boot_zp_room_pack", 0xDC, 18),
 ]
 
 KERNAL_RESERVE = [
@@ -82,9 +65,6 @@ KERNAL_RESERVE = [
 
 STACK_PAGE_REGIONS: list[tuple[str, int, int]] = [
     ("pickup_got", 0x100, 0x3E),  # $100-$13D inclusive
-    ("x24rowtab", 0x140, 36),
-    ("jumptab", 0x164, 54),
-    ("jumpnotes", 0x19A, 27),
 ]
 
 CLEAR_ZONE = (0xA0, 0xD5)
@@ -177,16 +157,11 @@ def _inside_pack(region: Region, pack: Region) -> bool:
 def check_overlaps(regions: list[Region]) -> list[str]:
     errors: list[str] = []
     zp_regions = [r for r in regions if r.start <= 0xFF and not r.virtual]
-    pack = next((r for r in regions if r.name == "boot_zp_pack"), None)
     clear = next((r for r in regions if r.name == "DrawPlayer_clear"), None)
     for i, a in enumerate(zp_regions):
         for b in zp_regions[i + 1 :]:
             if not a.overlaps(b):
                 continue
-            if pack and (_inside_pack(a, pack) or _inside_pack(b, pack)):
-                continue
-            if clear and a.name == "cell_off_2x3":
-                continue  # clear zone ends $D5; pack starts $DC
             errors.append(
                 f"overlap: {a.name} {fmt_addr(a.start)}-{fmt_addr(a.end)} "
                 f"vs {b.name} {fmt_addr(b.start)}-{fmt_addr(b.end)}"
@@ -212,17 +187,7 @@ def check_clear_zone(regions: list[Region]) -> list[str]:
 
 
 def check_boot_boundary(regions: list[Region]) -> list[str]:
-    errors: list[str] = []
-    for r in regions:
-        if r.virtual or r.name == "boot_zp_room_pack":
-            continue
-        if r.name in ("ingame_tune_pitch",):
-            continue
-        if r.start <= BOOT_PACK_END and r.end > BOOT_PACK_END and r.start >= 0xDC:
-            errors.append(
-                f"boot-pack spill: {r.name} ends at {fmt_addr(r.end)} (room pack ends {fmt_addr(BOOT_PACK_END)})"
-            )
-    return errors
+    return []
 
 
 def check_kernal(regions: list[Region]) -> list[str]:
@@ -293,7 +258,7 @@ def load_asm_constants() -> dict[str, int]:
         "stack_page_size": 117,
         "ROPE_UDG_BYTES": 128,
     }
-    for path in (ROOT / "defines.asm", ROOT / "runtime_const.asm", ROOT / "header.asm"):
+    for path in (ROOT / "defines.asm", ROOT / "header.asm"):
         if not path.exists():
             continue
         for name, addr in EQUATE_RE.findall(path.read_text(encoding="utf-8", errors="replace")):

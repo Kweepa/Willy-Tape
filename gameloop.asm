@@ -140,7 +140,28 @@ erase_player_done
 	dec up_down_ctr
 	bpl +
 	lda #2
-	sta up_down_ctr
+    sta up_down_ctr
 +
+    rts
+
+DrawHud
+    lda items_collected
+    ldy #$b0
+-
+    cmp #10
+    bcc +
+    sbc #10
+    iny
+    bne -
++
+    sty hud_items_scr
+    clc
+    adc #$b0
+    sta hud_items_scr+1
+
+    lda men
+    clc
+    adc #$b0
+    sta hud_men_count_scr
     rts
 

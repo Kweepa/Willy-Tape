@@ -1,16 +1,29 @@
-; Jet Set Willy - unexpanded VIC-20
-; PRG from $1000; room image loads to image_base ($1A05)
+; Jet Set Willy — 16K expanded tape port
+; PRG loads at $1201; screen RAM at $1000; UDG hole $1800-$1BFF; high bank $1C00+
 
 !source "zp.asm"
 !source "defines.asm"
 !source "debug.asm"
 
+; --- Low bank $1201-$17FF: boot path + physics (no UDG writes) ---
 !source "header.asm"
 !source "gameloop.asm"
 !source "map.asm"
 !source "loader.asm"
 !source "ramp.asm"
-!source "willy.asm"
+!source "willy_collide.asm"
+
+low_bank_end = *
+!if low_bank_end > $17FF {
+!error "low bank overflow past $17FF"
+}
+
+; --- UDG charset RAM $1800-$1BFF: no code ---
+*= $1C00
+
+; --- High bank $1C00+ ---
+!source "ingame_tune.asm"
+!source "willy_draw.asm"
 !source "util.asm"
 !source "input.asm"
 !source "guardians.asm"
@@ -23,7 +36,5 @@
 
 prg_end = *
 
-!source "ingame_tune.asm"
+!source "tape_runtime.asm"
 !source "warm.asm"
-!source "runtime_const.asm"
-!source "relocated_code.asm"

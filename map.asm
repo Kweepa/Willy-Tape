@@ -1,6 +1,6 @@
 ResetGame
 
-SHOW_TITLE = 1
+SHOW_TITLE = 0
 
 !if SHOW_TITLE {
 
@@ -127,4 +127,19 @@ CheckRoomEdge
     jsr do_falling_ramp_check
 
     sec ; don't draw player after, since we did transition
+    rts
+
+ResetMap
+    lda #0
+    sta dead
+    sta left_right_ctr
+    sta up_down_ctr
+    sta belt_active
+    rts
+
+SaveSpawn
+    lda px
+    sta spawn_px
+    lda py
+    sta spawn_py
     rts

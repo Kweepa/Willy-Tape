@@ -1,5 +1,6 @@
-; If I Were a Rich Man — ROM tables copied at WarmStart.
-; Pitch: VIC $900B values (C=135 .. C=195). Index: 0-8 into pitch table.
+; In-game pitch table from the original Spectrum tune (C=150 .. C=210).
+; Pitch: $900B values written by PlayInGameMusic (registers A/B/C map to 0/2/4 in index).
+; Index: seq nybbles select pitch index 0-8; tape port reads pitch from PRG below.
 
 ingame_tune_pitch_rom
 	!byte 135,159,163,175,179,183,187,191,195
@@ -13,6 +14,8 @@ ingame_tune_idx_rom
 	!byte 4,3,2,3,4,4,2,2,8,8,8,8,8,8,8,8
 ingame_tune_idx_rom_end = *
 ingame_tune_idx_rom_bytes = ingame_tune_idx_rom_end - ingame_tune_idx_rom
+
+ingame_tune_pitch = ingame_tune_pitch_rom
 
 !if ingame_tune_pitch_rom_bytes <> 9 {
 !error "ingame_tune_pitch_rom must be 9 bytes"

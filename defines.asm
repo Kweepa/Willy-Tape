@@ -23,14 +23,14 @@ GUARDIAN_CHR = 22
 PLAY_CHR = 58
 ARROW_CHR = 46
 
-udg_base = $1c00
+udg_base = $1800
 guardian_udgs = udg_base + GUARDIAN_CHR*8
 player_udg = udg_base + PLAY_CHR*8
 arrow_udg_addr = udg_base + ARROW_CHR*8
 arrow_init = arrow_udg_addr + 8
 arrow_update = arrow_init + 5
 
-; Sync at row 15/16 boundary (below playfield, above HUD). Screen shifted down ($9001 = $32).
+; Sync at row 15/16 boundary (below playfield, above HUD). $9001 positions 17-row screen.
 RASTERLINE_PAL      = $70
 RASTERLINE_NTSC     = $62
 
