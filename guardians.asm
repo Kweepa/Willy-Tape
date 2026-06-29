@@ -10,7 +10,7 @@ CopyDownGuardianData
     bpl -
     rts
 
-GetHorizontalGuardianFrame
+GetHorizontalGuardianFramePtr
     lda hx
     and #$03
     ldx g_fctl ; check bidirectional
@@ -21,12 +21,12 @@ GetHorizontalGuardianFrame
 +
     bpl ++
 
-GetVerticalGuardianBmpAddr
+GetVerticalGuardianFramePtr
     lda g_frame
 ++
     clc
     adc ht
-    jmp GetSpriteFrameAddr   ; tail call — rts resumes at caller after jsr GetVerticalGuardianBmpAddr
+    jmp GetSpriteFrameAddr   ; tail call — rts resumes at caller after jsr ResolveGuardianFramePtr
 
 MoveGuardian
     ; advance either x or y
@@ -87,16 +87,56 @@ draw_guard_loop
     bpl -
     rts
 
-; arr = guardian_sprite_frames + (frame index) * 32. Uses ht/g_frame/axis —
-; must not rely on arr left over from CalcGuardianRecPtr ($5827…).
+; arr = sprite_frames + (frame index) * 32. Uses ht/g_frame/axis —
+; must not rely on arr left over from CalcGuardianRecPtr (meta guardian tail).
 ResolveGuardianFramePtr
     lda guard_axis
     bne +
-    jsr GetHorizontalGuardianFrame
-    rts
+    jmp GetHorizontalGuardianFramePtr ; tail call
 +
-    jmp GetVerticalGuardianBmpAddr
+    jmp GetVerticalGuardianFramePtr ; tail call
 
+; CopyGuardianFrame — copy one 32-byte pool frame into this guardian's 6-char UDG slot.
+;
+; Call chain (MoveGuardians, move tick only):
+;   CopyDownGuardianData  -> hx..guard_axis from guardian_data_base record
+;   MoveGuardian          -> may advance hx/hy, hd, g_frame
+;   CalcGuardianUDGAddr   -> arr2 = dest base (see below)
+;   CopyGuardianFrame
+;
+; ZP inputs (guardian scratch $20-$29, plus guard_udg_off $48):
+;   hx, hy     — pixel position (hy & 7 used for vertical trim within cell)
+;   ht         — pool frame index of set's first frame (runtime byte 6 / g_off_fmin)
+;   g_frame    — animation frame counter (byte 5); vertical lookup adds this to ht
+;   g_fctl     — horizontal: 0 uni / 1 bidir; vertical: g_frame AND mask (byte 7)
+;   hd         — horizontal velocity sign; bidir frame pick uses hd bit 7
+;   guard_axis — 0 horizontal (frame from hx & 3), 1 vertical (frame from g_frame)
+;   guard_udg_off — guardian_index * 6 (which 6-char UDG block in guardian_udgs)
+;
+; arr on entry: stale — do not use. ResolveGuardianFramePtr overwrites it.
+; arr on exit:  pointer to selected sprite_frames row (column-major 32 B frame):
+;                bytes 0-15  left column (16 rows)
+;                bytes 16-31 right column (16 rows)
+;   Horizontal: index = (hx & 3) [+4 if bidir and hd >= 0] + ht
+;   Vertical:   index = g_frame + ht
+;   Then GetSpriteFrameAddr: arr = sprite_frames + index * 32
+;
+; arr2 on entry: set by CalcGuardianUDGAddr immediately before this call.
+;   arr2 -> guardian_udgs + guard_udg_off * 8
+;        (= udg_base + GUARDIAN_CHR*8 + guardian_index*48)
+;   Top-left byte of this guardian's 6-character workspace (2 wide x 3 tall).
+;
+; arr3: local only — arr2 + 24 (top right char in that 6-char block, i.e. +3 slots).
+;   Used as the destination pointer for the right sprite column while arr2 receives
+;   the left column. Both are filled row-by-row with Y as the running offset.
+;
+; Algorithm:
+;   1. ResolveGuardianFramePtr -> arr = source frame in catalogue sprite_frames
+;   2. Patch mod_src_col1/2 absolute LDA operands to arr and arr+16
+;   3. If hy & 7 != 0: clear (hy & 7) leading rows in both dest columns with 0
+;   4. Copy 16 rows: left column from mod_src_col1 -> (arr2),y; right from mod_src_col2 -> (arr3),y
+;   5. Clear (7 - (hy & 7)) trailing rows in both columns with 0
+; DrawGuardian then stamps screen chars guard_udg_index+0..5 onto the playfield.
 CopyGuardianFrame
     jsr ResolveGuardianFramePtr
 
@@ -135,14 +175,14 @@ CopyGuardianFrame
     ldx #16
 -
 mod_src_col1
-    lda guardian_sprite_frames
+    lda sprite_frames
     inc mod_src_col1+1
     bne +
     inc mod_src_col1+2
 +
     sta (arr2),y
 mod_src_col2
-    lda guardian_sprite_frames
+    lda sprite_frames
     inc mod_src_col2+1
     bne +
     inc mod_src_col2+2

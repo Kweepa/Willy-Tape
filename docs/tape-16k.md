@@ -21,32 +21,28 @@ Screen at **`$1000`** flips the VIC colour pairing vs the disk build (`$1E00` sc
 | Region | Address | Size | Purpose |
 |--------|---------|-----:|---------|
 | ZP + game state | `$02`+ | ~160 B | See `zp.asm` |
+| **meta_content_src** | **$13E** | **104 B** | Runtime room meta on stack page; guardian AoS at +39 |
 | Tape scratch | `$0200`–`$03FF` | ~512 B | Decompress staging; free after bulk load |
 | Rope tables | `$033C`+ | 86 B | Cassette buffer (`warm.asm`) |
 | **screen_base** | **$1000** | 408 B | 24×17 display |
-| **Engine** | **$1200**+ | ~3.5 KB | Code, decompress, flip, font, music |
-| **udg_base** | **$1800** | **1024 B** | 128 character slots |
-| **fontchars** | program | 512 B | Proportional glyph defs (Miner-main) |
-| **Guardian pool** | **$2000** | ~10.9 KB | Contiguous frame sets (incl. bidir 8-frame sets) |
-| **Room catalogue** | **$4B00**+ | ~9 KB | Compressed rooms (base follows pool; see `catalogue.map`) |
-| **Palettes / tunes** | **~$5080** | ~2 KB | Shared lookup tables |
+| **Engine + catalogue** | **$1200**+ | ~18 KB | Code then embedded `catalogue_data.asm` (flows by `!source`; read in place) |
+| **udg_base** | **$1800** | **512 B** | 64 character slots (chr 0–63) — runtime charset RAM, not PRG |
 | **color_base** | **$9400** | 408 B | Active colour (paired with $1000 screen) |
 | **map_base** | **$9600** | 408 B | Ghost colour RAM — collision map |
 | **INGAME_TUNE_SEQ** | **$97C0** | 64 B | Optional tail spare in map block |
 
 No separate `$5C00` map (Miner-style) — ghost colour RAM reuse saves 512 B.
 
-### UDG layout ($1800, 1024 B)
+### UDG layout ($1800, 512 B — chr 0–63)
 
 | Chr | Use |
 |-----|-----|
+| 0–6 | Room tiles (empty, floor, wall, …) |
 | 13–14 | HUD icons |
-| 15–21 | Room tiles |
+| 15–21 | Room tile variants (from canonical pool) |
 | 22–45 | Guardian UDGs |
 | 46–47 | Arrow |
-| 58–63 | Willy |
-| 68–90 | Propfont composite row |
-| 91–127 | Title art / extra glyphs |
+| 58–63 | Willy (6 frames) |
 
 ---
 
@@ -72,8 +68,8 @@ Tools: `tools/mkcatalogue.py`, `tools/audit_room_compress.py`, `tools/audit_guar
 | Region | Range | Contents |
 |--------|-------|----------|
 | Low bank | `$1201–$17FF` | Boot stub, gameloop, map, loader, ramp, `willy_collide.asm` |
-| UDG hole | `$1800–$1BFF` | **No code** — charset RAM at runtime |
-| High bank | `$1C00+` | `willy_draw`, util, guardians, music, rope, `warm.asm` |
+| UDG hole | `$1800–$19FF` | **No code** — charset RAM at runtime (64 chars) |
+| High bank | `$1A00+` | `willy_draw`, util, guardians, music, rope, `warm.asm` |
 
 Const tables live in the modules that use them (not a separate reloc file).
 

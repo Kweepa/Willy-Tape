@@ -24,6 +24,8 @@ PLAY_CHR = 58
 ARROW_CHR = 46
 
 udg_base = $1800
+UDG_CHAR_SLOTS = 64
+high_bank = udg_base + UDG_CHAR_SLOTS * 8   ; $1A00 — code starts after charset RAM
 guardian_udgs = udg_base + GUARDIAN_CHR*8
 player_udg = udg_base + PLAY_CHR*8
 arrow_udg_addr = udg_base + ARROW_CHR*8
@@ -37,7 +39,7 @@ RASTERLINE_NTSC     = $62
 GUARDIAN_HORIZONTAL = 0
 GUARDIAN_VERTICAL = 1
 
-; player frames 0-7 in willy (spriteframes.asm); GetPlayerFrameAddr
+; player frames 0-7 via player_sprite_set_idx in catalogue sprite pool; GetPlayerFrameAddr
 
 RAMP_NONE = 0
 RAMP_UP_RIGHT = 1

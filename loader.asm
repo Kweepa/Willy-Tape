@@ -20,23 +20,11 @@ LoadRoom
     beq LoadRoomDone
 
     jsr FindRoomRecord
-    bcc LoadRoomBlank
-
     jsr DecompressRoom
     jsr TapePaintMap
-    rts
 
-LoadRoomBlank
-    jsr TapeClearScreen
-    jsr TapeInitMeta
-    jsr ApplyBorderFromMeta
-    jsr TapePaintRoomColors
-    jsr TapePaintMap
 LoadRoomDone
     rts
-
-LoadRoomFile
-    jmp LoadRoom
 
 ; Parse catalogue record at stream_ptr -> screen_base, meta.
 DecompressRoom
@@ -147,50 +135,46 @@ title_done
 ApplyRoomOverlays
     ldy #0
     lda (stream_ptr),y
-    sta ramp_tmp                  ; pickup offset lo
+    sta meta_content_pickup_scr
     iny
     lda (stream_ptr),y
-    sta ramp_y                    ; pickup offset hi
-    lda ramp_tmp
+    sta meta_content_pickup_scr+1
+    lda meta_content_pickup_scr+1
     cmp #$ff
     bne fix_pickup_addr
-    lda ramp_y
+    lda meta_content_pickup_scr
     cmp #$ff
     beq pickup_addr_done
 fix_pickup_addr
-    lda ramp_tmp
+    lda meta_content_pickup_scr
     clc
     adc #<screen_base
-    sta ramp_tmp
-    lda ramp_y
+    sta meta_content_pickup_scr
+    lda meta_content_pickup_scr+1
     adc #>screen_base
-    sta ramp_y
+    sta meta_content_pickup_scr+1
 pickup_addr_done
     jsr Skip2
 
     lda meta_content_record_flags
     and #FLAG_RAMP
     beq +
-    jsr ApplyRamp3
+    jsr ApplyRamp
 +
     lda meta_content_record_flags
     and #FLAG_CONVEYOR
     beq +
-    jsr ApplyConveyor3
+    jsr ApplyConveyor
 +
     rts
 
 PaintPickup
-    lda ramp_y
-    cmp #$ff
-    bne paint_pickup
-    lda ramp_tmp
+    lda meta_content_pickup_scr+1
     cmp #$ff
     beq paint_pickup_done
-paint_pickup
-    lda ramp_tmp
+    lda meta_content_pickup_scr
     sta arr
-    lda ramp_y
+    lda meta_content_pickup_scr+1
     sta arr+1
     lda #ITEM_CHR
     ldy #0
@@ -265,46 +249,99 @@ LoadRoomUdgs
     ldx #7
     lda #0
 -
-    sta udg_base,x              ; chr 0 empty — always zero, not in catalogue
+    sta udg_base,x              ; chr 0 empty — always zero
     dex
     bpl -
 
-    lda #TILE_PLATFORM          ; floor chr 1
-    jsr LoadOneUdgChr
-    lda #TILE_SOLID             ; wall chr 2
-    jsr LoadOneUdgChr
-    lda #ITEM_CHR               ; pickup chr 6
-    jsr LoadOneUdgChr
+    ldy #0
+    lda (stream_ptr),y
+    tax
+    lda #<udg_pool_floor
+    sta scr_ptr
+    lda #>udg_pool_floor
+    sta scr_ptr+1
+    lda #TILE_PLATFORM
+    jsr LoadUdgFromPool
+
+    ldy #1
+    lda (stream_ptr),y
+    tax
+    lda #<udg_pool_wall
+    sta scr_ptr
+    lda #>udg_pool_wall
+    sta scr_ptr+1
+    lda #TILE_SOLID
+    jsr LoadUdgFromPool
+
+    ldy #2
+    lda (stream_ptr),y
+    tax
+    lda #<udg_pool_pickup
+    sta scr_ptr
+    lda #>udg_pool_pickup
+    sta scr_ptr+1
+    lda #ITEM_CHR
+    jsr LoadUdgFromPool
 
     lda meta_content_record_flags
     and #FLAG_NASTY
-    beq +
+    beq load_udg_skip_nasty
+    ldy #3
+    lda (stream_ptr),y
+    tax
+    lda #<udg_pool_nasty
+    sta scr_ptr
+    lda #>udg_pool_nasty
+    sta scr_ptr+1
     lda #TILE_HAZARD
-    jsr LoadOneUdgChr
-+
+    jsr LoadUdgFromPool
+load_udg_skip_nasty
     lda meta_content_record_flags
     and #FLAG_RAMP
-    beq +
+    beq load_udg_skip_ramp
+    ldy #4
+    lda (stream_ptr),y
+    tax
+    lda #<udg_pool_ramp
+    sta scr_ptr
+    lda #>udg_pool_ramp
+    sta scr_ptr+1
     lda #TILE_RAMP
-    jsr LoadOneUdgChr
-+
+    jsr LoadUdgFromPool
+load_udg_skip_ramp
     lda meta_content_record_flags
     and #FLAG_CONVEYOR
-    beq +
+    beq load_udg_skip_belt
+    ldy #5
+    lda (stream_ptr),y
+    tax
+    lda #<udg_pool_belt
+    sta scr_ptr
+    lda #>udg_pool_belt
+    sta scr_ptr+1
     lda #TILE_CONVEYOR
-    jsr LoadOneUdgChr
-+
+    jsr LoadUdgFromPool
+load_udg_skip_belt
+    lda #UDG_INDEX_BYTES
+    jsr SkipBytes
     jsr EnsureVicCharset
     rts
 
-; Keep $9005 charset block at $1800 after UDG writes.
-EnsureVicCharset
-    lda #$ce
-    sta $9005
-    rts
-
-; A = VIC chr. Copy 8 bytes from stream_ptr to udg_base + chr*8.
-LoadOneUdgChr
+; A = VIC chr, X = pool index, scr_ptr = pool type base (contiguous ZP $05-$06).
+LoadUdgFromPool
+    stx ramp_tmp
+    pha
+    lda ramp_tmp
+    asl
+    asl
+    asl
+    clc
+    adc scr_ptr
+    sta scr_ptr
+    bcc +
+    inc scr_ptr+1
++
+    pla
     asl
     asl
     asl
@@ -316,18 +353,16 @@ LoadOneUdgChr
     sta udg_ptr+1
     ldy #0
 -
-    lda (stream_ptr),y
+    lda (scr_ptr),y
     sta (udg_ptr),y
     iny
     cpy #8
     bne -
-    lda #8
-    clc
-    adc stream_ptr
-    sta stream_ptr
-    bcc +
-    inc stream_ptr_hi
-+
+    rts
+
+EnsureVicCharset
+    lda #$ce
+    sta $9005
     rts
 
 LoadRoomGuardians
@@ -401,9 +436,9 @@ LookupGuardianSet
     lda mov
     asl
     tax
-    lda guardian_set_metadata,x
+    lda sprite_set_metadata,x
     sta ht
-    lda guardian_set_metadata+1,x
+    lda sprite_set_metadata+1,x
     sta ts
     lda guard_axis
     bne lookup_guardian_set_v
@@ -447,16 +482,6 @@ SkipBytesLoop
 SkipBytesDone
     rts
 
-TapeClearScreen
-    lda #TILE_CHR_BASE + TILE_EMPTY
-    ldx #0
--
-    sta screen_base,x
-    sta screen_base+$80,x
-    inx
-    bne -
-    rts
-
 TapeInitMeta
     lda #0
     ldx #0
@@ -477,25 +502,9 @@ TapeInitMeta
     sta meta_content_spawn_py
     lda #8
     sta meta_content_border
-    rts
-
-TapePaintRoomColors
-    ldy #0
--
-    lda screen_base,y
-    and #$0f
-    tax
-    lda tile_color_src,x
-    sta color_base,y
-
-    lda screen_base+$80,y
-    and #$0f
-    tax
-    lda tile_color_src,x
-    sta color_base+$80,y
-
-    iny
-    bne -
+    lda #$ff
+    sta meta_content_pickup_scr
+    sta meta_content_pickup_scr+1
     rts
 
 TapePaintMap

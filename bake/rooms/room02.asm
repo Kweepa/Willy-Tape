@@ -24,16 +24,20 @@ room02_data
     !byte WHT, GRN, RED, YEL, WHT, WHT
 
 ; --- tile_udg ---
-; types 1 floor, 2 wall, 6 pickup always; 3 nasty / 4 ramp / 5 belt when flagged
+; canonical pool indices: floor wall pickup nasty ramp belt (6 B)
 ; type 0 empty is always zero — not stored
 ; floor
-    !byte $d7, $b3, $75, $6d, $5c, $18, $08, $04
+    !byte 2
 ; wall
-    !byte $bd, $aa, $5d, $a2, $f3, $0a, $06, $01
+    !byte 9
 ; pickup
-    !byte $81, $42, $24, $18, $3c, $18, $3c, $c3
+    !byte 21
 ; nasty
-    !byte $49, $6a, $3b, $3a, $fc, $1e, $6b, $e8
+    !byte 8
+; ramp
+    !byte 0
+; belt
+    !byte 0
 
 ; --- rle_tilemap ---
 ; 43 tokens, 384 cells — each byte (N<<3)|C

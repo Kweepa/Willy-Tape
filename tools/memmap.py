@@ -41,11 +41,8 @@ TAPE_RAM = [
     ("screen_base", 0x1000, 408, "24x17 playfield"),
     ("color_base", 0x9400, 408, "active colour (paired with $1000 screen)"),
     ("map_base", 0x9600, 408, "ghost colour RAM collision map"),
-    ("udg_base", 0x1800, 1024, "character RAM via 36869 OR $0E"),
-    ("meta_content_src", 0x5800, 104, "runtime room meta (was per-room PRG tail)"),
-    ("guardian_data_base", 0x5827, 60, "runtime guardian AoS (meta tail)"),
-    ("guardian_pool", 0x2000, 4096, "deduped frames (Phase 3 load)"),
-    ("catalogue_base", 0x3000, 0x1C00, "compressed rooms + globals (Phase 3)"),
+    ("udg_base", 0x1800, 512, "character RAM via 36869 OR $0E (64 slots)"),
+    ("meta_content_src", 0x13E, 104, "runtime room meta; guardian AoS at +39 ($165)"),
     ("ROPE_SEGMENT_Y", 0x33C, 32, "rope segment Y (cassette buffer)"),
     ("INGAME_TUNE_SEQ", 0x97C0, 64, "tune index table in map colour spare"),
 ]
@@ -53,8 +50,18 @@ TAPE_RAM = [
 DISK_ROOM_BASE = 0x1A05
 TAPE_LOAD_BASE = 0x1201
 TAPE_UDG_BASE = 0x1800
-TAPE_UDG_END = 0x1BFF
-TAPE_GUARDIAN_POOL = 0x2000
+TAPE_UDG_END = 0x19FF
+TAPE_LOW_BANK_END = 0x17FF
+TAPE_HIGH_BANK = 0x1A00
+
+# PRG segments: (name, start_label, end_label). Order must match link layout.
+TAPE_PRG_SEGMENTS = [
+    ("low bank code", "cold_start", "low_bank_end"),
+    ("high bank code", "high_bank", "high_bank_code_end"),
+    ("catalogue rooms", "CatalogueImage", "catalogue_rooms_end"),
+    ("catalogue tile UDGs", "udg_pool_counts", "catalogue_udgs_end"),
+    ("catalogue sprites", "sprite_set_metadata", "catalogue_sprites_end"),
+]
 
 
 def parse_labels(lbl: Path) -> dict[str, int]:
@@ -64,6 +71,107 @@ def parse_labels(lbl: Path) -> dict[str, int]:
         if m:
             labels[m.group(2)] = int(m.group(1), 16)
     return labels
+
+
+def check_tape_layout(labels: dict[str, int], *, end: int) -> int:
+    """Return error count; print segment map and overlap report."""
+    errors = 0
+    segments: list[tuple[str, int, int]] = []
+
+    print("PRG layout (from labels):")
+    print(f"{'Segment':28} {'Start':>6} {'End':>6} {'Size':>6}")
+    print("-" * 52)
+
+    for name, start_sym, end_sym in TAPE_PRG_SEGMENTS:
+        if start_sym not in labels:
+            print(f"  *** missing label .{start_sym}")
+            errors += 1
+            continue
+        if end_sym not in labels:
+            print(f"  *** missing label .{end_sym}")
+            errors += 1
+            continue
+        start = labels[start_sym]
+        seg_end = labels[end_sym] - 1
+        if seg_end < start:
+            print(f"  *** {name}: .{end_sym} (${labels[end_sym]:04X}) before .{start_sym} (${start:04X})")
+            errors += 1
+            continue
+        size = seg_end - start + 1
+        segments.append((name, start, seg_end))
+        print(f"{name:28} ${start:04X} ${seg_end:04X} {size:6}")
+
+    prg_end = labels.get("prg_end")
+    if prg_end is None:
+        print("  *** missing label .prg_end")
+        errors += 1
+    elif prg_end != end + 1:
+        print(
+            f"  *** prg_end ${prg_end:04X} != PRG byte end ${end + 1:04X}"
+        )
+        errors += 1
+    elif segments and segments[-1][2] + 1 != prg_end:
+        print(
+            f"  *** catalogue_sprites_end ${segments[-1][2] + 1:04X} != prg_end ${prg_end:04X}"
+        )
+        errors += 1
+    else:
+        print(f"{'prg_end':28} ${prg_end:04X} ${prg_end - 1:04X} {1:6}")
+
+    print()
+    for i in range(len(segments) - 1):
+        _n1, _s1, e1 = segments[i]
+        n2, s2, _e2 = segments[i + 1]
+        if e1 >= s2:
+            overlap = e1 - s2 + 1
+            print(
+                f"  *** OVERLAP: {segments[i][0]} ends ${e1:04X}, "
+                f"{n2} starts ${s2:04X} ({overlap} bytes)"
+            )
+            errors += 1
+        elif s2 - e1 - 1 > 0:
+            gap = s2 - e1 - 1
+            print(f"  gap {gap} B between {segments[i][0]} and {n2} (${e1 + 1:04X}-${s2 - 1:04X})")
+
+    low_end = labels.get("low_bank_end")
+    if low_end is not None and low_end > TAPE_LOW_BANK_END:
+        print(
+            f"  *** low bank extends to ${low_end:04X} (limit ${TAPE_LOW_BANK_END:04X})"
+        )
+        errors += 1
+
+    for name, start, seg_end in segments:
+        if start <= TAPE_UDG_END and seg_end >= TAPE_UDG_BASE:
+            if name != "low bank code":
+                print(f"  *** {name} spans UDG charset hole (${TAPE_UDG_BASE:04X}-${TAPE_UDG_END:04X})")
+                errors += 1
+
+    if end >= TAPE_UDG_BASE and labels.get("low_bank_end", 0) <= TAPE_LOW_BANK_END:
+        over = min(end, TAPE_UDG_END) - max(TAPE_LOAD_BASE, TAPE_UDG_BASE) + 1
+        if over > 0 and not any(
+            n == "low bank code" and s <= TAPE_UDG_END and e >= TAPE_UDG_BASE
+            for n, s, e in segments
+        ):
+            print(
+                f"  note: PRG file spans UDG hole (${TAPE_UDG_BASE:04X}-${TAPE_UDG_END:04X}) "
+                f"via low bank — expected until Phase 2 split"
+            )
+
+    prg_total = end - TAPE_LOAD_BASE + 1
+    cat = labels.get("CatalogueImage")
+    print()
+    print(f"  PRG image ${TAPE_LOAD_BASE:04X}-${end:04X} ({prg_total} bytes)")
+    if cat is not None:
+        cat_size = end - cat + 1
+        print(
+            f"  embedded catalogue ${cat:04X}-${end:04X} ({cat_size} bytes, read in place)"
+        )
+
+    if errors:
+        print(f"\nLayout check: {errors} error(s)")
+    else:
+        print("\nLayout check: OK — no segment overlaps")
+    return errors
 
 
 def prg_slack(lbl: Path, room_base: int) -> int:
@@ -98,25 +206,19 @@ def prg_bytes_end(lbl: Path, load_base: int) -> int:
 def main():
     args = sys.argv[1:]
     tape_mode = "--tape" in args
-    args = [a for a in args if a != "--tape"]
+    check_overlap = "--overlap" in args or tape_mode
+    args = [a for a in args if a not in ("--tape", "--overlap")]
 
     if args and args[0] == "--slack":
         lbl = Path(args[1] if len(args) > 1 else "jsw.lbl")
         if tape_mode:
             labels = parse_labels(lbl)
             end = prg_bytes_end(lbl, TAPE_LOAD_BASE)
-            slack = TAPE_GUARDIAN_POOL - end
-            if slack < 0:
-                over = -slack
-                print(
-                    f"PRG extends {over} (0x{over:02X}) bytes past "
-                    f"${TAPE_GUARDIAN_POOL:04X} guardian_pool base"
-                )
-                sys.exit(1)
-            print(
-                f"PRG code ends ${end:04X}; "
-                f"{slack} (0x{slack:02X}) bytes free before guardian_pool"
-            )
+            total = end - TAPE_LOAD_BASE + 1
+            print(f"PRG image ${TAPE_LOAD_BASE:04X}-${end:04X} ({total} bytes)")
+            cat = labels.get("CatalogueImage")
+            if cat is not None:
+                print(f"  catalogue embedded ${cat:04X}-${end:04X} ({end - cat + 1} bytes)")
             return
         slack = prg_slack(lbl, DISK_ROOM_BASE)
         if slack < 0:
@@ -157,11 +259,11 @@ def main():
                 f"  *** {udg_overlap} bytes overlap UDG charset RAM "
                 f"(${TAPE_UDG_BASE:04X}-${TAPE_UDG_END:04X}) — split code in Phase 2 ***"
             )
-        pool_slack = TAPE_GUARDIAN_POOL - end
-        if pool_slack < 0:
-            print(f"  *** {-pool_slack} bytes past ${TAPE_GUARDIAN_POOL:04X} guardian_pool ***")
-        else:
-            print(f"  {pool_slack} bytes free before guardian_pool @ ${TAPE_GUARDIAN_POOL:04X}")
+        cat = labels.get("CatalogueImage")
+        if cat is not None:
+            print(
+                f"  catalogue embedded ${cat:04X}-${end:04X} ({end - cat + 1} bytes)"
+            )
         bounds = [(s, n, sym) for s, n, sym in bounds if s >= load_base]
         bounds.sort()
         print()
@@ -184,6 +286,10 @@ def main():
             else:
                 size_s = f"~{size}"
             print(f"  ${addr:04X}  {name:28} {size_s:>6}  ({note})")
+        if check_overlap:
+            print()
+            if check_tape_layout(labels, end=end):
+                sys.exit(1)
         return
 
     load_base = 0x1000

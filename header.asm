@@ -7,11 +7,11 @@ map_base    = $9600
 tile_bytes  = 408                 ; 24 x 17
 hud_row_off = 384                 ; row 16 * 24
 
-; Character RAM @ $1800 — room tiles chr 0-6 (empty=0), HUD 13-14, guardians 22+
+; Character RAM @ $1800 — 64 slots (chr 0-63); room tiles 0-6, HUD 13-14, guardians 22+
 udg_base = $1800
 
-; Room catalogue in PRG (catalogue_data.asm): catalogue_rooms.asm (RoomRecordPtrs +
-; room records), catalogue_guardians.asm (guardian_set_metadata, guardian_sprite_frames).
+; Room catalogue in PRG (catalogue_data.asm): catalogue_rooms.asm, catalogue_udgs.asm,
+; catalogue_sprites.asm (sprite_set_metadata, sprite_frames, player_sprite_set_idx).
 ; Read in place. Tile colours are 6 B inline in each room record.
 
 ; Room record flags (meta8 byte 6 — see bake/room_record.asm)
@@ -23,9 +23,10 @@ FLAG_ARROW    = $10
 
 title_ptr       = $39          ; 2 B pointer into catalogue record title
 
-UDG_FIXED_BYTES = 24              ; floor + wall + item UDG in every room record
+UDG_INDEX_BYTES = 6              ; per-room canonical pool indices
 
-meta_content_src = $5800
+; Runtime room meta (104 B) on stack page after pickup_got; guardian AoS at +39 in-place.
+meta_content_src = $13e
 tail_size       = 104
 meta_content_guardians = meta_content_src
 meta_content_border = meta_content_src + 1
@@ -50,6 +51,7 @@ meta_content_guardian_data = meta_content_src + 39
 meta_content_has_arrow = meta_content_src + 99
 meta_content_spare = meta_content_src + 100
 meta_content_record_flags = meta_content_spare + 1
+meta_content_pickup_scr = meta_content_src + 102   ; 2 B screen addr; hi=$FF = none
 ending_pending = meta_content_spare
 guardian_data_base = meta_content_guardian_data
 tail_base = meta_content_src
@@ -68,7 +70,7 @@ guardian_data_bytes = 60
 max_guardians = 6
 
 ; Per-room guardian state only — sprite frames read from catalogue in place.
-; Player Willy frames: willy label in spriteframes.asm (GetPlayerFrameAddr).
+; Player Willy frames: player_sprite_set_idx in catalogue_sprites.asm (GetPlayerFrameAddr).
 
 ; In-game tune index seq — optional tail spare in map colour block (unused; tune in PRG).
 INGAME_TUNE_SEQ = $97c0

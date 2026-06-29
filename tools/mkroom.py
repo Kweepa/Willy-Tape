@@ -1080,7 +1080,7 @@ def build_title_screen() -> tuple[bytes, int]:
             "SCANKEYROW": load_resident_symbol("ScanKeyRow"),
             "WAITFORRASTER": load_resident_symbol("WaitForRaster"),
             "SETCOLORS": load_resident_symbol("SetColors"),
-            "LOADROOMFILE": load_resident_symbol("LoadRoomFile"),
+            "LOADROOM": load_resident_symbol("LoadRoom"),
             "room_name": load_resident_symbol("room_name"),
             "TITLE_BAR_COUNT": TITLE_BAR_COUNT,
             "HUD_SCR": SCREEN_BASE + hud_row_off,

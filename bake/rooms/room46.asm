@@ -11,7 +11,7 @@ room46_data
 
 ; --- meta8 ---
 ; conn N E S W
-    !byte 3, 47, 0, 45
+    !byte 3, 255, 0, 45
 ; spawn px py
     !byte 4, 104
 ; flags: nasty|ramp|conveyor
@@ -24,20 +24,20 @@ room46_data
     !byte WHT, YEL, PUR, RED, PUR, GRN
 
 ; --- tile_udg ---
-; types 1 floor, 2 wall, 6 pickup always; 3 nasty / 4 ramp / 5 belt when flagged
+; canonical pool indices: floor wall pickup nasty ramp belt (6 B)
 ; type 0 empty is always zero — not stored
 ; floor
-    !byte $ff, $ff, $00, $00, $00, $00, $00, $00
+    !byte 7
 ; wall
-    !byte $66, $99, $24, $24, $77, $88, $8d, $72
+    !byte 9
 ; pickup
-    !byte $02, $1d, $22, $5e, $be, $7c, $38, $10
+    !byte 12
 ; nasty
-    !byte $1c, $2a, $5f, $7d, $be, $fe, $d2, $7c
+    !byte 9
 ; ramp
-    !byte $03, $02, $0d, $02, $31, $08, $d5, $22
+    !byte 0
 ; belt
-    !byte $ee, $aa, $38, $ff, $ff, $10, $10, $38
+    !byte 3
 
 ; --- rle_tilemap ---
 ; 67 tokens, 384 cells — each byte (N<<3)|C
@@ -56,11 +56,11 @@ room46_data
 
 ; --- ramp ---
 ; x=18 y=14 len=5 dir=0
-    !byte $d2, $8b, $01
+    !byte $4e, $12
 
 ; --- conveyor ---
 ; x=0 y=10 len=9 belt=-1
-    !byte $40, $53, $00
+    !byte $8a, $40
 
 ; --- guardians ---
 ; count, then 8 B per guardian:

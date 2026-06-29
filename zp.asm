@@ -78,14 +78,12 @@
 ; Candidate per-room gameplay scratch — rope erase, character
 ; clear temp buffer, etc. Do not persist state there across LoadRoom.
 ;
-; Stack page ($100-$1FF) — pickup_got at $100; tune/map tables in PRG on tape port:
+; Stack page ($100-$1FF) — tape port:
 ;   $100-$13D  pickup_got
-;   $140-$163  x24rowtab (36 B) — util.asm
-;   $164-$199  jumptab (54 B) — willy_collide.asm
-;   $19A-$1B4  jumpnotes (27 B) — willy_collide.asm
+;   $13E-$1A5  meta_content_src (104 B; pickup_scr @ +102; guardian_data @ +39)
+;   $1A6-$1BF  free
 ;   $01C0-$01FF CPU stack
-;
-; Const tables in PRG (disk copied at WarmStart; tape reads directly from source modules).
+; Disk only (WarmStart copies to $140+): x24rowtab, jumptab, jumpnotes — tape reads from PRG.
 
 tmp             = $02
 arr             = $03

@@ -24,20 +24,20 @@ room39_data
     !byte WHT, CYN, YEL, CYN, WHT, RED
 
 ; --- tile_udg ---
-; types 1 floor, 2 wall, 6 pickup always; 3 nasty / 4 ramp / 5 belt when flagged
+; canonical pool indices: floor wall pickup nasty ramp belt (6 B)
 ; type 0 empty is always zero — not stored
 ; floor
-    !byte $99, $99, $99, $99, $99, $99, $99, $99
+    !byte 1
 ; wall
-    !byte $40, $ea, $ff, $ae, $04, $ae, $ff, $ea
+    !byte 17
 ; pickup
-    !byte $0e, $18, $18, $1e, $2c, $50, $e0, $c0
+    !byte 9
 ; nasty
-    !byte $ff, $3f, $03, $1f, $7f, $1f, $03, $3f
+    !byte 6
 ; ramp
-    !byte $03, $00, $0c, $00, $30, $00, $c0, $00
+    !byte 0
 ; belt
-    !byte $aa, $54, $aa, $54, $28, $10, $28, $10
+    !byte 4
 
 ; --- rle_tilemap ---
 ; 74 tokens, 384 cells — each byte (N<<3)|C
@@ -57,11 +57,11 @@ room39_data
 
 ; --- ramp ---
 ; x=11 y=10 len=6 dir=0
-    !byte $4b, $8d, $01
+    !byte $5a, $0b
 
 ; --- conveyor ---
 ; x=8 y=11 len=8 belt=-1
-    !byte $68, $51, $00
+    !byte $7b, $48
 
 ; --- guardians ---
 ; count, then 8 B per guardian:

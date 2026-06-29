@@ -22,7 +22,7 @@ F   FFFF  W  FWW    \
   F  WFF     FW     F  
      W       FW   F    
      WWFF    FWF       
-<<<<<<<<<<<<<<<<<<<<<<<<
+WWWWWW<<<<<<<<<<<<<<<<WW
 
 @emptycolor PUR
 @floorcolor RED

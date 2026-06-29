@@ -23,7 +23,9 @@ from catalogue_asm import RoomSection, write_catalogue_asm  # noqa: E402
 from udg_pool import (  # noqa: E402
     REDIRECT_ROOM_PTR,
     SKIP_ROOM_IDS,
+    UDG_INDEX_BYTES,
     UdgPool,
+    audit_unused_udg_definitions,
 )
 from mkroom import (  # noqa: E402
     GUARDIAN_HORIZONTAL,
@@ -37,7 +39,9 @@ from mkroom import (  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 BAKE_CATALOGUE_ROOMS_ASM = ROOT / "bake" / "catalogue_rooms.asm"
-BAKE_CATALOGUE_GUARDIANS_ASM = ROOT / "bake" / "catalogue_guardians.asm"
+BAKE_CATALOGUE_SPRITES_ASM = ROOT / "bake" / "catalogue_sprites.asm"
+BAKE_CATALOGUE_UDGS_ASM = ROOT / "bake" / "catalogue_udgs.asm"
+UDG_OVERRIDES_JSON = ROOT / "bake" / "udg_canonical_overrides.json"
 
 # Set table entry: u8 start_frame, u8 frame_count (2 B each; pool < 256 frames)
 SET_ENTRY_BYTES = 2
@@ -58,7 +62,8 @@ FLAG_CONVEYOR = 0x04
 FLAG_ROPE = 0x08
 FLAG_ARROW = 0x10
 
-UDG_FIXED_BYTES = 24  # floor + wall + item (8 B each)
+UDG_FIXED_BYTES = UDG_INDEX_BYTES  # legacy name — per-room UDG index bytes
+
 
 SAW_LINE = re.compile(r"\bsaw\b", re.IGNORECASE)
 ENTITY_LINE = re.compile(
@@ -360,7 +365,7 @@ def slice_frames(sprites: bytes, fmin: int, fmax: int) -> list[bytes]:
 
 
 ROOT = Path(__file__).resolve().parent.parent
-GUARDIAN_SPRITES_ASM = ROOT / "spriteframes.asm"
+SPRITE_SOURCE_ASM = ROOT / "bake" / "sprite_source.asm"
 
 _sprite_lib_cache: dict[str, list[bytes]] | None = None
 
@@ -371,21 +376,23 @@ def load_sprite_lib() -> dict[str, list[bytes]]:
         return _sprite_lib_cache
     from guardian_sprite_types import parse_spriteframes_asm  # noqa: WPS433
 
-    raw = parse_spriteframes_asm(GUARDIAN_SPRITES_ASM)
+    raw = parse_spriteframes_asm(SPRITE_SOURCE_ASM)
     if not raw:
-        raise FileNotFoundError(f"missing or empty {GUARDIAN_SPRITES_ASM}")
+        raise FileNotFoundError(f"missing or empty {SPRITE_SOURCE_ASM}")
     _sprite_lib_cache = dict(raw)
     return _sprite_lib_cache
 
 
 def sprite_frames(name: str) -> list[bytes]:
-    """Frames for a guardian sprite name from spriteframes.asm."""
+    """Frames for a sprite name from bake/sprite_source.asm."""
     key = name.lower()
     if not key:
         raise ValueError("guardian sprite name required")
     lib = load_sprite_lib()
     if key not in lib:
-        raise KeyError(f"unknown guardian sprite {key!r} (not in spriteframes.asm)")
+        raise KeyError(
+            f"unknown guardian sprite {key!r} (not in {SPRITE_SOURCE_ASM.name})"
+        )
     return lib[key]
 
 
@@ -444,20 +451,21 @@ def pack_room_title(room: dict) -> bytes:
     return text + b"\x00"
 
 
-def pack_room_udg(room: dict, flags: int) -> bytes:
-    """floor + wall + item always; nasty/ramp/belt UDG when flag set."""
-    chunks = [
-        bytes(room["tileudg"][1][:8]),
-        bytes(room["tileudg"][2][:8]),
-        bytes(room["tileudg"][6][:8]),
-    ]
-    if flags & FLAG_NASTY:
-        chunks.append(bytes(room["tileudg"][3][:8]))
-    if flags & FLAG_RAMP:
-        chunks.append(bytes(room["tileudg"][4][:8]))
-    if flags & FLAG_CONVEYOR:
-        chunks.append(bytes(room["tileudg"][5][:8]))
-    return b"".join(chunks)
+def room_record_flags(room: dict) -> int:
+    grid = tile_grid(room["tilemap"])
+    base, ramp, conv, _pickup = strip_overlays(grid)
+    flags = 0
+    if TILE_HAZARD in base:
+        flags |= FLAG_NASTY
+    if ramp:
+        flags |= FLAG_RAMP
+    if conv:
+        flags |= FLAG_CONVEYOR
+    return flags
+
+
+def pack_room_udg_indices(udg_pool: UdgPool, rid: int, flags: int) -> bytes:
+    return udg_pool.pack_room_indices(rid, flags)
 
 
 def pack_arrow(room: dict) -> bytes:
@@ -496,6 +504,7 @@ def build_room_record(
     *,
     source: str,
     pool: GuardianPool,
+    udg_pool: UdgPool,
     pickup: tuple[int, int] | None,
     ramp,
     conv,
@@ -522,7 +531,7 @@ def build_room_record(
     base_rle, _, _, _ = strip_overlays(grid)
     rle = bytes(rle_pack(base_rle, "row"))
 
-    udg_blob = pack_room_udg(room, flags)
+    udg_blob = pack_room_udg_indices(udg_pool, room["id"], flags)
     guardians_blob, guardian_warnings = pack_guardians(room, pool)
     pickup_bytes = pack_pickup_bytes(pickup)
 
@@ -618,8 +627,14 @@ def build_catalogue(rooms_dir: Path) -> tuple[bytes, dict]:
         parsed.append((parse_room(source, source=p), source))
     parsed.sort(key=lambda rs: rs[0]["id"])
 
+    overrides_path = UDG_OVERRIDES_JSON if UDG_OVERRIDES_JSON.is_file() else None
+    udg_pool = UdgPool()
+    rooms = [room for room, _source in parsed]
+    flags_by_rid = {room["id"]: room_record_flags(room) for room in rooms}
+    udg_pool.build(rooms, flags_by_rid=flags_by_rid, overrides_path=overrides_path)
+
     pool = GuardianPool()
-    all_warnings: list[str] = []
+    all_warnings: list[str] = list(audit_unused_udg_definitions(rooms))
 
     room_builds: list[RoomBuild] = []
     for room, source in parsed:
@@ -629,12 +644,15 @@ def build_catalogue(rooms_dir: Path) -> tuple[bytes, dict]:
             room,
             source=source,
             pool=pool,
+            udg_pool=udg_pool,
             pickup=pickup,
             ramp=ramp,
             conv=conv,
         )
         all_warnings.extend(rb.stats.get("guardian_warnings", []))
         room_builds.append(rb)
+
+    player_sprite_set_idx = pool.set_index("willy")
 
     sets_blob = pool.sets_blob()
     pool_blob = pool.frames_blob()
@@ -665,11 +683,14 @@ def build_catalogue(rooms_dir: Path) -> tuple[bytes, dict]:
     write_catalogue_asm(
         room_builds=room_builds,
         pool=pool,
+        udg_pool=udg_pool,
         report={
             "rooms": len(room_builds),
             "set_count": len(pool.sets),
             "pool_frames": pool.frame_count,
             "pool_ram_bytes": pool.pool_ram_bytes,
+            "udg_pool_bytes": udg_pool.pool_bytes(),
+            "player_sprite_set_idx": player_sprite_set_idx,
         },
     )
 
@@ -701,7 +722,7 @@ def write_map(path: Path, report: dict) -> None:
         "JSW-Tape catalogue.map",
         f"rooms {report['rooms']}",
         "",
-        "Embedded in PRG (read in place): guardian_set_metadata, guardian_sprite_frames",
+        "Embedded in PRG (read in place): sprite_set_metadata, sprite_frames",
         "",
         "File sections:",
     ]
@@ -780,7 +801,7 @@ def main() -> None:
     print(f"Wrote {args.out} and {args.map}")
     print(
         f"Wrote {BAKE_CATALOGUE_ROOMS_ASM.name}, "
-        f"{BAKE_CATALOGUE_GUARDIANS_ASM.name}, and bake/rooms/*.asm"
+        f"{BAKE_CATALOGUE_SPRITES_ASM.name}, and bake/rooms/*.asm"
     )
 
 

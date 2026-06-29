@@ -71,9 +71,9 @@ def strip_overlays(grid: list[int]) -> tuple[list[int], dict | None, dict | None
             base[i] = TILE_EMPTY
             pickup = (i % WIDTH, i // WIDTH)
         elif t == TILE_RAMP:
-            base[i] = TILE_EMPTY  # omitted — painted from ramp overlay
+            base[i] = TILE_EMPTY
         elif t == TILE_CONVEYOR:
-            base[i] = TILE_EMPTY  # painted from conveyor overlay
+            base[i] = TILE_EMPTY
 
     ramp_info = extract_ramp_overlay(grid)
     conv_info = extract_conveyor_overlay(grid)
@@ -192,31 +192,38 @@ def raw_bits(values: list[int], bits: int) -> int:
     return (total_bits + 7) // 8
 
 
-def pack_ramp3(info: dict) -> bytes:
-    """3-byte ramp: x(5) y(4) len(5) dir(1) row_step sign in spare bits."""
+def pack_ramp2(info: dict) -> bytes:
+    """2-byte ramp: byte0 (len-1)<<4|y, byte1 (dir<<7)|x."""
     x = info["x"] & 0x1F
     y = info["y"] & 0x0F
-    length = min(info["length"], 31) & 0x1F
+    length = info["length"]
+    if not 1 <= length <= 16:
+        raise ValueError(f"ramp length {length} out of range 1-16")
+    length_n = (length - 1) & 0x0F
     direction = info["direction"] & 1
-    step = info["row_step"] & 3  # -1,0,1 encoded as 2 bits (0=0, 1=+1, 3=-1)
-    if info["row_step"] == -1:
-        step = 3
-    b0 = x | ((y & 1) << 5)
-    b1 = ((y >> 1) & 0x07) | (length << 3) | ((direction & 1) << 8)
-    # b1 is only 8 bits — rework packing
-    word = x | (y << 5) | (length << 9) | (direction << 14) | (step << 15)
-    return bytes([word & 0xFF, (word >> 8) & 0xFF, (word >> 16) & 0xFF])
+    b0 = (length_n << 4) | y
+    b1 = (direction << 7) | x
+    return bytes([b0, b1])
 
 
-def pack_conveyor3(info: dict, velocity: int) -> bytes:
-    """3-byte conveyor: x(5) y(4) len(5) vel(2)."""
+def pack_conveyor2(info: dict, velocity: int) -> bytes:
+    """2-byte conveyor: byte0 (len-1)<<4|y, byte1 (vel<<6)|x."""
     vel_map = {-1: 1, 0: 0, 1: 2}
     vel = vel_map.get(velocity, 0) & 3
     x = info["x"] & 0x1F
     y = info["y"] & 0x0F
-    length = min(info["length"], 31) & 0x1F
-    word = x | (y << 5) | (length << 9) | (vel << 14)
-    return bytes([word & 0xFF, (word >> 8) & 0xFF, (word >> 16) & 0xFF])
+    length = info["length"]
+    if not 1 <= length <= 16:
+        raise ValueError(f"conveyor length {length} out of range 1-16")
+    length_n = (length - 1) & 0x0F
+    b0 = (length_n << 4) | y
+    b1 = (vel << 6) | x
+    return bytes([b0, b1])
+
+
+# Legacy names used by mkcatalogue imports.
+pack_ramp3 = pack_ramp2
+pack_conveyor3 = pack_conveyor2
 
 
 def count_custom_udg(room: dict) -> int:

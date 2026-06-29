@@ -1,5 +1,5 @@
 ; Jet Set Willy — 16K expanded tape port
-; PRG loads at $1201; screen RAM at $1000; UDG hole $1800-$1BFF; high bank $1C00+
+; PRG loads at $1201; screen RAM at $1000; UDG hole $1800-$19FF; high bank $1A00+
 
 !source "zp.asm"
 !source "defines.asm"
@@ -17,10 +17,10 @@ low_bank_end = *
 !error "low bank overflow past $17FF"
 }
 
-; --- UDG charset RAM $1800-$1BFF: no code ---
-*= $1C00
+; --- UDG charset RAM $1800-$19FF (64 chars): no code ---
+*= high_bank
 
-; --- High bank $1C00+ ---
+; --- High bank $1A00+ ---
 !source "decompress.asm"
 !source "catalogue_reader.asm"
 !source "loader.asm"
@@ -29,7 +29,6 @@ low_bank_end = *
 !source "util.asm"
 !source "input.asm"
 !source "guardians.asm"
-!source "spriteframes.asm"
 !source "endgame.asm"
 !source "music.asm"
 
@@ -37,9 +36,19 @@ low_bank_end = *
 !source "rope_draw.asm"
 !source "rope_interact.asm"
 
-prg_end = *
-
 !source "tape_runtime.asm"
 !source "warm.asm"
 
+high_bank_code_end = *
+!if high_bank_code_end > $17FF {
+!if high_bank_code_end <= $19FF {
+!error "high bank code overlaps UDG charset RAM ($1800-$19FF)"
+}
+}
+
 !source "catalogue_data.asm"
+
+prg_end:
+!if prg_end != catalogue_sprites_end {
+!error "prg_end must follow catalogue_sprites_end with no gap"
+}

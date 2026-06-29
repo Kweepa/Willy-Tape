@@ -16,8 +16,8 @@ from mkcatalogue import (  # noqa: E402
     FLAG_CONVEYOR,
     FLAG_NASTY,
     FLAG_RAMP,
-    UDG_FIXED_BYTES,
 )
+from udg_pool import UDG_INDEX_BYTES  # noqa: E402
 from mkroom import TILE_CHR_BASE, TILEMAP_ROWS, WIDTH, parse_room  # noqa: E402
 
 HEADER = 2
@@ -30,13 +30,7 @@ def parse_record(blob: bytes, off: int) -> dict:
     meta = blob[meta_off : meta_off + 8]
     flags = meta[6]
     pos = meta_off + 8 + 6  # meta8 + tile_colors
-    pos += UDG_FIXED_BYTES
-    if flags & FLAG_NASTY:
-        pos += 8
-    if flags & FLAG_RAMP:
-        pos += 8
-    if flags & FLAG_CONVEYOR:
-        pos += 8
+    pos += UDG_INDEX_BYTES
     rle_start = pos
     pos = rle_start
     cells: list[int] = []
@@ -48,9 +42,9 @@ def parse_record(blob: bytes, off: int) -> dict:
         pos += 1
     pos += 2  # pickup screen offset word ($ffff = none)
     if flags & FLAG_RAMP:
-        pos += 3
+        pos += 2
     if flags & FLAG_CONVEYOR:
-        pos += 3
+        pos += 2
     if flags & FLAG_ARROW:
         pos += 5
     pos += 1  # guardian count

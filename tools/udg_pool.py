@@ -37,6 +37,8 @@ UDG_POOL_ORDER = (
 
 UDG_INDEX_ORDER = (TILE_FLOOR, TILE_WALL, TILE_PICKUP, TILE_NASTY, TILE_RAMP, TILE_BELT)
 
+UDG_INDEX_BYTES = 6  # per-room canonical indices (fixed)
+
 SKIP_ROOM_IDS = frozenset({47})
 REDIRECT_ROOM_PTR: dict[int, int] = {47: 0}
 
@@ -403,20 +405,27 @@ class UdgPool:
             out.append(self.assignment.get((rid, tile_type), 0) & 0xFF)
         return bytes(out)
 
+    def pool_used(self, tile_type: int) -> int:
+        return len(self.canonical.get(tile_type, []))
+
     def pool_blob(self) -> bytes:
         parts: list[bytes] = []
         for tile_type in UDG_POOL_ORDER:
-            limit = self.pool_limit(tile_type)
-            chunks = self.canonical.get(tile_type, [])
-            for i in range(limit):
-                if i < len(chunks):
-                    parts.append(chunks[i])
-                else:
-                    parts.append(b"\x00" * 8)
+            for chunk in self.canonical.get(tile_type, []):
+                parts.append(chunk)
         return b"".join(parts)
 
+    def pool_offsets(self) -> dict[int, int]:
+        """Byte offset of each tile type within pool_blob (actual used slots only)."""
+        offsets: dict[int, int] = {}
+        pos = 0
+        for tile_type in UDG_POOL_ORDER:
+            offsets[tile_type] = pos
+            pos += len(self.canonical.get(tile_type, [])) * 8
+        return offsets
+
     def pool_bytes(self) -> int:
-        return sum(self.pool_limit(t) for t in UDG_POOL_ORDER) * 8
+        return len(self.pool_blob())
 
     def stats(self) -> dict[str, int | float]:
         used = sum(len(v) for v in self.canonical.values())

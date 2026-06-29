@@ -18,9 +18,7 @@ rle_loop
 rle_loop_cont
     ldy #0
     lda (stream_ptr),y
-    beq rle_err
     sta run
-    lda run
     lsr
     lsr
     lsr
@@ -79,8 +77,6 @@ fill_advance
     jmp rle_loop
 rle_done
     rts
-rle_err
-    rts
 
 ; A = tile type 0-6 at (hy, hc): screen chr + colour via scr_ptr / col_ptr.
 PaintPlayfieldCell
@@ -98,57 +94,39 @@ PaintPlayfieldCell
     sta (scr_ptr),y
     rts
 
-; Apply 3-byte ramp overlay (pack_ramp3). Advances stream_ptr by 3.
-; word = x | (y<<5) | (len<<9) | (dir<<14) | (step<<15); step: 0=0, 1=+1, 3=-1 row/col.
-ApplyRamp3
+; Apply 2-byte ramp overlay (pack_ramp2). Advances stream_ptr by 2.
+; byte0 = (length-1)<<4 | y; byte1 = (direction<<7) | x
+; direction bit7: 0 = / up-right (row-), 1 = \ up-left (row+).
+ApplyRamp
     ldy #0
     lda (stream_ptr),y
     sta arr
     iny
     lda (stream_ptr),y
     sta arr2
-    iny
-    lda (stream_ptr),y
-    sta mov
     lda arr
+    and #$0f
+    sta mov                     ; start row y
+    lda arr
+    lsr
+    lsr
+    lsr
+    lsr
+    clc
+    adc #1
+    sta num                     ; length 1-16
+    lda arr2
     and #$1f
     sta hx
-    lda arr
-    lsr
-    lsr
-    lsr
-    lsr
-    lsr
-    sta hy
     lda arr2
-    and #7
-    asl
-    asl
-    asl
-    ora hy
-    and #$0f
-    sta hy
-    lda arr2
-    lsr
-    and #$1f
-    sta num
-    lda arr2
-    lsr
-    lsr
-    lsr
-    lsr
-    lsr
-    lsr
-    lsr
-    and #1
+    bmi ramp_dir_up_left
+    lda #3                      ; / up-right: row decreases with column
     sta g_frame
-    lda mov
-    and #1
-    asl
-    ora g_frame
+    jmp ramp_paint
+ramp_dir_up_left
+    lda #1                      ; \ up-left: row increases with column
     sta g_frame
-    lda hy
-    sta mov                     ; start row (byte 3 no longer needed)
+ramp_paint
     lda #0
     sta g_fctl
 ramp_cell_loop
@@ -156,7 +134,7 @@ ramp_cell_loop
     clc
     adc hx
     sta hc
-    lda mov                     ; always from start row
+    lda mov
     ldx g_frame
     beq ramp_row_ok
     cpx #1
@@ -178,7 +156,7 @@ ramp_row_ok
     cmp num
     bne ramp_cell_loop
 ramp_done
-    lda #3
+    lda #2
     clc
     adc stream_ptr
     sta stream_ptr
@@ -187,39 +165,29 @@ ramp_done
 +
     rts
 
-; Apply 3-byte conveyor overlay (pack_conveyor3). Advances stream_ptr by 3.
-ApplyConveyor3
+; Apply 2-byte conveyor overlay (pack_conveyor2). Advances stream_ptr by 2.
+; byte0 = (length-1)<<4 | y; byte1 = (velocity<<6) | x
+ApplyConveyor
     ldy #0
     lda (stream_ptr),y
     sta arr
     iny
     lda (stream_ptr),y
     sta arr2
-    iny
-    lda (stream_ptr),y
-    sta mov
     lda arr
+    and #$0f
+    sta mov                     ; row y
+    lda arr
+    lsr
+    lsr
+    lsr
+    lsr
+    clc
+    adc #1
+    sta num
+    lda arr2
     and #$1f
     sta hx
-    lda arr
-    lsr
-    lsr
-    lsr
-    lsr
-    lsr
-    sta hy
-    lda arr2
-    and #7
-    asl
-    asl
-    asl
-    ora hy
-    and #$0f
-    sta hy
-    lda arr2
-    lsr
-    and #$1f
-    sta num
     lda #0
     sta g_fctl
 conv_loop
@@ -227,13 +195,15 @@ conv_loop
     clc
     adc hx
     sta hc
+    lda mov
+    sta hy
     lda #TILE_CONVEYOR
     jsr PaintPlayfieldCell
     inc g_fctl
     lda g_fctl
     cmp num
     bne conv_loop
-    lda #3
+    lda #2
     clc
     adc stream_ptr
     sta stream_ptr

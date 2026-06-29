@@ -100,6 +100,11 @@ def deinterleave_frame(interleaved: bytes) -> bytes:
     return bytes(out)
 
 
+def guardian_frame_column_major(fr: bytes) -> bytes:
+    """Skool interleaved L,R pairs -> column-major (CopyGuardianFrame layout)."""
+    return deinterleave_frame(fr)
+
+
 def parse_byte_list(text: str) -> list[int]:
     return [int(p.strip()) & 0xFF for p in text.split(",") if p.strip()]
 
@@ -130,7 +135,7 @@ def skoolkit_frames(name: str, gfx: bytes) -> list[bytes]:
         raw = gfx[off : off + 32]
         if len(raw) < 32:
             raw = raw.ljust(32, b"\x00")
-        frames.append(raw)
+        frames.append(guardian_frame_column_major(raw))
     return frames
 
 

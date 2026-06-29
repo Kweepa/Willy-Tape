@@ -65,10 +65,12 @@ DrawMap
     lda #0
     sta use_room_spawn
     jmp LoadRoom               ; tail call — LoadRoom draws via DrawPlayerBody
+
 drawmap_first_room
     lda #1
     sta use_room_spawn          ; new game - @spawn from room meta
     jsr LoadRoom
+    
     jsr SaveSpawn
     lda #0
     sta use_room_spawn

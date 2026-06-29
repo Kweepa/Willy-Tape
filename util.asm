@@ -115,30 +115,25 @@ GetSpriteFrameAddr
     dex
     bne -
     clc
-    adc #<guardian_sprite_frames
+    adc #<sprite_frames
     sta arr
     lda arr+1
-    adc #>guardian_sprite_frames
+    adc #>sprite_frames
     sta arr+1
     rts
 
-; A = Willy frame index 0-7 -> arr (willy in spriteframes.asm).
+; A = Willy frame index 0-7 -> arr (willy set in catalogue sprite pool).
 GetPlayerFrameAddr
-    ldx #0
-    stx arr+1
-    ldx #5
--
+    pha
+    lda #player_sprite_set_idx
     asl
-    rol arr+1
-    dex
-    bne -
+    tax
+    lda sprite_set_metadata,x
+    sta ht
+    pla
     clc
-    adc #<willy
-    sta arr
-    lda arr+1
-    adc #>willy
-    sta arr+1
-    rts
+    adc ht
+    jmp GetSpriteFrameAddr
 
 CalcGuardianRecPtr
     lda guardian_index

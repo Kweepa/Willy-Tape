@@ -4,6 +4,7 @@ start_game
 start_map
 	jsr ResetMap
     jsr DrawMap
+
 main_loop
     jsr ErasePlayer_EraseGuardians_UpdateMoveCounters
     lda meta_content_room_has_rope

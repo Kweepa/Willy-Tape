@@ -1,5 +1,5 @@
 ; Title screen loop + scrolling HUD message — baked into r62 @ image_base.
-; CLI: -DORG=$1A05 -DSCANKEYROW=… -DWAITFORRASTER=… -DSETCOLORS=… -DLOADROOMFILE=…
+; CLI: -DORG=$1A05 -DSCANKEYROW=… -DWAITFORRASTER=… -DSETCOLORS=… -DLOADROOM=…
 ;      -DHUD_SCR=… -DHUD_COL=… -DMSG_LEN=… -DHOLD_FRAMES=150 -DSCROLL_FRAMES=6
 ;      -DSLOT_BYTES=510 -DTITLE_BAR_COUNT=28
 ; Must assemble at ORG (load address); internal labels are absolute, not PC-relative.
@@ -90,11 +90,9 @@ TitleScreen
     lda #0
     sta $900a
     sta $900b
-    lda #'J'
-    sta room_name+1
-    lda #'Y'
-    sta room_name+2
-    jmp LOADROOMFILE
+    lda #ROOM_START
+    sta map
+    jmp LOADROOM
 
 ; Z set = no fire, Z clear = fire pressed (bit 5 of $9111 active-low)
 ; don't need to set the DDR for joystick FIRE read. was cargo cult programming.
