@@ -32,9 +32,9 @@ FFFFFFFFFFFFFFFFFFFFFFFF
 @itemcolor BLU
 
 @guardians
-y=104 x=16(0..22) v=-1 f=0..7 cyan rabbit
-y=24 x=22(5..22) v=-1 f=0..7 red bat
-x=14 y=72(48..87) v=-3 f=8 purple pinhead
+y=104 x=16(0..22) v=-1 cyan rabbit
+y=24 x=22(5..22) v=-1 red bat
+x=14 y=72(48..87) v=-3 purple pinhead
 
 @floorudg 215,179,117,109,92,24,8,4
 @walludg 189,170,93,162,243,10,6,1

@@ -8,8 +8,6 @@
 @belt -1
 @rope
 
-@guardiansprites
-
 @tilemap
                         
                         

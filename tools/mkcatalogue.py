@@ -352,46 +352,36 @@ def slice_frames(sprites: bytes, fmin: int, fmax: int) -> list[bytes]:
     return out
 
 
-def expand_guardian_frames(
-    g: dict,
-    sprites: bytes,
-    entity_blocks: list[EntityBlock],
-    source: str,
-) -> tuple[list[bytes], int]:
-    """Return expanded frame list and set flags (SET_FLAG_H_BIDIR etc.)."""
-    fmin, fmax = g["fmin"], g["fmax"]
-    axis = g["axis"]
+ROOT = Path(__file__).resolve().parent.parent
+GUARDIAN_SPRITES_ASM = ROOT / "spriteframes.asm"
 
-    if axis == GUARDIAN_HORIZONTAL:
-        if horizontal_bidir_capable(g, sprites, entity_blocks, source):
-            return horizontal_bidir_eight(g, sprites, entity_blocks), SET_FLAG_H_BIDIR
-        frames = slice_frames(sprites, fmin, fmax)
-        return frames, 0
+_sprite_lib_cache: dict[str, list[bytes]] | None = None
 
-    # Vertical — expand partial disk references to full contiguous parent set.
-    n = fmax - fmin + 1
-    block = entity_for_frame(entity_blocks, fmin)
 
-    if fmin >= 8 or (block and block.block_fmin >= 8):
-        ent_frames = fetch_entity_frames(block) if block else []
-        if ent_frames:
-            return ent_frames, 0
-        one = slice_frames(sprites, fmin, fmin)
-        if one:
-            return one * 4, 0
+def load_sprite_lib() -> dict[str, list[bytes]]:
+    global _sprite_lib_cache
+    if _sprite_lib_cache is not None:
+        return _sprite_lib_cache
+    from guardian_sprite_types import parse_spriteframes_asm  # noqa: WPS433
 
-    if fmin <= 3 or (n == 1 and fmin in (0, 1, 2, 3)) or (n == 2 and fmin in (0, 2)):
-        return slice_frames(sprites, 0, 3), 0
+    raw = parse_spriteframes_asm(GUARDIAN_SPRITES_ASM)
+    if not raw:
+        raise FileNotFoundError(f"missing or empty {GUARDIAN_SPRITES_ASM}")
+    _sprite_lib_cache = dict(raw)
+    return _sprite_lib_cache
 
-    if fmin >= 4 or (n == 2 and fmin == 4):
-        raw = slice_frames(sprites, 4, 7)
-        if len(raw) < 4 and block:
-            ent_frames = fetch_entity_frames(block)
-            if len(ent_frames) >= 4:
-                raw = ent_frames[:4]
-        return raw, 0
 
-    return slice_frames(sprites, fmin, fmax), 0
+def expand_guardian_frames(g: dict) -> tuple[list[bytes], int]:
+    """Return frame list and set flags from named sprite in spriteframes.asm."""
+    name = (g.get("sprite") or "").lower()
+    if not name:
+        raise ValueError(f"guardian missing sprite name: {g.get('line', g)!r}")
+    lib = load_sprite_lib()
+    if name not in lib:
+        raise KeyError(f"unknown guardian sprite {name!r} (not in spriteframes.asm)")
+    frames = lib[name]
+    flags = SET_FLAG_H_BIDIR if g["axis"] == GUARDIAN_HORIZONTAL and g["fctl"] == 1 else 0
+    return frames, flags
 
 
 def pack_guardian_catalog(g: dict, set_idx: int) -> bytes:
@@ -410,18 +400,14 @@ def pack_guardian_catalog(g: dict, set_idx: int) -> bytes:
     )
 
 
-def pack_guardians(
-    room: dict, pool: GuardianPool, source: str
-) -> tuple[bytes, list[str]]:
+def pack_guardians(room: dict, pool: GuardianPool) -> tuple[bytes, list[str]]:
     guardians = room["guardians"]
     if len(guardians) > MAX_GUARDIANS:
         raise ValueError(f"room {room['id']}: too many guardians ({len(guardians)})")
-    sprites = deinterleave_guardian_sprites(room.get("guardiansprites") or b"\x00" * 288)
-    entity_blocks = parse_entity_blocks(source)
 
     out = bytearray([len(guardians) & 0xFF])
     for g in guardians:
-        frames, set_flags = expand_guardian_frames(g, sprites, entity_blocks, source)
+        frames, set_flags = expand_guardian_frames(g)
         set_idx = pool.add_set(frames, set_flags)
         out.extend(pack_guardian_catalog(g, set_idx))
 
@@ -526,7 +512,7 @@ def build_room_record(
     if room.get("arrow"):
         parts.append(pack_arrow(room))
 
-    guardians_blob, guardian_warnings = pack_guardians(room, pool, source)
+    guardians_blob, guardian_warnings = pack_guardians(room, pool)
     parts.append(guardians_blob)
 
     record = b"".join(parts)

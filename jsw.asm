@@ -27,6 +27,7 @@ low_bank_end = *
 !source "util.asm"
 !source "input.asm"
 !source "guardians.asm"
+!source "spriteframes.asm"
 !source "endgame.asm"
 !source "music.asm"
 

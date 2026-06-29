@@ -46,12 +46,8 @@ TITLE_MESSAGE = (
 META_OFF_ROPE = 16 + ITEM_DRAW_BYTES + ITEM_ERASE_BYTES
 TAIL_OFF_GUARDIAN_DATA = META_OFF_ROPE + 1
 PLAYER_BMP_BYTES = 256
-NIGHTMARE_ROOM_ID = 29
 DEFAULT_PLAYER_BMP_PATH = (
     Path(__file__).resolve().parent.parent / "willy.txt"
-)
-NIGHTMARE_PLAYER_BMP_PATH = (
-    Path(__file__).resolve().parent.parent / "nightmareroomwilly.txt"
 )
 GUARDIAN_DATA_BYTES = 60          # AoS: 10 bytes x 6 guardians
 GUARDIAN_RECORD_BYTES = 10
@@ -172,6 +168,17 @@ VIC_COLOR = {
     "YEL": 7,
 }
 
+VIC_COLOR_ALIAS = {
+    "BLACK": 0,
+    "WHITE": 1,
+    "GREEN": 5,
+    "BLUE": 6,
+    "YELLOW": 7,
+    "CYAN": 3,
+    "RED": 2,
+    "PURPLE": 4,
+}
+
 # VIC-20 screen background only ($900F bits 4-7); not valid for border or color RAM.
 VIC_BG_EXTRA = {
     "ORN": 8,
@@ -188,16 +195,16 @@ GUARDIAN_DSL_H = re.compile(
     r"y\s*=\s*(\d+)\s+"
     r"x\s*=\s*(\d+)\((\d+)\.\.(\d+)\)\s+"
     r"v\s*=\s*([+-]?\d+)\s+"
-    r"f\s*=\s*(\d+)(?:\.\.(\d+))?\s+"
-    r"(\w+)",
+    r"(?:f\s*=\s*\d+(?:\.\.\d+)?\s+)?"
+    r"(\w+)\s+(\w+)",
     re.I,
 )
 GUARDIAN_DSL_V = re.compile(
     r"x\s*=\s*(\d+)\s+"
     r"y\s*=\s*(\d+)\((\d+)\.\.(\d+)\)\s+"
     r"v\s*=\s*([+-]?\d+)\s+"
-    r"f\s*=\s*(\d+)(?:\.\.(\d+))?\s+"
-    r"(\w+)",
+    r"(?:f\s*=\s*\d+(?:\.\.\d+)?\s+)?"
+    r"(\w+)\s+(\w+)",
     re.I,
 )
 
@@ -243,10 +250,12 @@ def parse_byte(s: str) -> int:
 
 
 def parse_vic_color(token: str) -> int:
-    """Parse a VIC colour token: name (BLK, WHT, …) or digit 0-7."""
+    """Parse a VIC colour token: name (BLK, WHT, cyan, …) or digit 0-7."""
     s = token.strip().upper()
     if s in VIC_COLOR:
         return VIC_COLOR[s]
+    if s in VIC_COLOR_ALIAS:
+        return VIC_COLOR_ALIAS[s]
     if len(s) == 1 and s.isdigit():
         v = int(s)
         if v > 7:
@@ -344,43 +353,45 @@ def parse_guardian_line(
 ) -> dict:
     """Parse guardian DSL line into SoA field dict."""
     loc = fmt_loc(source, line_no)
-    m = GUARDIAN_DSL_H.match(line)
+    body = line.split("#", 1)[0].split(";", 1)[0].strip()
+    m = GUARDIAN_DSL_H.match(body)
     if m:
-        hy, x_tile, xmin, xmax, vel, fmin, fmax, colour = m.groups()
+        hy, x_tile, xmin, xmax, vel, colour, sprite = m.groups()
         gx = int(x_tile) * 4
         gmin = int(xmin) * 4
         gmax = int(xmax) * 4 - 1
         gy = int(hy)
         axis = 0
     else:
-        m = GUARDIAN_DSL_V.match(line)
+        m = GUARDIAN_DSL_V.match(body)
         if not m:
             raise ValueError(f"{loc}bad @guardians line: {line!r}")
-        x_tile, gy, ymin, ymax, vel, fmin, fmax, colour = m.groups()
+        x_tile, gy, ymin, ymax, vel, colour, sprite = m.groups()
         gx = int(x_tile) * 4
         gy = int(gy)
         gmin = int(ymin)
         gmax = int(ymax)
         axis = 1
 
-    fmin_i = int(fmin)
-    fmax_i = int(fmax) if fmax is not None else fmin_i
-    if not 0 <= fmin_i <= 8 or not 0 <= fmax_i <= 8 or fmin_i > fmax_i:
-        raise ValueError(f"{loc}frame range out of range 0-8: {fmin}..{fmax}")
+    from guardian_sprite_types import sprite_meta  # noqa: WPS433
 
-    frame_count = fmax_i - fmin_i + 1
+    meta = sprite_meta(sprite, axis=axis)
+    fmin_i = 0
+    fmax_i = meta.frame_count - 1
     if axis == 1:
-        if frame_count not in (1, 2, 4):
+        if meta.frame_count not in (1, 2, 4):
             raise ValueError(
-                f"{loc}vertical guardian frame count must be 1, 2, or 4: {fmin}..{fmax}"
+                f"{loc}vertical sprite {sprite!r} has {meta.frame_count} frames "
+                f"(need 1, 2, or 4)"
             )
-        fctl_store = frame_count - 1  # wrap mask: 0, 1, or 3
+        fctl_store = meta.frame_count - 1
     else:
-        if frame_count not in (4, 8):
+        if meta.frame_count not in (1, 2, 4, 8):
             raise ValueError(
-                f"{loc}horizontal guardian frame count must be 4 or 8: {fmin}..{fmax}"
+                f"{loc}horizontal sprite {sprite!r} has {meta.frame_count} frames "
+                f"(need 1, 2, 4, or 8)"
             )
-        fctl_store = 1 if frame_count == 8 else 0  # bidirectional flag
+        fctl_store = 1 if meta.bidir else 0
 
     out = {
         "x": gx & 0xFF,
@@ -393,6 +404,7 @@ def parse_guardian_line(
         "fctl": fctl_store,
         "color": parse_vic_color(colour),
         "axis": axis,
+        "sprite": meta.name,
     }
     if line_no is not None:
         out["line_no"] = line_no
@@ -1601,14 +1613,7 @@ def load_default_player_bmp() -> bytes:
     return load_player_bmp_file(DEFAULT_PLAYER_BMP_PATH)
 
 
-def load_nightmare_player_bmp() -> bytes:
-    """256-byte Willy sprite for the Nightmare Room (room 29)."""
-    return load_player_bmp_file(NIGHTMARE_PLAYER_BMP_PATH)
-
-
 def player_bmp_for_room(room: dict) -> bytes:
-    if room["id"] == NIGHTMARE_ROOM_ID:
-        return load_nightmare_player_bmp()
     return room["playerbmp"] or load_default_player_bmp()
 
 

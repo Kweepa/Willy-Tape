@@ -14,6 +14,7 @@ python tools\memmap.py --tape
 if errorlevel 1 exit /b 1
 
 echo [3/3] Catalogue...
+python tools\export_spriteframes_asm.py
 python tools\mkcatalogue.py --rooms rooms --out catalogue.bin --map catalogue.map
 if errorlevel 1 exit /b 1
 

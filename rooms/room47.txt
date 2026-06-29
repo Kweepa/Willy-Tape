@@ -6,8 +6,6 @@
 @border BLK
 @belt 0
 
-@guardiansprites
-
 @tilemap
                         
                         

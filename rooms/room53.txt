@@ -6,8 +6,6 @@
 @border BLU
 @belt 1
 
-@guardiansprites
-
 @tilemap
             WW            
             WW            

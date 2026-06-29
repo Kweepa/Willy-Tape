@@ -32,10 +32,10 @@ WW  WWWWWWFFFFFFWWFFFFFF
 @itemcolor YEL
 
 @guardians
-y=40 x=5(0..6) v=-1 f=0..7 cyan bird
-y=64 x=6(5..21) v=-1 f=0..7 yellow bird
-y=88 x=16(12..21) v=-1 f=0..7 green bird
-y=104 x=11(10..23) v=1 f=0..7 cyan egg
+y=40 x=5(0..6) v=-1 cyan bird
+y=64 x=6(5..21) v=-1 yellow bird
+y=88 x=16(12..21) v=-1 green bird
+y=104 x=11(10..23) v=1 cyan egg
 
 @floorudg 170,85,170,255,255,85,170,85
 @walludg 112,7,119,119,0,59,11,125
