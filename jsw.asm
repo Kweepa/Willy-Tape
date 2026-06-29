@@ -9,7 +9,6 @@
 !source "header.asm"
 !source "gameloop.asm"
 !source "map.asm"
-!source "loader.asm"
 !source "ramp.asm"
 !source "willy_collide.asm"
 
@@ -22,6 +21,9 @@ low_bank_end = *
 *= $1C00
 
 ; --- High bank $1C00+ ---
+!source "decompress.asm"
+!source "catalogue.asm"
+!source "loader.asm"
 !source "ingame_tune.asm"
 !source "willy_draw.asm"
 !source "util.asm"
@@ -39,3 +41,5 @@ prg_end = *
 
 !source "tape_runtime.asm"
 !source "warm.asm"
+
+!source "catalogue_data.asm"

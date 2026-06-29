@@ -71,6 +71,35 @@ ConvertXYToScreenAddr
     sta col_ptr + 1
     rts
 
+; X = tile col (0..23), Y = tile row (0..15) -> scr_ptr, map_ptr, col_ptr.
+ConvertTileXYToScreenAddr
+    tya
+    asl
+    clc
+    adc #2                  ; skip x24rowtab row -1 entry (Y=0 -> row 0)
+    tay
+    lda x24rowtab,y
+    sta scr_ptr
+    lda x24rowtab + 1,y
+    sta scr_ptr + 1
+    txa
+    clc
+    adc scr_ptr
+    sta scr_ptr
+    bcc +
+    inc scr_ptr + 1
++
+    lda scr_ptr
+    sta map_ptr
+    sta col_ptr
+    lda scr_ptr + 1
+    clc
+    adc #>(map_base - screen_base)
+    sta map_ptr + 1
+    adc #>(color_base - map_base)
+    sta col_ptr + 1
+    rts
+
 GetCollision
     lda (map_ptr),y
     and #$0f

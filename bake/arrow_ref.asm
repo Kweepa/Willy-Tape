@@ -52,7 +52,6 @@ arrow_update
 	; replace the tile
 	lda (map_ptr),y
 	and #$0f   ; mask out the random high nibble
-	ora #$10   ; bump up into the tile udg range
 	sta (scr_ptr),y
 +
 	; increment and play sound

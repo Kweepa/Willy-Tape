@@ -73,7 +73,7 @@ def strip_overlays(grid: list[int]) -> tuple[list[int], dict | None, dict | None
         elif t == TILE_RAMP:
             base[i] = TILE_EMPTY  # omitted — painted from ramp overlay
         elif t == TILE_CONVEYOR:
-            base[i] = TILE_PLATFORM  # conveyors sit on floor
+            base[i] = TILE_EMPTY  # painted from conveyor overlay
 
     ramp_info = extract_ramp_overlay(grid)
     conv_info = extract_conveyor_overlay(grid)
@@ -151,6 +151,18 @@ def grid_to_tilemap(grid: list[int]) -> list[str]:
                 chars.append(rev.get(t, " "))
         lines.append("".join(chars))
     return lines
+
+
+def rle_unpack(tokens: list[int], nbytes: int = CELLS) -> list[int]:
+    """Inverse of rle_pack — expand tokens to cell types."""
+    out: list[int] = []
+    for tok in tokens:
+        run = (tok >> 3) & 0x1F
+        val = tok & 7
+        out.extend([val] * run)
+    if len(out) != nbytes:
+        raise ValueError(f"rle_unpack: got {len(out)} cells, expected {nbytes}")
+    return out
 
 
 def rle_pack(values: list[int], order: str = "row") -> list[int]:

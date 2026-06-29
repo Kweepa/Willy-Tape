@@ -1,6 +1,5 @@
 ;
-; LoadRoom — tape build (Phase 1): clear screen, default meta, paint colour/map.
-; Phase 3 replaces body with catalogue decompress.
+; LoadRoom — decompress catalogue room to screen + colour/map RAM.
 ;
 
 room_lfn = 15
@@ -14,23 +13,348 @@ LoadRoom
     sta $900c
 
     jsr SetColors
-    jsr TapeClearScreen
-    jsr TapeInitMeta
     jsr FormatRoomName
 
     lda map
     cmp #ROOM_TITLE
     beq LoadRoomDone
 
+    jsr FindRoomRecord
+    bcc LoadRoomBlank
+
+    jsr DecompressRoom
     jsr TapePaintRoomColors
     jsr TapePaintMap
 
+    ; THROWAWAY: halt after screen + colour paint for debugger inspection
+debug_room_halt
+    jmp debug_room_halt
+
+    rts
+
+LoadRoomBlank
+    jsr TapeClearScreen
+    jsr TapeInitMeta
+    jsr ApplyBorderFromMeta
+    jsr TapePaintRoomColors
+    jsr TapePaintMap
 LoadRoomDone
     rts
 
 LoadRoomFile
-    ; Phase 6: cassette load entry
     jmp LoadRoom
+
+; Parse catalogue record at stream_ptr -> screen_base, meta.
+DecompressRoom
+    jsr TapeInitMeta
+    jsr ReadTitlePtr
+    jsr SkipTitle
+    jsr ParseMeta8
+    jsr ApplyBorderFromMeta
+    jsr ApplySpawnFromMeta
+    jsr ReadTileColors
+    jsr LoadRoomUdgs
+    jsr RleUnpack
+    jsr ApplyRoomOverlays
+    jsr PaintPickup
+    jsr StampHudRow
+    jsr SkipGuardianCatalog
+    rts
+
+ApplyBorderFromMeta
+    lda meta_content_border
+    sta $900f
+    rts
+
+ApplySpawnFromMeta
+    lda use_room_spawn
+    beq +
+    lda meta_content_spawn_px
+    sta px
+    lda meta_content_spawn_py
+    sta py
++
+    rts
+
+ParseMeta8
+    ldy #0
+    lda (stream_ptr),y
+    sta meta_content_conn
+    iny
+    lda (stream_ptr),y
+    sta meta_content_conn+1
+    iny
+    lda (stream_ptr),y
+    sta meta_content_conn+2
+    iny
+    lda (stream_ptr),y
+    sta meta_content_conn+3
+    iny
+    lda (stream_ptr),y
+    sta meta_content_spawn_px
+    iny
+    lda (stream_ptr),y
+    sta meta_content_spawn_py
+    iny
+    lda (stream_ptr),y
+    sta meta_content_record_flags
+    iny
+    lda (stream_ptr),y
+    sta meta_content_border
+    lda #8
+    clc
+    adc stream_ptr
+    sta stream_ptr
+    bcc +
+    inc stream_ptr_hi
++
+    rts
+
+ReadTileColors
+    ldy #0
+-
+    lda (stream_ptr),y
+    sta tile_color_src,y
+    iny
+    cpy #6
+    bne -
+    lda stream_ptr
+    clc
+    adc #6
+    sta stream_ptr
+    bcc +
+    inc stream_ptr_hi
++
+    rts
+
+ReadTitlePtr
+    lda stream_ptr
+    sta title_ptr
+    lda stream_ptr_hi
+    sta title_ptr+1
+    rts
+
+SkipTitle
+-
+    ldy #0
+    lda (stream_ptr),y
+    beq title_done
+    inc stream_ptr
+    bne -
+    inc stream_ptr_hi
+    jmp -
+title_done
+    inc stream_ptr
+    bne +
+    inc stream_ptr_hi
++
+    rts
+
+ApplyRoomOverlays
+    ldy #0
+    lda (stream_ptr),y
+    sta ramp_tmp                  ; pickup screen address lo
+    iny
+    lda (stream_ptr),y
+    sta ramp_y                    ; pickup screen address hi
+    jsr Skip2
+
+    lda meta_content_record_flags
+    and #FLAG_RAMP
+    beq +
+    jsr ApplyRamp3
++
+    lda meta_content_record_flags
+    and #FLAG_CONVEYOR
+    beq +
+    jsr ApplyConveyor3
++
+    rts
+
+PaintPickup
+    lda ramp_y
+    cmp #$ff
+    bne paint_pickup
+    lda ramp_tmp
+    cmp #$ff
+    beq paint_pickup_done
+paint_pickup
+    lda ramp_tmp
+    sta arr
+    lda ramp_y
+    sta arr+1
+    lda #ITEM_CHR
+    ldy #0
+    sta (arr),y
+paint_pickup_done
+    rts
+
+Skip3
+    inc stream_ptr
+    bne +
+    inc stream_ptr_hi
++
+    inc stream_ptr
+    bne +
+    inc stream_ptr_hi
++
+    inc stream_ptr
+    bne +
+    inc stream_ptr_hi
++
+    rts
+
+Skip2
+    inc stream_ptr
+    bne +
+    inc stream_ptr_hi
++
+    inc stream_ptr
+    bne +
+    inc stream_ptr_hi
++
+    rts
+
+StampHudRow
+    ldy #0
+    ldx #0
+-
+    cpy #18
+    beq stamp_icons
+    lda (title_ptr),y
+    beq pad_title
+    pha
+    jsr ToUpper
+    jsr AsciiToScreen
+    sta screen_base+hud_row_off,x
+    pla
+    iny
+    inx
+    jmp -
+pad_title
+    lda #160
+    sta screen_base+hud_row_off,x
+    inx
+    iny
+    jmp -
+stamp_icons
+    lda #MEN_CHR
+    sta hud_men_scr
+    lda #HUD_ITEM_CHR
+    sta hud_item_scr
+    rts
+
+LoadRoomUdgs
+    ldx #7
+    lda #0
+-
+    sta udg_base,x              ; chr 0 empty — always zero, not in catalogue
+    dex
+    bpl -
+
+    lda #TILE_PLATFORM          ; floor chr 1
+    jsr LoadOneUdgChr
+    lda #TILE_SOLID             ; wall chr 2
+    jsr LoadOneUdgChr
+    lda #ITEM_CHR               ; pickup chr 6
+    jsr LoadOneUdgChr
+
+    lda meta_content_record_flags
+    and #FLAG_NASTY
+    beq +
+    lda #TILE_HAZARD
+    jsr LoadOneUdgChr
++
+    lda meta_content_record_flags
+    and #FLAG_RAMP
+    beq +
+    lda #TILE_RAMP
+    jsr LoadOneUdgChr
++
+    lda meta_content_record_flags
+    and #FLAG_CONVEYOR
+    beq +
+    lda #TILE_CONVEYOR
+    jsr LoadOneUdgChr
++
+    jsr EnsureVicCharset
+    rts
+
+; Keep $9005 charset block at $1800 after UDG writes.
+EnsureVicCharset
+    lda #$ce
+    sta $9005
+    rts
+
+; A = VIC chr. Copy 8 bytes from stream_ptr to udg_base + chr*8.
+LoadOneUdgChr
+    asl
+    asl
+    asl
+    clc
+    adc #<udg_base
+    sta udg_ptr
+    lda #>udg_base
+    adc #0
+    sta udg_ptr+1
+    ldy #0
+-
+    lda (stream_ptr),y
+    sta (udg_ptr),y
+    iny
+    cpy #8
+    bne -
+    lda #8
+    clc
+    adc stream_ptr
+    sta stream_ptr
+    bcc +
+    inc stream_ptr_hi
++
+    rts
+
+SkipGuardianCatalog
+    lda meta_content_record_flags
+    and #FLAG_ARROW
+    beq +
+    lda #5
+    jsr SkipBytes
++
+    ldy #0
+    lda (stream_ptr),y
+    tax
+    inx
+    stx num
+    lda #0
+    sta mov
+guard_skip
+    lda mov
+    cmp num
+    bcs guard_done
+    lda #8
+    clc
+    adc stream_ptr
+    sta stream_ptr
+    bcc +
+    inc stream_ptr_hi
++
+    inc mov
+    jmp guard_skip
+guard_done
+    rts
+
+SkipBytes
+    sta mov
+    beq SkipBytesDone
+SkipBytesLoop
+    inc stream_ptr
+    bne +
+    inc stream_ptr_hi
++
+    dec mov
+    bne SkipBytesLoop
+SkipBytesDone
+    rts
 
 TapeClearScreen
     lda #TILE_CHR_BASE + TILE_EMPTY
@@ -43,7 +367,6 @@ TapeClearScreen
     rts
 
 TapeInitMeta
-    ; Minimal defaults so DrawMap / edge checks do not read garbage
     lda #0
     ldx #0
 -
@@ -115,4 +438,37 @@ FormatRoomName
     adc #'0'
     sta room_name+2
     sty room_name+1
+    rts
+
+AsciiToScreen
+    cmp #'A'
+    bcc ats_other
+    cmp #'Z'+1
+    bcs ats_other
+    sec
+    sbc #'A'
+    clc
+    adc #129
+    rts
+ats_other
+    cmp #'0'
+    bcc ats_plain
+    cmp #'9'+1
+    bcs ats_plain
+    clc
+    adc #128
+    rts
+ats_plain
+    clc
+    adc #128
+    rts
+
+ToUpper
+    cmp #'a'
+    bcc +
+    cmp #'z'+1
+    bcs +
+    sec
+    sbc #$20
++
     rts

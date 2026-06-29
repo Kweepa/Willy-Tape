@@ -27,14 +27,15 @@ WarmStart
     dey
     bpl -
 
-    // CONTINUE HERE
-
     jmp start_game
 
     ; horizontal centering, vertical centering,
     ; num columns (plus high bit for screen), num rows,
     ; screen and udg loc, voices, volume
+    ; $9002 bit7=0 -> screen $1000 + color $9400 (16K tape layout)
+    ; $9002 bit7=1 -> screen $1E00 + color $9600 (disk / unexpanded layout)
+    ; $9005 $CE -> video block 12 ($1000) + charset block 14 ($1800)
 .vic_offset
     !byte 0, 1, 2, 3, 5, $a, $b, $c, $d, $e
 .vic_val
-    !byte 10,50,$98,17<<1,$ce,0,0,0,0,10
+    !byte 10, 50, 24, 17<<1, $ce, 0, 0, 0, 0, 10

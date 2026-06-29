@@ -13,7 +13,7 @@ MODULES = [
     ("ramp", ["calculate_ramp_y", "do_walking_ramp_check", "do_falling_ramp_check"]),
     ("willy_collide", ["try_touch", "Collide", "hit_above"]),
     ("willy_draw", ["DrawPlayerEntry", "DrawPlayer"]),
-    ("util", ["ConvertXYToScreenAddr", "UpdateMoveCounters"]),
+    ("util", ["ConvertXYToScreenAddr", "ConvertTileXYToScreenAddr", "UpdateMoveCounters"]),
     ("input", ["GetPlayerInput", "ScanKeyRow"]),
     ("guardians", ["CopyDownGuardianData", "MoveGuardians", "EraseGuardians"]),
     ("tape_runtime", ["FlickerItem", "AnimateConveyors", "DoBelt"]),

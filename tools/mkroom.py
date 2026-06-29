@@ -85,7 +85,7 @@ ROOM_IMAGE_SIZE = 0x5FB           # 1531 bytes ($1A05-$1FFF); FlickerItem +16 at
 HUD_UDG_BYTES = 16
 # Pad pins screen at $1E00: IMAGE_LOAD + flicker + code prefix + sprites + ... + pad == SCREEN_BASE
 RUNTIME_UDG_PAD = 0x150           # 336 bytes ($1CB0-$1DFF)
-TILE_CHR_BASE = 16
+TILE_CHR_BASE = 0
 TILE_EMPTY = 0
 TILE_PLATFORM = 1
 TILE_SOLID = 2

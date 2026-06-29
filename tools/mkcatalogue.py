@@ -19,19 +19,19 @@ from audit_room_compress import (  # noqa: E402
     strip_overlays,
     tile_grid,
 )
+from catalogue_asm import RoomSection, write_catalogue_asm  # noqa: E402
 from mkroom import (  # noqa: E402
     GUARDIAN_HORIZONTAL,
     HUD_TITLE_COLS,
     MAX_GUARDIANS,
+    TILE_HAZARD,
     build_tile_colors,
     deinterleave_guardian_sprites,
     parse_room,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
-
-CATALOGUE_MAGIC = 0x43575354  # "TSWC" little-endian on wire
-CATALOGUE_VERSION = 6
+BAKE_CATALOGUE_ASM = ROOT / "bake" / "catalogue.asm"
 
 # Set table entry: u16 start_frame, u8 frame_count, u8 flags (4 B each)
 SET_ENTRY_BYTES = 4
@@ -41,19 +41,20 @@ GUARDIAN_CATALOG_BYTES = 8
 
 SET_FLAG_H_BIDIR = 0x01
 
-# Target RAM bases (documented in catalogue.map; loaded in Phase 3)
-RAM_POOL = 0x2000
-RAM_PALETTES = 0x5080
-
-HEADER_SIZE = 64
+HEADER_SIZE = 2  # u16 room_count only
 ROOM_INDEX_ENTRY = 4  # u16 offset + u16 length
+SCREEN_WIDTH = 24
+SCREEN_BASE = 0x1000
+PICKUP_NONE = 0xFFFF
 
-FLAG_PICKUP = 0x01
+# meta8 byte 6 — feature flags (optional overlays + UDG chunks)
+FLAG_NASTY = 0x01
 FLAG_RAMP = 0x02
 FLAG_CONVEYOR = 0x04
 FLAG_ROPE = 0x08
 FLAG_ARROW = 0x10
-FLAG_BELT_NEG = 0x20
+
+UDG_FIXED_BYTES = 24  # floor + wall + item (8 B each)
 
 SAW_LINE = re.compile(r"\bsaw\b", re.IGNORECASE)
 ENTITY_LINE = re.compile(
@@ -431,17 +432,20 @@ def pack_room_title(room: dict) -> bytes:
     return text + b"\x00"
 
 
-def pack_room_udg(room: dict) -> bytes:
-    mask = 0
-    chunks: list[bytes] = []
-    for i in range(6):
-        if any(room["tileudg"][i]):
-            mask |= 1 << i
-            chunks.append(bytes(room["tileudg"][i][:8]))
-    if room.get("itemudg_defined") or any(room["tileudg"][6]):
-        mask |= 1 << 6
-        chunks.append(bytes(room["tileudg"][6][:8]))
-    return bytes([mask & 0xFF]) + b"".join(chunks)
+def pack_room_udg(room: dict, flags: int) -> bytes:
+    """floor + wall + item always; nasty/ramp/belt UDG when flag set."""
+    chunks = [
+        bytes(room["tileudg"][1][:8]),
+        bytes(room["tileudg"][2][:8]),
+        bytes(room["tileudg"][6][:8]),
+    ]
+    if flags & FLAG_NASTY:
+        chunks.append(bytes(room["tileudg"][3][:8]))
+    if flags & FLAG_RAMP:
+        chunks.append(bytes(room["tileudg"][4][:8]))
+    if flags & FLAG_CONVEYOR:
+        chunks.append(bytes(room["tileudg"][5][:8]))
+    return b"".join(chunks)
 
 
 def pack_arrow(room: dict) -> bytes:
@@ -457,9 +461,12 @@ def pack_arrow(room: dict) -> bytes:
     )
 
 
-def pack_pickup(pickup: tuple[int, int]) -> bytes:
-    col, row = pickup
-    return bytes([col & 0xFF, row & 0xFF])
+def pack_pickup_bytes(pickup: tuple[int, int] | None) -> bytes:
+    if pickup:
+        col, row = pickup
+        offset = row * SCREEN_WIDTH + col
+        return struct.pack("<H", offset)
+    return struct.pack("<H", PICKUP_NONE)
 
 
 @dataclass
@@ -468,21 +475,25 @@ class RoomBuild:
     title: str
     record: bytes
     stats: dict
+    flags: int = 0
+    sections: list[RoomSection] = field(default_factory=list)
 
 
 def build_room_record(
     room: dict,
     *,
     source: str,
-    palette_idx: int,
     pool: GuardianPool,
     pickup: tuple[int, int] | None,
     ramp,
     conv,
 ) -> RoomBuild:
+    grid = tile_grid(room["tilemap"])
+    base, ramp, conv, pickup = strip_overlays(grid)
+
     flags = 0
-    if pickup:
-        flags |= FLAG_PICKUP
+    if TILE_HAZARD in base:
+        flags |= FLAG_NASTY
     if ramp:
         flags |= FLAG_RAMP
     if conv:
@@ -491,40 +502,82 @@ def build_room_record(
         flags |= FLAG_ROPE
     if room.get("arrow"):
         flags |= FLAG_ARROW
-    if room.get("belt", 0) < 0:
-        flags |= FLAG_BELT_NEG
 
     meta = pack_meta8(room, flags=flags)
     title = pack_room_title(room)
+    tile_colors = build_tile_colors(room)
 
-    grid = tile_grid(room["tilemap"])
-    base, _, _, _ = strip_overlays(grid)
-    rle = bytes(rle_pack(base, "row"))
+    base_rle, _, _, _ = strip_overlays(grid)
+    rle = bytes(rle_pack(base_rle, "row"))
 
-    parts = [meta, bytes([palette_idx & 0xFF]), title, rle]
-    if pickup:
-        parts.append(pack_pickup(pickup))
+    udg_blob = pack_room_udg(room, flags)
+    guardians_blob, guardian_warnings = pack_guardians(room, pool)
+    pickup_bytes = pack_pickup_bytes(pickup)
+
+    parts = [title, meta, tile_colors, udg_blob, rle, pickup_bytes]
+    sections: list[RoomSection] = [
+        RoomSection("title", "", title),
+        RoomSection("meta8", "", meta),
+        RoomSection("tile_colors", "", tile_colors),
+        RoomSection("tile_udg", "", udg_blob, extra={"flags": flags}),
+        RoomSection("rle_tilemap", "", rle),
+        RoomSection(
+            "pickup",
+            "",
+            pickup_bytes,
+            extra={"pickup": pickup},
+        ),
+    ]
     if ramp:
         parts.append(pack_ramp3(ramp))
+        sections.append(
+            RoomSection(
+                "ramp",
+                f"x={ramp['x']} y={ramp['y']} len={ramp['length']} dir={ramp['direction']}",
+                pack_ramp3(ramp),
+            )
+        )
     if conv:
         parts.append(pack_conveyor3(conv, room.get("belt", 0)))
-    parts.append(pack_room_udg(room))
+        sections.append(
+            RoomSection(
+                "conveyor",
+                f"x={conv['x']} y={conv['y']} len={conv['length']} belt={room.get('belt', 0)}",
+                pack_conveyor3(conv, room.get("belt", 0)),
+            )
+        )
     if room.get("arrow"):
         parts.append(pack_arrow(room))
-
-    guardians_blob, guardian_warnings = pack_guardians(room, pool)
+        a = room["arrow"]
+        sections.append(
+            RoomSection(
+                "arrow",
+                f"x={a['x']} y={a['y']} v={a['v']} sound={a['sound']}",
+                pack_arrow(room),
+            )
+        )
     parts.append(guardians_blob)
+    sections.append(
+        RoomSection(
+            "guardians",
+            "",
+            guardians_blob,
+            extra={"guardians": room["guardians"]},
+        )
+    )
 
     record = b"".join(parts)
     return RoomBuild(
         rid=room["id"],
         title=room["title"],
         record=record,
+        flags=flags,
+        sections=sections,
         stats={
             "meta": len(meta),
             "title": len(title),
             "rle": len(rle),
-            "udg": len(pack_room_udg(room)),
+            "udg": len(udg_blob),
             "guardians": len(room["guardians"]),
             "guardian_bytes": len(guardians_blob),
             "guardian_warnings": guardian_warnings,
@@ -533,15 +586,16 @@ def build_room_record(
     )
 
 
-def dedupe_palettes(rooms: list[dict]) -> tuple[list[bytes], dict[bytes, int]]:
-    palettes: list[bytes] = []
-    index: dict[bytes, int] = {}
-    for room in rooms:
-        key = build_tile_colors(room)
-        if key not in index:
-            index[key] = len(palettes)
-            palettes.append(key)
-    return palettes, index
+def flags_desc(flags: int) -> str:
+    bits = (
+        (FLAG_NASTY, "nasty"),
+        (FLAG_RAMP, "ramp"),
+        (FLAG_CONVEYOR, "conveyor"),
+        (FLAG_ROPE, "rope"),
+        (FLAG_ARROW, "arrow"),
+    )
+    names = [name for bit, name in bits if flags & bit]
+    return "|".join(names) if names else "none"
 
 
 def build_catalogue(rooms_dir: Path) -> tuple[bytes, dict]:
@@ -552,7 +606,6 @@ def build_catalogue(rooms_dir: Path) -> tuple[bytes, dict]:
         parsed.append((parse_room(source, source=p), source))
     parsed.sort(key=lambda rs: rs[0]["id"])
 
-    palettes, palette_index = dedupe_palettes([r for r, _ in parsed])
     pool = GuardianPool()
     all_warnings: list[str] = []
 
@@ -563,7 +616,6 @@ def build_catalogue(rooms_dir: Path) -> tuple[bytes, dict]:
         rb = build_room_record(
             room,
             source=source,
-            palette_idx=palette_index[build_tile_colors(room)],
             pool=pool,
             pickup=pickup,
             ramp=ramp,
@@ -572,11 +624,8 @@ def build_catalogue(rooms_dir: Path) -> tuple[bytes, dict]:
         all_warnings.extend(rb.stats.get("guardian_warnings", []))
         room_builds.append(rb)
 
-    palettes_blob = b"".join(palettes)
     sets_blob = pool.sets_blob()
     pool_blob = pool.frames_blob()
-    catalogue_ram = (RAM_POOL + pool.pool_ram_bytes + 0xFF) & ~0xFF
-
     room_records_blob = b"".join(rb.record for rb in room_builds)
     room_index = bytearray()
     offset = 0
@@ -584,29 +633,14 @@ def build_catalogue(rooms_dir: Path) -> tuple[bytes, dict]:
         room_index.extend(struct.pack("<HH", offset, len(rb.record)))
         offset += len(rb.record)
 
-    header = bytearray(HEADER_SIZE)
-    struct.pack_into(
-        "<IHH", header, 0, CATALOGUE_MAGIC, CATALOGUE_VERSION, len(room_builds)
-    )
-    struct.pack_into(
-        "<IIII",
-        header,
-        8,
-        catalogue_ram,
-        RAM_POOL,
-        RAM_PALETTES,
-        len(room_records_blob),
-    )
+    header = struct.pack("<H", len(room_builds))
 
-    parts: list[bytes] = [bytes(header), bytes(room_index)]
+    parts: list[bytes] = [header, bytes(room_index)]
     section_offsets: dict[str, int] = {}
 
     section_offsets["room_index"] = len(parts[0])
     section_offsets["room_records"] = section_offsets["room_index"] + len(room_index)
     parts.append(room_records_blob)
-
-    section_offsets["palettes"] = sum(len(p) for p in parts)
-    parts.append(palettes_blob)
 
     section_offsets["sets"] = sum(len(p) for p in parts)
     parts.append(sets_blob)
@@ -616,15 +650,16 @@ def build_catalogue(rooms_dir: Path) -> tuple[bytes, dict]:
 
     blob = b"".join(parts)
 
-    struct.pack_into("<I", header, 24, section_offsets["room_records"])
-    struct.pack_into("<I", header, 28, section_offsets["palettes"])
-    struct.pack_into("<I", header, 32, section_offsets["sets"])
-    struct.pack_into("<I", header, 36, section_offsets["pool"])
-    struct.pack_into("<I", header, 40, len(blob))
-    struct.pack_into("<H", header, 44, len(pool.sets))
-    struct.pack_into("<H", header, 46, 0)  # reserved (v5: no flip scratch)
-
-    blob = bytes(header) + blob[HEADER_SIZE:]
+    write_catalogue_asm(
+        room_builds=room_builds,
+        pool=pool,
+        report={
+            "rooms": len(room_builds),
+            "set_count": len(pool.sets),
+            "pool_frames": pool.frame_count,
+            "pool_ram_bytes": pool.pool_ram_bytes,
+        },
+    )
 
     guardian_instances = sum(rb.stats["guardians"] for rb in room_builds)
     guardian_bytes = sum(rb.stats["guardian_bytes"] for rb in room_builds)
@@ -634,7 +669,6 @@ def build_catalogue(rooms_dir: Path) -> tuple[bytes, dict]:
         "guardian_instances": guardian_instances,
         "guardian_bytes": guardian_bytes,
         "title_bytes": title_bytes,
-        "palettes": len(palettes),
         "pool_frames": pool.frame_count,
         "pool_unique_frames": pool.unique_frame_count,
         "pool_frame_bytes": pool.frames_bytes,
@@ -646,11 +680,6 @@ def build_catalogue(rooms_dir: Path) -> tuple[bytes, dict]:
         "room_builds": room_builds,
         "section_offsets": section_offsets,
         "warnings": all_warnings,
-        "ram": {
-            "catalogue": catalogue_ram,
-            "pool": RAM_POOL,
-            "palettes": RAM_PALETTES,
-        },
     }
     return blob, report
 
@@ -658,14 +687,12 @@ def build_catalogue(rooms_dir: Path) -> tuple[bytes, dict]:
 def write_map(path: Path, report: dict) -> None:
     lines = [
         "JSW-Tape catalogue.map",
-        f"version {CATALOGUE_VERSION}",
+        f"rooms {report['rooms']}",
         "",
-        "Target RAM bases (Phase 3 loader):",
+        "Embedded in PRG (read in place): CatalogueSets, CataloguePool",
+        "",
+        "File sections:",
     ]
-    for name, addr in report["ram"].items():
-        lines.append(f"  {name:12s} ${addr:04X}")
-    lines.append("")
-    lines.append("File sections:")
     for name, off in report["section_offsets"].items():
         lines.append(f"  {name:14s} file ${off:04X}")
     lines.append("")
@@ -685,7 +712,7 @@ def write_map(path: Path, report: dict) -> None:
     lines.append(
         f"titles:     embedded in room records ({report['title_bytes']} B total)"
     )
-    lines.append(f"palettes:   {report['palettes']} x 6 B (shared table)")
+    lines.append("tile colors: 6 B per room record (types 0-5)")
     lines.append("")
     if report.get("warnings"):
         lines.append("Warnings:")
@@ -714,7 +741,7 @@ def print_report(report: dict) -> None:
         f"Pool:         {report['pool_frames']} slots ({report['pool_unique_frames']} unique), "
         f"{report['pool_ram_bytes']} B RAM"
     )
-    print(f"Palettes:     {report['palettes']} x 6 B")
+    print("Tile colors:  6 B inline per room record")
     print(f"Total file:   {report['total_bytes']} B ({report['total_bytes']/1024:.1f} KB)")
     print(
         f"Per-room:     min={min(sizes)} avg={sum(sizes)/len(sizes):.1f} "
@@ -739,6 +766,7 @@ def main() -> None:
     write_map(args.map, report)
     print_report(report)
     print(f"Wrote {args.out} and {args.map}")
+    print(f"Wrote {BAKE_CATALOGUE_ASM} and bake/rooms/*.asm")
 
 
 if __name__ == "__main__":

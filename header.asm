@@ -7,12 +7,23 @@ map_base    = $9600
 tile_bytes  = 408                 ; 24 x 17
 hud_row_off = 384                 ; row 16 * 24
 
-; Character RAM (36869 OR $0E) — 1 KB, chr 16-143
+; Character RAM @ $1800 — room tiles chr 0-6 (empty=0), HUD 13-14, guardians 22+
 udg_base = $1800
 
-; Catalogue / runtime buffers (Phase 3+ fills from tape load)
-catalogue_base    = $3000
-guardian_pool   = $2000
+; Room catalogue in PRG (catalogue_data.asm): RoomRecordPtrs, CatalogueSets,
+; CataloguePool — read in place. Tile colours are 6 B inline in each room record.
+
+; Room record flags (meta8 byte 6 — see bake/room_record.asm)
+FLAG_NASTY    = $01
+FLAG_RAMP     = $02
+FLAG_CONVEYOR = $04
+FLAG_ROPE     = $08
+FLAG_ARROW    = $10
+
+title_ptr       = $39          ; 2 B pointer into catalogue record title
+
+UDG_FIXED_BYTES = 24              ; floor + wall + item UDG in every room record
+
 meta_content_src = $5800
 tail_size       = 104
 meta_content_guardians = meta_content_src
@@ -37,6 +48,7 @@ meta_content_room_has_rope = meta_content_src + 38
 meta_content_guardian_data = meta_content_src + 39
 meta_content_has_arrow = meta_content_src + 99
 meta_content_spare = meta_content_src + 100
+meta_content_record_flags = meta_content_spare + 1
 ending_pending = meta_content_spare
 guardian_data_base = meta_content_guardian_data
 tail_base = meta_content_src

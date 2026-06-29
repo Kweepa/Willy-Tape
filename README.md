@@ -24,7 +24,7 @@
 make.bat
 ```
 
-Produces `jsw.prg` (loads at `$1201`) and `catalogue.bin` (room catalogue for Phase 3 loader). Phase 6 adds `mktape.py` for TAP output. Disk-era `mkroom.py` / `mkdisk.py` remain as reference only.
+Produces `jsw.prg` (loads at `$1201`, with `catalogue.bin` embedded at `CatalogueImage`). Phase 6 adds `mktape.py` for TAP output. Disk-era `mkroom.py` / `mkdisk.py` remain as reference only.
 
 See [docs/tape-16k.md](docs/tape-16k.md) for the target memory map and catalogue design.
 
