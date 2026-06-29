@@ -1,5 +1,5 @@
 ;
-; Room catalogue runtime (data in bake/catalogue.asm via catalogue_data.asm).
+; Catalogue record lookup — stream_ptr from RoomRecordPtrs (bake/catalogue.asm).
 ; Pool, sets, and room records are read in place — no copy at boot.
 ;
 

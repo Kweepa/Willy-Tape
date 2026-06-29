@@ -22,7 +22,7 @@ low_bank_end = *
 
 ; --- High bank $1C00+ ---
 !source "decompress.asm"
-!source "catalogue.asm"
+!source "catalogue_reader.asm"
 !source "loader.asm"
 !source "ingame_tune.asm"
 !source "willy_draw.asm"
