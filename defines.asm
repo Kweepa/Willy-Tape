@@ -44,6 +44,7 @@ GUARDIAN_VERTICAL = 1
 RAMP_NONE = 0
 RAMP_UP_RIGHT = 1
 RAMP_UP_LEFT = $FF
+RAMP_BOUNDS_NONE = 99
 
 ; Endgame: collect all pickups, enter master bedroom (Maria vanishes),
 ; walk to ENDING_TRIGGER_PX, then teleport to bathroom for the toilet ending.

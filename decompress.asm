@@ -156,6 +156,7 @@ ramp_row_ok
     cmp num
     bne ramp_cell_loop
 ramp_done
+    jsr BakeRampMeta
     lda #2
     clc
     adc stream_ptr

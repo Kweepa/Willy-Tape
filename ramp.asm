@@ -1,4 +1,135 @@
 ; ===========================================================================
+; Called at end of ApplyRamp: hx=col_start, mov=row_start, num=length,
+; g_frame=3 (/) or 1 (\). Writes meta_content_ramp_*.
+
+BakeRampMeta
+    lda hx
+    clc
+    adc num
+    sec
+    sbc #1
+    sta hc                  ; col_end
+
+    ldx g_frame
+    cpx #3
+    beq .br_up_right
+    lda #RAMP_UP_LEFT
+    sta meta_content_ramp
+    lda #0
+    sta meta_content_ramp_E
+    sta meta_content_ramp_A
+    jmp .br_bounds
+.br_up_right
+    lda #RAMP_UP_RIGHT
+    sta meta_content_ramp
+    lda #$ff
+    sta meta_content_ramp_E
+    lda #1
+    sta meta_content_ramp_A
+
+.br_bounds
+    lda hx
+    asl
+    asl
+    sec
+    sbc #4
+    sta meta_content_ramp_rx1
+    lda hc
+    asl
+    asl
+    clc
+    adc #4
+    sta meta_content_ramp_rx2
+
+    lda meta_content_ramp_rx1
+    jsr ramp_surface_abs
+    ldx g_frame
+    cpx #3
+    beq .br_store_ry
+    sec
+    sbc #4                  ; toe 6 minus UP_LEFT_RY_ADJUST 2
+.br_store_ry
+    sta meta_content_ramp_ry
+
+    ldx g_frame
+    cpx #3
+    bne .br_ymin_px
+    lda hc
+    asl
+    asl
+    jmp .br_ymin_surf
+.br_ymin_px
+    lda hx
+    asl
+    asl
+.br_ymin_surf
+    jsr ramp_surface_abs
+    ldx g_frame
+    cpx #3
+    beq .br_store_ymin
+    sec
+    sbc #6
+.br_store_ymin
+    sta meta_content_ramp_ymin
+    rts
+
+; A = px -> A = absolute feet Y on ramp surface (hx, mov, num, g_frame).
+ramp_surface_abs
+    sta ramp_tmp
+    lda num
+    cmp #1
+    beq .rsa_flat
+    lda ramp_tmp
+    clc
+    adc #3
+    sta arr2
+    lda arr2
+    lsr
+    lsr
+    sec
+    sbc hx
+    sta arr
+    lda mov
+    ldx g_frame
+    cpx #3
+    bne .rsa_row_inc
+    sec
+    sbc arr
+    jmp .rsa_row_done
+.rsa_row_inc
+    clc
+    adc arr
+    jmp .rsa_row_done
+.rsa_flat
+    lda ramp_tmp
+    clc
+    adc #3
+    sta arr2
+    lda mov
+    jmp .rsa_row_done
+.rsa_row_done
+    asl
+    asl
+    asl
+    sta arr
+    lda arr2
+    and #3
+    asl
+    ldx g_frame
+    cpx #3
+    bne .rsa_yleft
+    sta ramp_tmp
+    lda #6
+    sec
+    sbc ramp_tmp
+    jmp .rsa_finish
+.rsa_yleft
+.rsa_finish
+    clc
+    adc arr
+    rts
+
+; ===========================================================================
 ; call this once per frame, irrespective of movement
 ; ramp_y = feet Y on ramp surface; py is head (feet = py + 16).
 

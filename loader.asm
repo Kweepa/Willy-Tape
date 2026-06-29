@@ -41,6 +41,7 @@ DecompressRoom
     jsr PaintPickup
     jsr StampHudRow
     jsr LoadRoomGuardians
+    jsr calculate_ramp_y
     rts
 
 ApplyBorderFromMeta
@@ -505,6 +506,9 @@ TapeInitMeta
     lda #$ff
     sta meta_content_pickup_scr
     sta meta_content_pickup_scr+1
+    lda #RAMP_BOUNDS_NONE
+    sta meta_content_ramp_rx1
+    sta meta_content_ramp_rx2
     rts
 
 TapePaintMap
