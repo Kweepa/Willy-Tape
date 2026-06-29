@@ -80,15 +80,7 @@ ErasePlayer_EraseGuardians_UpdateMoveCounters
 	ldy cell_off_2x3,x
 	lda (map_ptr),y
 	and #$0f
-	cmp #TILE_ITEM
-	bne +
-	lda #ITEM_CHR
 	sta (scr_ptr),y
-	bne ++
-+
-	ora #$10
-	sta (scr_ptr),y
-++
 	dex
 	bpl -
 erase_player_done
