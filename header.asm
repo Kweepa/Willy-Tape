@@ -10,8 +10,9 @@ hud_row_off = 384                 ; row 16 * 24
 ; Character RAM @ $1800 — room tiles chr 0-6 (empty=0), HUD 13-14, guardians 22+
 udg_base = $1800
 
-; Room catalogue in PRG (catalogue_data.asm): RoomRecordPtrs, CatalogueSets,
-; CataloguePool — read in place. Tile colours are 6 B inline in each room record.
+; Room catalogue in PRG (catalogue_data.asm): catalogue_rooms.asm (RoomRecordPtrs +
+; room records), catalogue_guardians.asm (guardian_set_metadata, guardian_sprite_frames).
+; Read in place. Tile colours are 6 B inline in each room record.
 
 ; Room record flags (meta8 byte 6 — see bake/room_record.asm)
 FLAG_NASTY    = $01

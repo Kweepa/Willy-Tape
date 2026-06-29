@@ -31,15 +31,14 @@ from mkroom import (  # noqa: E402
 )
 
 ROOT = Path(__file__).resolve().parent.parent
-BAKE_CATALOGUE_ASM = ROOT / "bake" / "catalogue.asm"
+BAKE_CATALOGUE_ROOMS_ASM = ROOT / "bake" / "catalogue_rooms.asm"
+BAKE_CATALOGUE_GUARDIANS_ASM = ROOT / "bake" / "catalogue_guardians.asm"
 
-# Set table entry: u16 start_frame, u8 frame_count, u8 flags (4 B each)
-SET_ENTRY_BYTES = 4
+# Set table entry: u8 start_frame, u8 frame_count (2 B each; pool < 256 frames)
+SET_ENTRY_BYTES = 2
 
 # Catalogue guardian: motion + color + axis + set_idx (no frame/fmin/fctl — in set table)
 GUARDIAN_CATALOG_BYTES = 8
-
-SET_FLAG_H_BIDIR = 0x01
 
 HEADER_SIZE = 2  # u16 room_count only
 ROOM_INDEX_ENTRY = 4  # u16 offset + u16 length
@@ -90,28 +89,30 @@ class EntityBlock:
 
 @dataclass
 class GuardianPool:
-    """Unique guardian frame sets; set flags hold bidir / wrap metadata for load."""
+    """Build-time pool: one entry per distinct guardian sprite name."""
 
     _flat: list[bytes] = field(default_factory=list)
-    _set_key: dict[tuple[bytes, int], int] = field(default_factory=dict)
-    sets: list[tuple[int, int, int]] = field(default_factory=list)  # start, count, flags
+    _by_name: dict[str, int] = field(default_factory=dict)
+    sets: list[tuple[int, int, str]] = field(default_factory=list)  # start, count, name
 
-    def add_set(self, frames: list[bytes], flags: int) -> int:
-        if not frames:
-            return 0
+    def set_index(self, name: str) -> int:
+        """Return set index for sprite name; append frames on first use."""
+        key = name.lower()
+        if not key:
+            raise ValueError("guardian missing sprite name")
+        if key in self._by_name:
+            return self._by_name[key]
+
+        frames = sprite_frames(key)
         for fr in frames:
             if len(fr) != 32:
-                raise ValueError(f"guardian frame must be 32 bytes, got {len(fr)}")
-
-        key = (b"".join(frames), flags & 0xFF)
-        if key in self._set_key:
-            return self._set_key[key]
+                raise ValueError(f"{key!r}: frame must be 32 bytes, got {len(fr)}")
 
         start = len(self._flat)
         self._flat.extend(frames)
         idx = len(self.sets)
-        self.sets.append((start, len(frames), flags & 0xFF))
-        self._set_key[key] = idx
+        self.sets.append((start, len(frames), key))
+        self._by_name[key] = idx
         return idx
 
     @property
@@ -135,10 +136,10 @@ class GuardianPool:
 
     def sets_blob(self) -> bytes:
         out = bytearray()
-        for start, count, flags in self.sets:
-            if count > 255:
-                raise ValueError(f"set frame_count out of u8 range: {count}")
-            out.extend(struct.pack("<HBB", start, count & 0xFF, flags & 0xFF))
+        for start, count, _name in self.sets:
+            if start > 255 or count > 255:
+                raise ValueError(f"set out of u8 range: start={start} count={count}")
+            out.extend([start & 0xFF, count & 0xFF])
         return bytes(out)
 
 
@@ -372,17 +373,23 @@ def load_sprite_lib() -> dict[str, list[bytes]]:
     return _sprite_lib_cache
 
 
-def expand_guardian_frames(g: dict) -> tuple[list[bytes], int]:
-    """Return frame list and set flags from named sprite in spriteframes.asm."""
+def sprite_frames(name: str) -> list[bytes]:
+    """Frames for a guardian sprite name from spriteframes.asm."""
+    key = name.lower()
+    if not key:
+        raise ValueError("guardian sprite name required")
+    lib = load_sprite_lib()
+    if key not in lib:
+        raise KeyError(f"unknown guardian sprite {key!r} (not in spriteframes.asm)")
+    return lib[key]
+
+
+def expand_guardian_frames(g: dict) -> list[bytes]:
+    """Return frame list for a parsed guardian dict."""
     name = (g.get("sprite") or "").lower()
     if not name:
         raise ValueError(f"guardian missing sprite name: {g.get('line', g)!r}")
-    lib = load_sprite_lib()
-    if name not in lib:
-        raise KeyError(f"unknown guardian sprite {name!r} (not in spriteframes.asm)")
-    frames = lib[name]
-    flags = SET_FLAG_H_BIDIR if g["axis"] == GUARDIAN_HORIZONTAL and g["fctl"] == 1 else 0
-    return frames, flags
+    return sprite_frames(name)
 
 
 def pack_guardian_catalog(g: dict, set_idx: int) -> bytes:
@@ -408,8 +415,8 @@ def pack_guardians(room: dict, pool: GuardianPool) -> tuple[bytes, list[str]]:
 
     out = bytearray([len(guardians) & 0xFF])
     for g in guardians:
-        frames, set_flags = expand_guardian_frames(g)
-        set_idx = pool.add_set(frames, set_flags)
+        name = (g.get("sprite") or "").lower()
+        set_idx = pool.set_index(name)
         out.extend(pack_guardian_catalog(g, set_idx))
 
     return bytes(out), []
@@ -689,7 +696,7 @@ def write_map(path: Path, report: dict) -> None:
         "JSW-Tape catalogue.map",
         f"rooms {report['rooms']}",
         "",
-        "Embedded in PRG (read in place): CatalogueSets, CataloguePool",
+        "Embedded in PRG (read in place): guardian_set_metadata, guardian_sprite_frames",
         "",
         "File sections:",
     ]
@@ -702,11 +709,11 @@ def write_map(path: Path, report: dict) -> None:
     )
     lines.append(
         f"sets:       {report['set_count']} x {SET_ENTRY_BYTES} B "
-        f"(u16 start_frame + count + flags)"
+        f"(start_frame + frame_count)"
     )
     lines.append(
-        f"pool:       {report['pool_frames']} flat slots "
-        f"({report['pool_unique_frames']} unique 32 B blobs, "
+        f"pool:       {report['pool_frames']} frames "
+        f"({report['set_count']} sprite names, "
         f"{report['pool_frame_bytes']} B) = {report['pool_ram_bytes']} B RAM"
     )
     lines.append(
@@ -738,7 +745,7 @@ def print_report(report: dict) -> None:
     print(f"Guardians:    {report['guardian_instances']} x {GUARDIAN_CATALOG_BYTES} B inline")
     print(f"Sets:         {report['set_count']} descriptors ({report['set_bytes']} B)")
     print(
-        f"Pool:         {report['pool_frames']} slots ({report['pool_unique_frames']} unique), "
+        f"Pool:         {report['pool_frames']} frames ({report['set_count']} sprite names), "
         f"{report['pool_ram_bytes']} B RAM"
     )
     print("Tile colors:  6 B inline per room record")
@@ -766,7 +773,10 @@ def main() -> None:
     write_map(args.map, report)
     print_report(report)
     print(f"Wrote {args.out} and {args.map}")
-    print(f"Wrote {BAKE_CATALOGUE_ASM} and bake/rooms/*.asm")
+    print(
+        f"Wrote {BAKE_CATALOGUE_ROOMS_ASM.name}, "
+        f"{BAKE_CATALOGUE_GUARDIANS_ASM.name}, and bake/rooms/*.asm"
+    )
 
 
 if __name__ == "__main__":

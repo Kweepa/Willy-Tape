@@ -14,7 +14,6 @@ from mkcatalogue import (  # noqa: E402
     _entity_horizontal_eight,
     _frame_used,
     entity_for_frame,
-    expand_guardian_frames,
     gameplay_room_paths,
     horizontal_bidir_capable,
     parse_entity_blocks,
@@ -71,8 +70,8 @@ def main() -> None:
                 continue
             if not horizontal_bidir_capable(g, sprites, blocks, source):
                 continue
-            frames, flags = expand_guardian_frames(g, sprites, blocks, source)
-            sid = pool.add_set(frames, flags)
+            name = (g.get("sprite") or "").lower()
+            sid = pool.set_index(name)
             block = entity_for_frame(blocks, g["fmin"])
             reason = bidir_reason(g, sprites, blocks, source)
             rec = {

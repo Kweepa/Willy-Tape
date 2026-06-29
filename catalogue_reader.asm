@@ -1,5 +1,5 @@
 ;
-; Catalogue record lookup — stream_ptr from RoomRecordPtrs (bake/catalogue.asm).
+; Catalogue record lookup — stream_ptr from RoomRecordPtrs (bake/catalogue_rooms.asm).
 ; Pool, sets, and room records are read in place — no copy at boot.
 ;
 
