@@ -67,9 +67,8 @@ g_off_axis = 9
 guardian_data_bytes = 60
 max_guardians = 6
 
-; Per-room resident gfx workspace (Phase 4)
-guardian_sprites_base = $5e00
-player_bmp = $5f00
+; Per-room guardian state only — sprite frames read from catalogue in place.
+; Player Willy frames: willy label in spriteframes.asm (GetPlayerFrameAddr).
 
 ; In-game tune index seq — optional tail spare in map colour block (unused; tune in PRG).
 INGAME_TUNE_SEQ = $97c0
@@ -91,9 +90,7 @@ hud_items_col = color_base + hud_row_off + 22
 ROPE_ANCHOR_SCR = screen_base + ROPE_ANCHOR_COL
 ROPE_FIRST_UDG_ADDRESS = udg_base + ROPE_FIRST_UDG * 8
 master_bed_hook = guardian_udgs + 48
-master_bed_hook_ext = guardian_sprites_base + 128
 master_bed_hook_bytes = 240
-master_bed_hook_ext_bytes = 160
 
 pickup_got = $100
 pickup_got_last = pickup_got + $3d

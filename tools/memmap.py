@@ -43,7 +43,7 @@ TAPE_RAM = [
     ("map_base", 0x9600, 408, "ghost colour RAM collision map"),
     ("udg_base", 0x1800, 1024, "character RAM via 36869 OR $0E"),
     ("meta_content_src", 0x5800, 104, "runtime room meta (was per-room PRG tail)"),
-    ("guardian_sprites_base", 0x5E00, 896, "per-room resident gfx (Phase 4)"),
+    ("guardian_data_base", 0x5827, 60, "runtime guardian AoS (meta tail)"),
     ("guardian_pool", 0x2000, 4096, "deduped frames (Phase 3 load)"),
     ("catalogue_base", 0x3000, 0x1C00, "compressed rooms + globals (Phase 3)"),
     ("ROPE_SEGMENT_Y", 0x33C, 32, "rope segment Y (cassette buffer)"),

@@ -74,9 +74,7 @@ DrawPlayerBody
     sta tmp
 +
     lda tmp
-    clc
-    adc #PLAYER_SPRITE_FRAME
-    jsr GetSpriteFrameAddr
+    jsr GetPlayerFrameAddr
     lda arr
     clc
     adc #16

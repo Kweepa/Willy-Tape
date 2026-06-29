@@ -4,7 +4,7 @@
 
 !zone decompress
 
-; stream_ptr -> RLE bytes; paints screen_base; advances stream_ptr past RLE.
+; stream_ptr -> RLE bytes; paints screen_base + color_base; advances stream_ptr.
 ; 384 B playfield — align_tmp=0 page (256 cells) then 1 page (128 cells).
 RleUnpack
     ldx #0
@@ -34,12 +34,32 @@ fill_loop
     beq fill_p0
     cpx #128
     bcs rle_done
+    txa
+    pha
+    lda col
+    tax
+    lda tile_color_src,x
+    sta tmp
+    pla
+    tax
+    lda tmp
+    sta color_base+256,x
     lda col
     clc
     adc #TILE_CHR_BASE
     sta screen_base+256,x
     jmp fill_advance
 fill_p0
+    txa
+    pha
+    lda col
+    tax
+    lda tile_color_src,x
+    sta tmp
+    pla
+    tax
+    lda tmp
+    sta color_base,x
     lda col
     clc
     adc #TILE_CHR_BASE

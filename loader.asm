@@ -23,13 +23,7 @@ LoadRoom
     bcc LoadRoomBlank
 
     jsr DecompressRoom
-    jsr TapePaintRoomColors
     jsr TapePaintMap
-
-    ; THROWAWAY: halt after screen + colour paint for debugger inspection
-debug_room_halt
-    jmp debug_room_halt
-
     rts
 
 LoadRoomBlank
@@ -58,7 +52,7 @@ DecompressRoom
     jsr ApplyRoomOverlays
     jsr PaintPickup
     jsr StampHudRow
-    jsr SkipGuardianCatalog
+    jsr LoadRoomGuardians
     rts
 
 ApplyBorderFromMeta
@@ -153,10 +147,25 @@ title_done
 ApplyRoomOverlays
     ldy #0
     lda (stream_ptr),y
-    sta ramp_tmp                  ; pickup screen address lo
+    sta ramp_tmp                  ; pickup offset lo
     iny
     lda (stream_ptr),y
-    sta ramp_y                    ; pickup screen address hi
+    sta ramp_y                    ; pickup offset hi
+    lda ramp_tmp
+    cmp #$ff
+    bne fix_pickup_addr
+    lda ramp_y
+    cmp #$ff
+    beq pickup_addr_done
+fix_pickup_addr
+    lda ramp_tmp
+    clc
+    adc #<screen_base
+    sta ramp_tmp
+    lda ramp_y
+    adc #>screen_base
+    sta ramp_y
+pickup_addr_done
     jsr Skip2
 
     lda meta_content_record_flags
@@ -186,6 +195,14 @@ paint_pickup
     lda #ITEM_CHR
     ldy #0
     sta (arr),y
+    lda arr
+    sta col_ptr
+    lda arr+1
+    clc
+    adc #>(color_base - screen_base)
+    sta col_ptr+1
+    lda tile_color_src + TILE_ITEM
+    sta (col_ptr),y
 paint_pickup_done
     rts
 
@@ -313,7 +330,7 @@ LoadOneUdgChr
 +
     rts
 
-SkipGuardianCatalog
+LoadRoomGuardians
     lda meta_content_record_flags
     and #FLAG_ARROW
     beq +
@@ -322,15 +339,49 @@ SkipGuardianCatalog
 +
     ldy #0
     lda (stream_ptr),y
-    tax
-    inx
-    stx num
+    sta meta_content_guardians
+    inc stream_ptr
+    bne +
+    inc stream_ptr_hi
++
+    lda meta_content_guardians
+    beq guardians_done
+    sta num
     lda #0
-    sta mov
-guard_skip
-    lda mov
-    cmp num
-    bcs guard_done
+    sta guardian_index
+
+load_guardian_loop
+    ldy #0
+    lda (stream_ptr),y
+    sta hx
+    iny
+    lda (stream_ptr),y
+    sta hy
+    iny
+    lda (stream_ptr),y
+    sta hl
+    iny
+    lda (stream_ptr),y
+    sta hr
+    iny
+    lda (stream_ptr),y
+    sta hd
+    iny
+    lda (stream_ptr),y
+    sta hc
+    iny
+    lda (stream_ptr),y
+    sta guard_axis
+    iny
+    lda (stream_ptr),y
+    sta mov                     ; set_idx
+
+    jsr LookupGuardianSet
+
+    lda #0
+    sta g_frame
+    jsr WriteGuardianRuntimeRecord
+
     lda #8
     clc
     adc stream_ptr
@@ -338,9 +389,49 @@ guard_skip
     bcc +
     inc stream_ptr_hi
 +
-    inc mov
-    jmp guard_skip
-guard_done
+    inc guardian_index
+    dec num
+    bne load_guardian_loop
+
+guardians_done
+    rts
+
+; mov = set_idx -> ht = pool frame start, g_fctl from set metadata.
+LookupGuardianSet
+    lda mov
+    asl
+    tax
+    lda guardian_set_metadata,x
+    sta ht
+    lda guardian_set_metadata+1,x
+    sta ts
+    lda guard_axis
+    bne lookup_guardian_set_v
+    lda ts
+    cmp #8
+    beq lookup_guardian_set_bidir
+    lda #0
+    sta g_fctl
+    rts
+lookup_guardian_set_bidir
+    lda #1
+    sta g_fctl
+    rts
+lookup_guardian_set_v
+    lda ts
+    sec
+    sbc #1
+    sta g_fctl
+    rts
+
+WriteGuardianRuntimeRecord
+    jsr CalcGuardianRecPtr
+    ldy #g_off_axis
+-
+    lda hx,y
+    sta (arr),y
+    dey
+    bpl -
     rts
 
 SkipBytes

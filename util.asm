@@ -115,10 +115,28 @@ GetSpriteFrameAddr
     dex
     bne -
     clc
-    adc #<guardian_sprites_base
+    adc #<guardian_sprite_frames
     sta arr
     lda arr+1
-    adc #>guardian_sprites_base
+    adc #>guardian_sprite_frames
+    sta arr+1
+    rts
+
+; A = Willy frame index 0-7 -> arr (willy in spriteframes.asm).
+GetPlayerFrameAddr
+    ldx #0
+    stx arr+1
+    ldx #5
+-
+    asl
+    rol arr+1
+    dex
+    bne -
+    clc
+    adc #<willy
+    sta arr
+    lda arr+1
+    adc #>willy
     sta arr+1
     rts
 

@@ -123,14 +123,14 @@ CopyGuardianFrame
     ldx #16
 -
 mod_src_col1
-    lda guardian_sprites_base
+    lda guardian_sprite_frames
     inc mod_src_col1+1
     bne +
     inc mod_src_col1+2
 +
     sta (arr2),y
 mod_src_col2
-    lda guardian_sprites_base
+    lda guardian_sprite_frames
     inc mod_src_col2+1
     bne +
     inc mod_src_col2+2
