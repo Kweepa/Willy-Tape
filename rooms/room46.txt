@@ -1,7 +1,7 @@
 @room 46
 @playable
 @title Tree Root
-@conn 3 47 0 45
+@conn 3 255 0 45
 @spawn 4 104
 @border BLU
 @belt -1

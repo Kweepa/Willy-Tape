@@ -87,7 +87,19 @@ draw_guard_loop
     bpl -
     rts
 
+; arr = guardian_sprite_frames + (frame index) * 32. Uses ht/g_frame/axis —
+; must not rely on arr left over from CalcGuardianRecPtr ($5827…).
+ResolveGuardianFramePtr
+    lda guard_axis
+    bne +
+    jsr GetHorizontalGuardianFrame
+    rts
++
+    jmp GetVerticalGuardianBmpAddr
+
 CopyGuardianFrame
+    jsr ResolveGuardianFramePtr
+
     lda arr2
     clc
     adc #24
@@ -184,13 +196,6 @@ MoveGuardians
     bne draw_guardian
 move_guardian
     jsr MoveGuardian
-    lda guard_axis
-    bne +
-    jsr GetHorizontalGuardianFrame
-    jmp got_sprite_frame
-+
-    jsr GetVerticalGuardianBmpAddr
-got_sprite_frame
     jsr CalcGuardianUDGAddr
     jsr CopyGuardianFrame
 draw_guardian

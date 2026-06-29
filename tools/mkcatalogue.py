@@ -20,6 +20,11 @@ from audit_room_compress import (  # noqa: E402
     tile_grid,
 )
 from catalogue_asm import RoomSection, write_catalogue_asm  # noqa: E402
+from udg_pool import (  # noqa: E402
+    REDIRECT_ROOM_PTR,
+    SKIP_ROOM_IDS,
+    UdgPool,
+)
 from mkroom import (  # noqa: E402
     GUARDIAN_HORIZONTAL,
     HUD_TITLE_COLS,
@@ -145,7 +150,7 @@ class GuardianPool:
 
 def gameplay_room_paths(rooms_dir: Path) -> list[Path]:
     paths = sorted(rooms_dir.glob("room*.txt"))
-    return [p for p in paths if p.name != "room62.txt"]
+    return [p for p in paths if p.name not in ("room62.txt", "room47.txt")]
 
 
 def _entity_block_count(ent_id: int, page: int, sprite: int, fr_hint: str | None) -> int:

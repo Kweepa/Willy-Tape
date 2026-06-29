@@ -1,0 +1,36 @@
+{
+  "_readme": "Edit per tile type, then run: python tools/render_udg_pool.py",
+  "_count": "How many canonical UDGs to pick. May exceed default pool size (floor/wall/nasty 16, ramp/conveyor 8, pickup 32).",
+  "_include_rooms": "Room IDs forced into the canonical set first (count toward limit).",
+  "_exclude_rooms": "Room IDs not auto-picked as sources (still assigned to nearest slot).",
+  "floor": {
+    "count": 18,
+    "include_rooms": [33, 32, 29, 41, 58, 52, 40],
+    "exclude_rooms": [23]
+  },
+  "wall": {
+    "count": 18,
+    "include_rooms": [33, 34, 30, 32, 41, 52, 31, 5, 23],
+    "exclude_rooms": [43]
+  },
+  "nasty": {
+    "count": 12,
+    "include_rooms": [41, 58, 35],
+    "exclude_rooms": []
+  },
+  "ramp": {
+    "count": 8,
+    "include_rooms": [33, 59, 40],
+    "exclude_rooms": []
+  },
+  "conveyor": {
+    "count": 8,
+    "include_rooms": [33, 35, 59],
+    "exclude_rooms": []
+  },
+  "pickup": {
+    "count": 24,
+    "include_rooms": [33, 34, 40, 49],
+    "exclude_rooms": [53, 48, 42, 24, 1, 52, 11, 39, 28, 54, 5, 41, 20, 32]
+  }
+}

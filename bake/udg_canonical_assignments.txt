@@ -1,0 +1,117 @@
+Canonical UDG pool — room assignments
+(UDG bytes include ; invert from room files via parse_udg_bytes)
+
+=== floor (18 chosen, pool 18 (default 16)) ===
+  [0] from room 33  ->  rooms: 1, 3, 28, 33, 53
+  [1] from room 32  ->  rooms: 31, 32, 39
+  [2] from room 29  ->  rooms: 2, 29
+  [3] from room 41  ->  rooms: 41
+  [4] from room 58  ->  rooms: 58
+  [5] from room 52  ->  rooms: 52
+  [6] from room 40  ->  rooms: 40
+  [7] from room 11  ->  rooms: 0, 9, 11, 19, 22, 24, 25, 26, 34, 35, 38, 45, 46, 48, 50, 51, 54, 59, 60
+  [8] from room 30  ->  rooms: 30
+  [9] from room 44  ->  rooms: 7, 12, 20, 21, 37, 44, 55
+  [10] from room 6  ->  rooms: 6, 10
+  [11] from room 15  ->  rooms: 15, 16
+  [12] from room 13  ->  rooms: 13
+  [13] from room 27  ->  rooms: 27, 56
+  [14] from room 18  ->  rooms: 17, 18
+  [15] from room 36  ->  rooms: 14, 23, 36, 43, 49
+  [16] from room 4  ->  rooms: 4, 5
+  [17] from room 42  ->  rooms: 8, 42, 57
+
+=== wall (18 chosen, pool 18 (default 16)) ===
+  [0] from room 33  ->  rooms: 18, 28, 33, 50
+  [1] from room 34  ->  rooms: 34, 53, 60
+  [2] from room 30  ->  rooms: 30, 37
+  [3] from room 32  ->  rooms: 10, 11, 14, 32, 38
+  [4] from room 41  ->  rooms: 41
+  [5] from room 52  ->  rooms: 3, 8, 52
+  [6] from room 31  ->  rooms: 6, 15, 22, 31, 35, 56
+  [7] from room 5  ->  rooms: 5, 54
+  [8] from room 23  ->  rooms: 23, 27
+  [9] from room 19  ->  rooms: 2, 12, 19, 46
+  [10] from room 29  ->  rooms: 29, 44, 45, 51, 57
+  [11] from room 13  ->  rooms: 13
+  [12] from room 16  ->  rooms: 4, 16, 40, 55
+  [13] from room 9  ->  rooms: 9, 20
+  [14] from room 7  ->  rooms: 7
+  [15] from room 58  ->  rooms: 21, 24, 26, 36, 42, 49, 58, 59
+  [16] from room 1  ->  rooms: 0, 1, 17, 25, 43
+  [17] from room 39  ->  rooms: 39, 48
+
+=== nasty (12 chosen, pool 16) ===
+  [0] from room 41  ->  rooms: 41, 49
+  [1] from room 58  ->  rooms: 58
+  [2] from room 35  ->  rooms: 3, 8, 22, 35
+  [3] from room 57  ->  rooms: 6, 9, 14, 57
+  [4] from room 60  ->  rooms: 1, 17, 60
+  [5] from room 13  ->  rooms: 13, 16, 36
+  [6] from room 39  ->  rooms: 39, 43
+  [7] from room 51  ->  rooms: 7, 19, 25, 40, 45, 50, 51
+  [8] from room 28  ->  rooms: 2, 12, 28, 56
+  [9] from room 11  ->  rooms: 0, 11, 46
+  [10] from room 59  ->  rooms: 59
+  [11] from room 15  ->  rooms: 15, 18, 42
+
+=== ramp (8 chosen, pool 8) ===
+  [0] from room 33  ->  rooms: 0, 1, 7, 14, 23, 27, 28, 30, 33, 36, 37, 39, 42, 43, 44, 46, 48, 50, 51, 52, 54, 57
+  [1] from room 59  ->  rooms: 4, 5, 11, 21, 59, 60
+  [2] from room 40  ->  rooms: 40
+  [3] from room 8  ->  rooms: 3, 8, 12, 22, 35
+  [4] from room 31  ->  rooms: 31, 49, 53, 58
+  [5] from room 29  ->  rooms: 10, 24, 29, 32, 45
+  [6] from room 34  ->  rooms: 9, 34
+  [7] from room 19  ->  rooms: 19
+
+=== conveyor (8 chosen, pool 8) ===
+  [0] from room 33  ->  rooms: 1, 29, 33, 58
+  [1] from room 35  ->  rooms: 19, 35
+  [2] from room 59  ->  rooms: 45, 59, 60
+  [3] from room 41  ->  rooms: 14, 17, 18, 41, 42, 46, 55
+  [4] from room 49  ->  rooms: 16, 22, 39, 43, 49
+  [5] from room 50  ->  rooms: 21, 24, 37, 50, 53
+  [6] from room 0  ->  rooms: 0
+  [7] from room 51  ->  rooms: 4, 5, 40, 51
+
+=== pickup (24 chosen, pool 32) ===
+  [0] from room 33  ->  rooms: 33
+  [1] from room 34  ->  rooms: 19, 34, 60
+  [2] from room 40  ->  rooms: 40
+  [3] from room 49  ->  rooms: 49, 51
+  [4] from room 18  ->  rooms: 18, 24, 54
+  [5] from room 59  ->  rooms: 53, 59
+  [6] from room 25  ->  rooms: 25, 55
+  [7] from room 30  ->  rooms: 4, 21, 30
+  [8] from room 38  ->  rooms: 38
+  [9] from room 56  ->  rooms: 39, 56
+  [10] from room 23  ->  rooms: 5, 11, 20, 23, 57
+  [11] from room 14  ->  rooms: 14
+  [12] from room 37  ->  rooms: 13, 37, 46
+  [13] from room 22  ->  rooms: 1, 7, 22, 36
+  [14] from room 9  ->  rooms: 9, 32, 42
+  [15] from room 3  ->  rooms: 3
+  [16] from room 58  ->  rooms: 58
+  [17] from room 31  ->  rooms: 8, 31
+  [18] from room 12  ->  rooms: 12, 52
+  [19] from room 43  ->  rooms: 0, 15, 16, 17, 26, 27, 28, 41, 43, 48
+  [20] from room 29  ->  rooms: 29
+  [21] from room 2  ->  rooms: 2
+  [22] from room 50  ->  rooms: 50
+  [23] from room 44  ->  rooms: 10, 44, 45
+
+Warnings:
+  - room 2: @rampudg defined but no ramp in tilemap
+  - room 4: @nastyudg defined but no nasty in tilemap
+  - room 6: @rampudg defined but no ramp in tilemap
+  - room 16: @rampudg defined but no ramp in tilemap
+  - room 23: @nastyudg defined but no nasty in tilemap
+  - room 23: @beltudg defined but no belt in tilemap
+  - room 29: @nastyudg defined but no nasty in tilemap
+  - room 37: @nastyudg defined but no nasty in tilemap
+  - room 44: @nastyudg defined but no nasty in tilemap
+  - room 44: @beltudg defined but no belt in tilemap
+  - room 48: @nastyudg defined but no nasty in tilemap
+  - room 56: @rampudg defined but no ramp in tilemap
+  - room 57: @beltudg defined but no belt in tilemap
