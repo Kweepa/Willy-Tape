@@ -22,8 +22,38 @@ LoadRoom
     jsr FindRoomRecord
     jsr DecompressRoom
     jsr TapePaintMap
+    jsr InitPlayerState
 
 LoadRoomDone
+    rts
+
+InitPlayerState
+    ldx #0
+    stx belt_active
+    stx is_on_ramp
+    stx rope_willy_is_holding
+    stx rope_udg
+    stx rope_frame
+    stx rope_grab_cooldown
+    stx rope_swing_side
+    inx
+    stx rope_swing_dir
+    stx on_ground
+    stx was_on_ground
+
+    lda use_room_spawn
+    beq +
+    lda meta_content_spawn_px
+    sta px
+    lda meta_content_spawn_py
+    sta py
++
+    jsr calculate_ramp_y
+
+    lda #27
+    sta inairtime
+    lda py
+    sta last_py
     rts
 
 ; Parse catalogue record at stream_ptr -> screen_base, meta.
@@ -41,7 +71,6 @@ DecompressRoom
     jsr PaintPickup
     jsr StampHudRow
     jsr LoadRoomGuardians
-    jsr calculate_ramp_y
     rts
 
 ApplyBorderFromMeta

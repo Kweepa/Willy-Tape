@@ -24,6 +24,7 @@ SHOW_TITLE = 0
     stx xadd
     stx edge_skip_draw
     stx fall_death_respawn
+    stx safe_transition_count
     stx music_index
     stx music_delay
 

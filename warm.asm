@@ -11,6 +11,7 @@ WarmStart
     ldx #$ff                    ; reset stack
     txs
 
+    jsr $fdf9                   ; IOINIT — keyboard matrix / VIA defaults
     sei
 
     ; $eb15 is minimal no-op interrupt handler
