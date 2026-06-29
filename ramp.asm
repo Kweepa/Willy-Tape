@@ -1,6 +1,6 @@
 ; ===========================================================================
 ; Called at end of ApplyRamp: hx=col_start, mov=row_start, num=length,
-; g_frame=3 (/) or 1 (\). Writes meta_content_ramp_*.
+; arr3=3 (/) or 1 (\). Writes meta_content_ramp_*.
 
 BakeRampMeta
     lda hx
@@ -10,7 +10,7 @@ BakeRampMeta
     sbc #1
     sta hc                  ; col_end
 
-    ldx g_frame
+    ldx arr3
     cpx #3
     beq .br_up_right
     lda #RAMP_UP_LEFT
@@ -43,7 +43,7 @@ BakeRampMeta
 
     lda meta_content_ramp_rx1
     jsr ramp_surface_abs
-    ldx g_frame
+    ldx arr3
     cpx #3
     beq .br_store_ry
     sec
@@ -51,7 +51,7 @@ BakeRampMeta
 .br_store_ry
     sta meta_content_ramp_ry
 
-    ldx g_frame
+    ldx arr3
     cpx #3
     bne .br_ymin_px
     lda hc
@@ -64,7 +64,7 @@ BakeRampMeta
     asl
 .br_ymin_surf
     jsr ramp_surface_abs
-    ldx g_frame
+    ldx arr3
     cpx #3
     beq .br_store_ymin
     sec
@@ -73,7 +73,7 @@ BakeRampMeta
     sta meta_content_ramp_ymin
     rts
 
-; A = px -> A = absolute feet Y on ramp surface (hx, mov, num, g_frame).
+; A = px -> A = absolute feet Y on ramp surface (hx, mov, num, arr3).
 ramp_surface_abs
     sta ramp_tmp
     lda num
@@ -90,7 +90,7 @@ ramp_surface_abs
     sbc hx
     sta arr
     lda mov
-    ldx g_frame
+    ldx arr3
     cpx #3
     bne .rsa_row_inc
     sec
@@ -115,7 +115,7 @@ ramp_surface_abs
     lda arr2
     and #3
     asl
-    ldx g_frame
+    ldx arr3
     cpx #3
     bne .rsa_yleft
     sta ramp_tmp

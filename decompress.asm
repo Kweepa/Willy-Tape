@@ -97,66 +97,63 @@ PaintPlayfieldCell
 ; Apply 2-byte ramp overlay (pack_ramp2). Advances stream_ptr by 2.
 ; byte0 = (length-1)<<4 | y; byte1 = (direction<<7) | x
 ; direction bit7: 0 = / up-right (row-), 1 = \ up-left (row+).
+; arr3 = ramp direction (3=/ 1=\); run = column index — not g_frame/g_fctl
+; (guardian animation uses those ZP bytes during gameplay).
+
+; these are aliases
+; also used by BakeRampMeta so keep in sync
+ramp_lenandy = arr
+ramp_dirandx = arr2
+ramp_start_x = hx
+ramp_start_y = mov
+ramp_length = num
+
+ramp_loop_counter = ht
+; used by PaintPlayfieldCell
+ramp_loop_x = hc
+ramp_loop_y = hy
+
 ApplyRamp
     ldy #0
     lda (stream_ptr),y
-    sta arr
+    sta ramp_lenandy
     iny
     lda (stream_ptr),y
-    sta arr2
-    lda arr
+    sta ramp_dirandx
+    lda ramp_lenandy
     and #$0f
-    sta mov                     ; start row y
-    lda arr
+    sta ramp_start_y
+    sta ramp_loop_y
+    lda ramp_lenandy
     lsr
     lsr
     lsr
     lsr
     clc
     adc #1
-    sta num                     ; length 1-16
-    lda arr2
+    sta ramp_length
+    sta ramp_loop_counter
+    lda ramp_dirandx
     and #$1f
-    sta hx
-    lda arr2
-    bmi ramp_dir_up_left
-    lda #3                      ; / up-right: row decreases with column
-    sta g_frame
-    jmp ramp_paint
-ramp_dir_up_left
-    lda #1                      ; \ up-left: row increases with column
-    sta g_frame
-ramp_paint
-    lda #0
-    sta g_fctl
-ramp_cell_loop
-    lda g_fctl
-    clc
-    adc hx
-    sta hc
-    lda mov
-    ldx g_frame
-    beq ramp_row_ok
-    cpx #1
-    bne +
-    clc
-    adc g_fctl
-    jmp ramp_row_ok
-+
-    cpx #3
-    bne ramp_done
-    sec
-    sbc g_fctl
-ramp_row_ok
-    sta hy
+    sta ramp_start_x
+    sta ramp_loop_x
+
+-
     lda #TILE_RAMP
     jsr PaintPlayfieldCell
-    inc g_fctl
-    lda g_fctl
-    cmp num
-    bne ramp_cell_loop
-ramp_done
+    inc ramp_loop_x
+    lda ramp_dirandx
+    bmi +
+    dec ramp_loop_y
+    bne ++
++
+    inc ramp_loop_y
+++
+    dec ramp_loop_counter
+    bne -
+
     jsr BakeRampMeta
+
     lda #2
     clc
     adc stream_ptr
