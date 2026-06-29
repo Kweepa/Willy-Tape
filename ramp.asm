@@ -1,8 +1,13 @@
 ; ===========================================================================
 ; Called at end of ApplyRamp: hx=col_start, mov=row_start, num=length,
-; arr3=3 (/) or 1 (\). Writes meta_content_ramp_*.
+; arr2 overlay byte bit7: 0=/ up-right, 1=\ up-left. Writes meta_content_ramp_*.
 
 BakeRampMeta
+    lda arr2                  ; ramp_dirandx — preserve; ramp_surface_abs clobbers arr2
+    sta arr3
+    lda mov                   ; row_start — paint loop only touches hy
+    sta run
+
     lda hx
     clc
     adc num
@@ -10,21 +15,20 @@ BakeRampMeta
     sbc #1
     sta hc                  ; col_end
 
-    ldx arr3
-    cpx #3
-    beq .br_up_right
-    lda #RAMP_UP_LEFT
-    sta meta_content_ramp
-    lda #0
-    sta meta_content_ramp_E
-    sta meta_content_ramp_A
-    jmp .br_bounds
-.br_up_right
+    lda arr3
+    bmi .br_up_left
     lda #RAMP_UP_RIGHT
     sta meta_content_ramp
     lda #$ff
     sta meta_content_ramp_E
     lda #1
+    sta meta_content_ramp_A
+    jmp .br_bounds
+.br_up_left
+    lda #RAMP_UP_LEFT
+    sta meta_content_ramp
+    lda #0
+    sta meta_content_ramp_E
     sta meta_content_ramp_A
 
 .br_bounds
@@ -44,16 +48,14 @@ BakeRampMeta
     lda meta_content_ramp_rx1
     jsr ramp_surface_abs
     ldx arr3
-    cpx #3
-    beq .br_store_ry
+    bpl .br_store_ry
     sec
     sbc #4                  ; toe 6 minus UP_LEFT_RY_ADJUST 2
 .br_store_ry
     sta meta_content_ramp_ry
 
     ldx arr3
-    cpx #3
-    bne .br_ymin_px
+    bmi .br_ymin_px
     lda hc
     asl
     asl
@@ -65,15 +67,14 @@ BakeRampMeta
 .br_ymin_surf
     jsr ramp_surface_abs
     ldx arr3
-    cpx #3
-    beq .br_store_ymin
+    bpl .br_store_ymin
     sec
     sbc #6
 .br_store_ymin
     sta meta_content_ramp_ymin
     rts
 
-; A = px -> A = absolute feet Y on ramp surface (hx, mov, num, arr3).
+; A = px -> A = absolute feet Y on ramp surface (hx, mov, num, arr3 bit7).
 ramp_surface_abs
     sta ramp_tmp
     lda num
@@ -89,14 +90,14 @@ ramp_surface_abs
     sec
     sbc hx
     sta arr
-    lda mov
-    ldx arr3
-    cpx #3
-    bne .rsa_row_inc
+    lda arr3
+    bmi .rsa_row_inc
+    lda run
     sec
     sbc arr
     jmp .rsa_row_done
 .rsa_row_inc
+    lda run
     clc
     adc arr
     jmp .rsa_row_done
@@ -105,25 +106,29 @@ ramp_surface_abs
     clc
     adc #3
     sta arr2
-    lda mov
+    lda run
     jmp .rsa_row_done
 .rsa_row_done
     asl
     asl
     asl
     sta arr
-    lda arr2
+    lda ramp_tmp
+    clc
+    adc #3
     and #3
     asl
+    pha
     ldx arr3
-    cpx #3
-    bne .rsa_yleft
-    sta ramp_tmp
+    bmi .rsa_y_left
+    pla
+    sta arr2
     lda #6
     sec
-    sbc ramp_tmp
+    sbc arr2
     jmp .rsa_finish
-.rsa_yleft
+.rsa_y_left
+    pla
 .rsa_finish
     clc
     adc arr

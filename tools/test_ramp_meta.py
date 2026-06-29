@@ -55,7 +55,7 @@ def overlay_bytes_to_tilemap(b0: int, b1: int) -> list[str]:
 
 
 def bake_ramp_params_from_pack(b0: int, b1: int) -> tuple[int, int, int, int, int, int]:
-    """Mirror BakeRampMeta 6502 (hx/mov/num/g_frame -> meta_content_ramp_*)."""
+    """Mirror BakeRampMeta 6502 (hx/mov/num/overlay bit7 -> meta_content_ramp_*)."""
     col_start, row_start, length, up_right = decode_ramp_pack(b0, b1)
     col_end = col_start + length - 1
     ramp_type = RAMP_UP_RIGHT if up_right else RAMP_UP_LEFT

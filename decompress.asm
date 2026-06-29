@@ -97,8 +97,7 @@ PaintPlayfieldCell
 ; Apply 2-byte ramp overlay (pack_ramp2). Advances stream_ptr by 2.
 ; byte0 = (length-1)<<4 | y; byte1 = (direction<<7) | x
 ; direction bit7: 0 = / up-right (row-), 1 = \ up-left (row+).
-; arr3 = ramp direction (3=/ 1=\); run = column index — not g_frame/g_fctl
-; (guardian animation uses those ZP bytes during gameplay).
+; BakeRampMeta reads arr2 bit7 (stashed in arr3 before ramp_surface_abs).
 
 ; these are aliases
 ; also used by BakeRampMeta so keep in sync
