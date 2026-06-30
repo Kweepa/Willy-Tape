@@ -17,7 +17,7 @@ rope_clear_pre_player_draw
     asl
     tax
 
-    lda #TILE_CHR_BASE ; empty tile
+    lda #TILE_EMPTY ; empty tile
 -
     sta (rope_old_screen_pos,x) ; valid 6502, intended for tables of addresses in ZP
     dex

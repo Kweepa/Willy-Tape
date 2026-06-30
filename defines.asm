@@ -15,7 +15,6 @@ TILE_RAMP = 4
 TILE_CONVEYOR = 5
 TILE_ITEM = 6                   ; map-only marker for pickup cell (not in author tilemap)
 
-TILE_CHR_BASE = 0                ; empty=0 floor=1 wall=2 … on screen and in charset
 ITEM_CHR = 6                     ; pickup (TILE_ITEM)
 MEN_CHR = 13                    ; HUD men icon
 HUD_ITEM_CHR = 14               ; HUD items icon

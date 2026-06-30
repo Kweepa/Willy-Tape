@@ -173,9 +173,9 @@ HandleOverlapChar
     rts
 
 ++
-    cmp #TILE_HAZARD + TILE_CHR_BASE
+    cmp #TILE_HAZARD
     beq kill_player
-    cmp #TILE_SOLID + TILE_CHR_BASE
+    cmp #TILE_SOLID
     beq dont_kill_player
     cmp #GUARDIAN_CHR
     bcs +

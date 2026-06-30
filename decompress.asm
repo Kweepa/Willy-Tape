@@ -148,8 +148,6 @@ ApplyConveyor
     lsr
     lsr
     lsr
-    tax
-    inx
     sta paint_loop_counter
 
     jsr LoadByteFromStream
