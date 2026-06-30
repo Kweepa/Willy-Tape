@@ -7,7 +7,7 @@
 room12_data
 ; --- title ---
 ; "Tree Top"
-    !byte 20, 44, 31, 31, 63, 20, 41, 42, 0
+    !byte 20, 39, 28, 28, 56, 20, 37, 38, 0
 
 ; --- meta8 ---
 ; conn N E S W

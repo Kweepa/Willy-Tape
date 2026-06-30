@@ -7,7 +7,7 @@
 room11_data
 ; --- title ---
 ; "The Hall"
-    !byte 20, 34, 31, 63, 8, 27, 38, 38, 0
+    !byte 20, 31, 28, 56, 8, 24, 34, 34, 0
 
 ; --- meta8 ---
 ; conn N E S W

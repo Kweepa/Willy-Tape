@@ -7,7 +7,7 @@
 room51_data
 ; --- title ---
 ; "Tool Shed"
-    !byte 20, 41, 41, 38, 63, 19, 34, 31, 30, 0
+    !byte 20, 37, 37, 34, 56, 19, 31, 28, 27, 0
 
 ; --- meta8 ---
 ; conn N E S W

@@ -7,7 +7,7 @@
 room59_data
 ; --- title ---
 ; "The Yacht"
-    !byte 20, 34, 31, 63, 25, 27, 29, 34, 46, 0
+    !byte 20, 31, 28, 56, 23, 24, 26, 31, 41, 0
 
 ; --- meta8 ---
 ; conn N E S W

@@ -7,7 +7,7 @@
 room54_data
 ; --- title ---
 ; "West Wing"
-    !byte 23, 31, 45, 46, 63, 23, 35, 40, 33, 0
+    !byte 22, 28, 40, 41, 56, 22, 32, 36, 30, 0
 
 ; --- meta8 ---
 ; conn N E S W

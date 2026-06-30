@@ -1,6 +1,13 @@
-"""Proportional font glyph indices (Miner chartofontchar / fontchars order)."""
+"""Proportional font glyph indices — full Miner set + compact bake subset."""
 
 from __future__ import annotations
+
+import json
+import re
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+SUBSET_JSON = ROOT / "bake" / "font_subset.json"
 
 # chartofontchar from Miner-main/font.asm — index (ASCII - 32)
 CHARTOFONTCHAR = bytes(
@@ -12,8 +19,10 @@ CHARTOFONTCHAR = bytes(
     ]
 )
 
-# Glyph index -> representative character (for comments / test decode)
-GLYPH_CHARS = (
+FULL_GLYPH_COUNT = 67
+
+# Glyph index in full font -> representative character
+FULL_GLYPH_CHARS = (
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz"
     "0123456789"
@@ -21,8 +30,19 @@ GLYPH_CHARS = (
 )
 
 
-def ascii_to_font_glyph(ch: str) -> int:
-    """Map one ASCII character to font glyph index 0-66."""
+def parse_fontchars_asm(path: Path) -> list[list[int]]:
+    rows: list[list[int]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if "!byte" not in line:
+            continue
+        parts = [int(x.strip(), 0) for x in line.split("!byte", 1)[1].split(",") if x.strip()]
+        if len(parts) == 8:
+            rows.append(parts)
+    return rows
+
+
+def ascii_to_full_glyph(ch: str) -> int:
+    """Map one ASCII character to full-font glyph index 0-66."""
     code = ord(ch)
     if code < 32 or code > 127:
         return 62
@@ -32,20 +52,69 @@ def ascii_to_font_glyph(ch: str) -> int:
     return g
 
 
+def titles_glyph_set(rooms_dir: Path) -> set[int]:
+    used: set[int] = set()
+    for path in sorted(rooms_dir.glob("room*.txt")):
+        text = path.read_text(encoding="utf-8", errors="replace")
+        match = re.search(r"@title\s+(.+)", text, re.I)
+        if not match:
+            continue
+        for ch in match.group(1).strip()[:18]:
+            used.add(ascii_to_full_glyph(ch))
+    return used
+
+
+def _load_subset() -> dict | None:
+    if not SUBSET_JSON.is_file():
+        return None
+    return json.loads(SUBSET_JSON.read_text(encoding="utf-8"))
+
+
+def full_to_compact_glyph(full_index: int) -> int:
+    subset = _load_subset()
+    if subset is None:
+        return full_index
+    mapped = subset["full_to_compact"].get(str(full_index))
+    if mapped is None:
+        raise KeyError(f"full glyph {full_index} ({FULL_GLYPH_CHARS[full_index]!r}) not in font subset")
+    return int(mapped)
+
+
+def compact_glyph_label(compact_index: int) -> str:
+    subset = _load_subset()
+    if subset is None:
+        if 0 <= compact_index < len(FULL_GLYPH_CHARS):
+            return FULL_GLYPH_CHARS[compact_index]
+        return "?"
+    labels = subset["compact_labels"]
+    if 0 <= compact_index < len(labels):
+        return labels[compact_index]
+    return "?"
+
+
 def pack_title_glyphs(text: str) -> bytes:
-    """1-based stored bytes, null-terminated (0 = end)."""
-    return bytes(ascii_to_font_glyph(c) + 1 for c in text) + b"\x00"
+    """1-based compact glyph bytes, null-terminated (0 = end)."""
+    out: list[int] = []
+    for ch in text:
+        compact = full_to_compact_glyph(ascii_to_full_glyph(ch))
+        out.append(compact + 1)
+    out.append(0)
+    return bytes(out)
 
 
 def decode_title_glyphs(data: bytes) -> str:
-    """Decode 1-based glyph title bytes to a display string."""
+    """Decode 1-based compact title bytes to a display string."""
     out: list[str] = []
     for b in data:
         if b == 0:
             break
-        g = b - 1
-        if 0 <= g < len(GLYPH_CHARS):
-            out.append(GLYPH_CHARS[g])
-        else:
-            out.append("?")
+        out.append(compact_glyph_label(b - 1))
     return "".join(out)
+
+
+def digit_compact_index(digit: int) -> int:
+    """Compact glyph index 0-57 for ASCII digit 0-9 (for future HUD counts)."""
+    subset = _load_subset()
+    if subset is None:
+        return 52 + digit
+    return int(subset["digit_compact"][str(digit)])

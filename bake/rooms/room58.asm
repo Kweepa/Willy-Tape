@@ -7,7 +7,7 @@
 room58_data
 ; --- title ---
 ; "The Beach"
-    !byte 20, 34, 31, 63, 2, 31, 27, 29, 34, 0
+    !byte 20, 31, 28, 56, 2, 28, 24, 26, 31, 0
 
 ; --- meta8 ---
 ; conn N E S W

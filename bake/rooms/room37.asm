@@ -7,7 +7,7 @@
 room37_data
 ; --- title ---
 ; "Orangery"
-    !byte 15, 44, 27, 40, 33, 31, 44, 51, 0
+    !byte 15, 39, 24, 36, 30, 28, 39, 45, 0
 
 ; --- meta8 ---
 ; conn N E S W

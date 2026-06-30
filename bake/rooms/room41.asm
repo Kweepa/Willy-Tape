@@ -7,7 +7,7 @@
 room41_data
 ; --- title ---
 ; "The Attic"
-    !byte 20, 34, 31, 63, 1, 46, 46, 35, 29, 0
+    !byte 20, 31, 28, 56, 1, 41, 41, 32, 26, 0
 
 ; --- meta8 ---
 ; conn N E S W
