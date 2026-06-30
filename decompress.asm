@@ -78,6 +78,11 @@ fill_advance
 rle_done
     rts
 
+; these are aliases
+paint_loop_counter = ht
+paint_loop_x = hc
+paint_loop_y = hy
+
 ; A = tile type 0-6 at (hy, hc): screen chr + colour via scr_ptr / col_ptr.
 PaintPlayfieldCell
     pha
@@ -107,52 +112,49 @@ ramp_start_x = hx
 ramp_start_y = mov
 ramp_length = num
 
-ramp_loop_counter = ht
-; used by PaintPlayfieldCell
-ramp_loop_x = hc
-ramp_loop_y = hy
-
 ApplyRamp
     ldy #0
-    lda (stream_ptr),y
-    sta ramp_lenandy
-    iny
-    lda (stream_ptr),y
-    sta ramp_dirandx
-    lda ramp_lenandy
+
+    lda (stream_ptr),y ; ramp length and y
     and #$0f
     sta ramp_start_y
-    sta ramp_loop_y
-    lda ramp_lenandy
+    sta paint_loop_y
+    lda (stream_ptr),y ; ramp length and y
     lsr
     lsr
     lsr
     lsr
-    clc
-    adc #1
-    sta ramp_length
-    sta ramp_loop_counter
-    lda ramp_dirandx
+    tax
+    inx
+    stx ramp_length
+    stx paint_loop_counter
+
+    iny
+    lda (stream_ptr),y ; ramp dir and x
+    sta ramp_dirandx
     and #$1f
     sta ramp_start_x
-    sta ramp_loop_x
+    sta paint_loop_x
 
+    ; draw
 -
     lda #TILE_RAMP
     jsr PaintPlayfieldCell
-    inc ramp_loop_x
+    inc paint_loop_x
     lda ramp_dirandx
     bmi +
-    dec ramp_loop_y
+    dec paint_loop_y
     bne ++
 +
-    inc ramp_loop_y
+    inc paint_loop_y
 ++
-    dec ramp_loop_counter
+    dec paint_loop_counter
     bne -
 
+    ; calculate values for calculate_ramp_y
     jsr BakeRampMeta
 
+    ; advance stream
     lda #2
     clc
     adc stream_ptr
@@ -162,44 +164,50 @@ ApplyRamp
 +
     rts
 
+
+; these are aliases
+conveyor_lengthandy = arr
+conveyor_velandx = arr2
+
 ; Apply 2-byte conveyor overlay (pack_conveyor2). Advances stream_ptr by 2.
 ; byte0 = (length-1)<<4 | y; byte1 = (velocity<<6) | x
 ApplyConveyor
+    ; unpack
     ldy #0
     lda (stream_ptr),y
-    sta arr
+    and #$0f
+    sta paint_loop_y
+    lda (stream_ptr),y
+    lsr
+    lsr
+    lsr
+    lsr
+    tax
+    inx
+    sta paint_loop_counter
+
     iny
     lda (stream_ptr),y
-    sta arr2
-    lda arr
-    and #$0f
-    sta mov                     ; row y
-    lda arr
-    lsr
-    lsr
-    lsr
-    lsr
-    clc
-    adc #1
-    sta num
-    lda arr2
     and #$1f
-    sta hx
-    lda #0
-    sta g_fctl
-conv_loop
-    lda g_fctl
-    clc
-    adc hx
-    sta hc
-    lda mov
-    sta hy
+    sta paint_loop_x
+    lda (stream_ptr),y
+    rol
+    rol
+    rol
+    and #$03
+    tax
+    dex ; was 0,1,2, want -1,0,1. doing it here gets us free sign extension.
+    stx meta_content_belt
+
+    ; draw
+-
     lda #TILE_CONVEYOR
     jsr PaintPlayfieldCell
-    inc g_fctl
-    lda g_fctl
-    cmp num
-    bne conv_loop
+    inc paint_loop_x
+    dec paint_loop_counter
+    bpl -
+
+    ; advance stream
     lda #2
     clc
     adc stream_ptr

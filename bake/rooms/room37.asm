@@ -59,7 +59,7 @@ room37_data
 
 ; --- conveyor ---
 ; x=22 y=10 len=2 belt=-1
-    !byte $1a, $56
+    !byte $1a, $16
 
 ; --- arrow ---
 ; x=80 y=66 v=1 sound=115

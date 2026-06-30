@@ -59,7 +59,7 @@ room35_data
 
 ; --- conveyor ---
 ; x=2 y=12 len=3 belt=0
-    !byte $2c, $02
+    !byte $2c, $42
 
 ; --- guardians ---
 ; count, then 8 B per guardian:

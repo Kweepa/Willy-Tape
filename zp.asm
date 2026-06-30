@@ -120,7 +120,7 @@ guard_axis      = $29
 lastxmove       = $4c
 was_on_ground   = $2a
 inairtime       = $2b
-men             = $2c
+men             = $2e
 stream_ptr      = $52
 stream_ptr_hi   = $53
 
@@ -143,7 +143,7 @@ music_enabled   = $45          ; $FF = in-game music on, $0 = off
 music_key_prev  = $4d          ; last ADGJL scan mask (0 = released)
 
 jumpIsPressed   = $0f
-leftIsPressed   = $12
+leftIsPressed   = $2c
 rightIsPressed  = $2d
 
 guard_udg_off   = $48

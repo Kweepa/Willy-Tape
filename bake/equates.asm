@@ -20,7 +20,7 @@ belt_opp_left_xadd  = $ff
 belt_push_left  = $ff
 belt_push_right = $01
 
-leftIsPressed   = $12          ; keep in sync with zp.asm
+leftIsPressed   = $2c          ; keep in sync with zp.asm
 rightIsPressed  = $2d
 jumpIsPressed   = $0f
 on_ground       = $18

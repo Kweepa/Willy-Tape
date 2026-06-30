@@ -207,9 +207,13 @@ def pack_ramp2(info: dict) -> bytes:
 
 
 def pack_conveyor2(info: dict, velocity: int) -> bytes:
-    """2-byte conveyor: byte0 (len-1)<<4|y, byte1 (vel<<6)|x."""
-    vel_map = {-1: 1, 0: 0, 1: 2}
-    vel = vel_map.get(velocity, 0) & 3
+    """2-byte conveyor: byte0 (len-1)<<4|y, byte1 (vel<<6)|x.
+
+    vel is belt+1 so runtime can decode with ``dex`` after extracting bits 6-7:
+    packed 0 -> belt $ff (-1), packed 1 -> belt $00, packed 2 -> belt $01.
+    """
+    vel_map = {-1: 0, 0: 1, 1: 2}
+    vel = vel_map.get(velocity, 1) & 3
     x = info["x"] & 0x1F
     y = info["y"] & 0x0F
     length = info["length"]

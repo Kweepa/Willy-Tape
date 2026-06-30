@@ -58,7 +58,7 @@ room24_data
 
 ; --- conveyor ---
 ; x=16 y=12 len=4 belt=-1
-    !byte $3c, $50
+    !byte $3c, $10
 
 ; --- guardians ---
 ; count, then 8 B per guardian:

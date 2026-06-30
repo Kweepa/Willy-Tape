@@ -64,7 +64,7 @@ room40_data
 
 ; --- conveyor ---
 ; x=6 y=15 len=16 belt=-1
-    !byte $ff, $46
+    !byte $ff, $06
 
 ; --- guardians ---
 ; count, then 8 B per guardian:

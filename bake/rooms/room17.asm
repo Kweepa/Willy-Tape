@@ -58,7 +58,7 @@ room17_data
 
 ; --- conveyor ---
 ; x=11 y=9 len=3 belt=-1
-    !byte $29, $4b
+    !byte $29, $0b
 
 ; --- arrow ---
 ; x=40 y=66 v=-1 sound=36
