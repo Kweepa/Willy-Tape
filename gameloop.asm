@@ -107,7 +107,7 @@ erase_player_done
     ; erase_block
 -
     ldy cell_off_2x3,x
-    lda #TILE_CHR_BASE
+    lda #TILE_EMPTY
     sta (scr_ptr),y
     lda #WHITE
     sta (col_ptr),y

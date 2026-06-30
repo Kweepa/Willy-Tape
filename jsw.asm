@@ -11,6 +11,7 @@
 !source "map.asm"
 !source "ramp.asm"
 !source "willy_collide.asm"
+!source "conveyorbelt.asm"
 
 low_bank_end = *
 !if low_bank_end > $17FF {

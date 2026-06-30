@@ -4,95 +4,78 @@
 
 !zone decompress
 
-; stream_ptr -> RLE bytes; paints screen_base + color_base; advances stream_ptr.
-; 384 B playfield — align_tmp=0 page (256 cells) then 1 page (128 cells).
-RleUnpack
-    ldx #0
-    lda #0
-    sta align_tmp
-rle_loop
-    lda align_tmp
-    beq rle_loop_cont
-    cpx #128
-    bcs rle_done
-rle_loop_cont
-    ldy #0
-    lda (stream_ptr),y
-    sta run
-    lsr
-    lsr
-    lsr
-    sta num
-    lda run
-    and #7
-    sta col
-    ldy #0
-fill_loop
-    lda align_tmp
-    beq fill_p0
-    cpx #128
-    bcs rle_done
-    txa
-    pha
-    lda col
-    tax
-    lda tile_color_src,x
-    sta tmp
-    pla
-    tax
-    lda tmp
-    sta color_base+256,x
-    lda col
-    clc
-    adc #TILE_CHR_BASE
-    sta screen_base+256,x
-    jmp fill_advance
-fill_p0
-    txa
-    pha
-    lda col
-    tax
-    lda tile_color_src,x
-    sta tmp
-    pla
-    tax
-    lda tmp
-    sta color_base,x
-    lda col
-    clc
-    adc #TILE_CHR_BASE
-    sta screen_base,x
-fill_advance
-    inx
-    bne +
-    inc align_tmp
-+
-    iny
-    cpy num
-    bne fill_loop
-    inc stream_ptr
-    bne +
-    inc stream_ptr_hi
-+
-    jmp rle_loop
-rle_done
-    rts
-
 ; these are aliases
 paint_loop_counter = ht
+paint_loop_value = mov
+
+; stream_ptr -> RLE bytes; paints screen_base + color_base; advances stream_ptr.
+RleUnpack
+
+    ; set up scr_ptr & col_ptr
+    ldx #0
+    ldy #0
+    jsr ConvertTileXYToScreenAddr
+
+--
+    ; read a byte
+    ldy #0
+    lda (stream_ptr),y
+
+    ; unpack it
+    lsr
+    lsr
+    lsr
+    sta paint_loop_counter
+    lda (stream_ptr),y
+    and #$7
+    sta paint_loop_value
+
+-
+    ; write it
+    lda paint_loop_value
+    sta (scr_ptr),y
+    tax
+    lda tile_color_src,x
+    sta (col_ptr),y
+
+    inc scr_ptr
+    inc col_ptr
+    bne +
+    inc scr_ptr+1
+    inc col_ptr+1
++
+    dec paint_loop_counter
+    bne -
+
+    ; advance the stream
+    inc stream_ptr
+    bne +
+    inc stream_ptr+1
++
+
+    lda scr_ptr
+    cmp #$80
+    bne --
+    lda scr_ptr+1
+    cmp #$11
+    bne --
+
+    rts
+
+
+; these are aliases
 paint_loop_x = hc
 paint_loop_y = hy
 
 ; A = tile type 0-6 at (hy, hc): screen chr + colour via scr_ptr / col_ptr.
 PaintPlayfieldCell
     pha
-    ldx hc
-    ldy hy
+    ldx paint_loop_x
+    ldy paint_loop_y
     jsr ConvertTileXYToScreenAddr
     pla
     tax
     lda tile_color_src,x
-    sta col
     ldy #0
     sta (col_ptr),y
     txa
