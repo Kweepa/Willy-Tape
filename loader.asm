@@ -2,18 +2,12 @@
 ; LoadRoom — decompress catalogue room to screen + colour/map RAM.
 ;
 
-room_lfn = 15
-
-room_name
-    !text "R00"
-
 LoadRoom
     lda #0
     sta $900b
     sta $900c
 
     jsr SetColors
-    jsr FormatRoomName
 
     lda map
     cmp #ROOM_TITLE
@@ -59,8 +53,7 @@ InitPlayerState
 ; Parse catalogue record at stream_ptr -> screen_base, meta.
 DecompressRoom
     jsr TapeInitMeta
-    jsr ReadTitlePtr
-    jsr SkipTitle
+    jsr ReadTitle
     jsr ParseMeta8
     jsr ApplyBorderFromMeta
     jsr ApplySpawnFromMeta
@@ -129,16 +122,21 @@ ReadTileColors
     bne -
     rts
 
-ReadTitlePtr
-    lda stream_ptr
-    sta title_ptr
-    lda stream_ptr_hi
-    sta title_ptr+1
-    rts
-
-SkipTitle
+ReadTitle
+    ; write to screen
+    ldx #0
 -
+    inx
     jsr LoadByteFromStream
+    sta $117f,x
+    bne -
+
+    ; pad with spaces
+    lda #0
+-
+    inx
+    sta $117f,x
+    cpx #18
     bne -
     rts
 
@@ -169,28 +167,6 @@ pickup_col_done
     rts
 
 StampHudRow
-    ldy #0
-    ldx #0
--
-    cpy #18
-    beq stamp_icons
-    lda (title_ptr),y
-    beq pad_title
-    pha
-    jsr ToUpper
-    jsr AsciiToScreen
-    sta screen_base+hud_row_off,x
-    pla
-    iny
-    inx
-    jmp -
-pad_title
-    lda #160
-    sta screen_base+hud_row_off,x
-    inx
-    iny
-    jmp -
-stamp_icons
     lda #MEN_CHR
     sta hud_men_scr
     lda #HUD_ITEM_CHR
@@ -447,52 +423,4 @@ TapePaintMap
     sta color_base + 383,y
     dey
     bne -
-    rts
-
-FormatRoomName
-    lda map
-    ldy #'0'
--
-    cmp #10
-    bcc +
-    sbc #10
-    iny
-    bne -
-+
-    adc #'0'
-    sta room_name+2
-    sty room_name+1
-    rts
-
-AsciiToScreen
-    cmp #'A'
-    bcc ats_other
-    cmp #'Z'+1
-    bcs ats_other
-    sec
-    sbc #'A'
-    clc
-    adc #129
-    rts
-ats_other
-    cmp #'0'
-    bcc ats_plain
-    cmp #'9'+1
-    bcs ats_plain
-    clc
-    adc #128
-    rts
-ats_plain
-    clc
-    adc #128
-    rts
-
-ToUpper
-    cmp #'a'
-    bcc +
-    cmp #'z'+1
-    bcs +
-    sec
-    sbc #$20
-+
     rts
