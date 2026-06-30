@@ -18,15 +18,15 @@ RleUnpack
 
 --
     ; read a byte
-    ldy #0
-    lda (stream_ptr),y
+    jsr LoadByteFromStream
+    pha
 
     ; unpack it
     lsr
     lsr
     lsr
     sta paint_loop_counter
-    lda (stream_ptr),y
+    pla
     and #$7
     sta paint_loop_value
 
@@ -46,12 +46,6 @@ RleUnpack
 +
     dec paint_loop_counter
     bne -
-
-    ; advance the stream
-    inc stream_ptr
-    bne +
-    inc stream_ptr+1
-+
 
     lda scr_ptr
     cmp #$80
@@ -96,13 +90,12 @@ ramp_start_y = mov
 ramp_length = num
 
 ApplyRamp
-    ldy #0
-
-    lda (stream_ptr),y ; ramp length and y
+    jsr LoadByteFromStream
+    pha
     and #$0f
     sta ramp_start_y
     sta paint_loop_y
-    lda (stream_ptr),y ; ramp length and y
+    pla                     ; ramp length and y
     lsr
     lsr
     lsr
@@ -112,9 +105,8 @@ ApplyRamp
     stx ramp_length
     stx paint_loop_counter
 
-    iny
-    lda (stream_ptr),y ; ramp dir and x
-    sta ramp_dirandx
+    jsr LoadByteFromStream
+    sta ramp_dirandx        ; ramp dir and x
     and #$1f
     sta ramp_start_x
     sta paint_loop_x
@@ -136,15 +128,6 @@ ApplyRamp
 
     ; calculate values for calculate_ramp_y
     jsr BakeRampMeta
-
-    ; advance stream
-    lda #2
-    clc
-    adc stream_ptr
-    sta stream_ptr
-    bcc +
-    inc stream_ptr_hi
-+
     rts
 
 
@@ -156,11 +139,11 @@ conveyor_velandx = arr2
 ; byte0 = (length-1)<<4 | y; byte1 = (velocity<<6) | x
 ApplyConveyor
     ; unpack
-    ldy #0
-    lda (stream_ptr),y
+    jsr LoadByteFromStream
+    pha
     and #$0f
     sta paint_loop_y
-    lda (stream_ptr),y
+    pla
     lsr
     lsr
     lsr
@@ -169,11 +152,11 @@ ApplyConveyor
     inx
     sta paint_loop_counter
 
-    iny
-    lda (stream_ptr),y
+    jsr LoadByteFromStream
+    pha
     and #$1f
     sta paint_loop_x
-    lda (stream_ptr),y
+    pla
     rol
     rol
     rol
@@ -190,12 +173,4 @@ ApplyConveyor
     dec paint_loop_counter
     bpl -
 
-    ; advance stream
-    lda #2
-    clc
-    adc stream_ptr
-    sta stream_ptr
-    bcc +
-    inc stream_ptr_hi
-+
     rts

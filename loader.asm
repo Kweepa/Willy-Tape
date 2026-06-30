@@ -87,55 +87,46 @@ ApplySpawnFromMeta
 +
     rts
 
-ParseMeta8
+
+; A = next catalogue byte; advances stream_ptr ($52-$53).
+LoadByteFromStream
     ldy #0
     lda (stream_ptr),y
-    sta meta_content_conn
-    iny
-    lda (stream_ptr),y
-    sta meta_content_conn+1
-    iny
-    lda (stream_ptr),y
-    sta meta_content_conn+2
-    iny
-    lda (stream_ptr),y
-    sta meta_content_conn+3
-    iny
-    lda (stream_ptr),y
-    sta meta_content_spawn_px
-    iny
-    lda (stream_ptr),y
-    sta meta_content_spawn_py
-    iny
-    lda (stream_ptr),y
-    sta meta_content_record_flags
-    iny
-    lda (stream_ptr),y
-    sta meta_content_border
-    lda #8
-    clc
-    adc stream_ptr
-    sta stream_ptr
-    bcc +
+    php
+    inc stream_ptr
+    bne +
     inc stream_ptr_hi
 +
+    plp
+    rts
+
+ParseMeta8
+    jsr LoadByteFromStream
+    sta meta_content_conn
+    jsr LoadByteFromStream
+    sta meta_content_conn+1
+    jsr LoadByteFromStream
+    sta meta_content_conn+2
+    jsr LoadByteFromStream
+    sta meta_content_conn+3
+    jsr LoadByteFromStream
+    sta meta_content_spawn_px
+    jsr LoadByteFromStream
+    sta meta_content_spawn_py
+    jsr LoadByteFromStream
+    sta meta_content_record_flags
+    jsr LoadByteFromStream
+    sta meta_content_border
     rts
 
 ReadTileColors
-    ldy #0
+    ldx #0
 -
-    lda (stream_ptr),y
-    sta tile_color_src,y
-    iny
-    cpy #6
+    jsr LoadByteFromStream
+    sta tile_color_src,x
+    inx
+    cpx #6
     bne -
-    lda stream_ptr
-    clc
-    adc #6
-    sta stream_ptr
-    bcc +
-    inc stream_ptr_hi
-+
     rts
 
 ReadTitlePtr
@@ -147,26 +138,14 @@ ReadTitlePtr
 
 SkipTitle
 -
-    ldy #0
-    lda (stream_ptr),y
-    beq title_done
-    inc stream_ptr
+    jsr LoadByteFromStream
     bne -
-    inc stream_ptr_hi
-    jmp -
-title_done
-    inc stream_ptr
-    bne +
-    inc stream_ptr_hi
-+
     rts
 
 ApplyRoomOverlays
-    ldy #0
-    lda (stream_ptr),y
+    jsr LoadByteFromStream
     sta pickup_scr
-    iny
-    lda (stream_ptr),y
+    jsr LoadByteFromStream
     sta pickup_scr+1
     lda pickup_scr+1
     bmi pickup_col_done
@@ -177,8 +156,6 @@ ApplyRoomOverlays
     adc #>(color_base - screen_base)
     sta pickup_col+1
 pickup_col_done
-    jsr Skip2
-
     lda meta_content_record_flags
     and #FLAG_RAMP
     beq +
@@ -188,32 +165,6 @@ pickup_col_done
     and #FLAG_CONVEYOR
     beq +
     jsr ApplyConveyor
-+
-    rts
-
-Skip3
-    inc stream_ptr
-    bne +
-    inc stream_ptr_hi
-+
-    inc stream_ptr
-    bne +
-    inc stream_ptr_hi
-+
-    inc stream_ptr
-    bne +
-    inc stream_ptr_hi
-+
-    rts
-
-Skip2
-    inc stream_ptr
-    bne +
-    inc stream_ptr_hi
-+
-    inc stream_ptr
-    bne +
-    inc stream_ptr_hi
 +
     rts
 
@@ -254,8 +205,7 @@ LoadRoomUdgs
     dex
     bpl -
 
-    ldy #0
-    lda (stream_ptr),y
+    jsr LoadByteFromStream
     tax
     lda #<udg_pool_floor
     sta scr_ptr
@@ -264,8 +214,7 @@ LoadRoomUdgs
     lda #TILE_PLATFORM
     jsr LoadUdgFromPool
 
-    ldy #1
-    lda (stream_ptr),y
+    jsr LoadByteFromStream
     tax
     lda #<udg_pool_wall
     sta scr_ptr
@@ -274,8 +223,7 @@ LoadRoomUdgs
     lda #TILE_SOLID
     jsr LoadUdgFromPool
 
-    ldy #2
-    lda (stream_ptr),y
+    jsr LoadByteFromStream
     tax
     lda #<udg_pool_pickup
     sta scr_ptr
@@ -284,12 +232,11 @@ LoadRoomUdgs
     lda #ITEM_CHR
     jsr LoadUdgFromPool
 
+    jsr LoadByteFromStream
+    tax
     lda meta_content_record_flags
     and #FLAG_NASTY
     beq load_udg_skip_nasty
-    ldy #3
-    lda (stream_ptr),y
-    tax
     lda #<udg_pool_nasty
     sta scr_ptr
     lda #>udg_pool_nasty
@@ -297,12 +244,11 @@ LoadRoomUdgs
     lda #TILE_HAZARD
     jsr LoadUdgFromPool
 load_udg_skip_nasty
+    jsr LoadByteFromStream
+    tax
     lda meta_content_record_flags
     and #FLAG_RAMP
     beq load_udg_skip_ramp
-    ldy #4
-    lda (stream_ptr),y
-    tax
     lda #<udg_pool_ramp
     sta scr_ptr
     lda #>udg_pool_ramp
@@ -310,12 +256,11 @@ load_udg_skip_nasty
     lda #TILE_RAMP
     jsr LoadUdgFromPool
 load_udg_skip_ramp
+    jsr LoadByteFromStream
+    tax
     lda meta_content_record_flags
     and #FLAG_CONVEYOR
     beq load_udg_skip_belt
-    ldy #5
-    lda (stream_ptr),y
-    tax
     lda #<udg_pool_belt
     sta scr_ptr
     lda #>udg_pool_belt
@@ -323,8 +268,6 @@ load_udg_skip_ramp
     lda #TILE_CONVEYOR
     jsr LoadUdgFromPool
 load_udg_skip_belt
-    lda #UDG_INDEX_BYTES
-    jsr SkipBytes
     jsr EnsureVicCharset
     rts
 
@@ -373,13 +316,8 @@ LoadRoomGuardians
     lda #5
     jsr SkipBytes
 +
-    ldy #0
-    lda (stream_ptr),y
+    jsr LoadByteFromStream
     sta meta_content_guardians
-    inc stream_ptr
-    bne +
-    inc stream_ptr_hi
-+
     lda meta_content_guardians
     beq guardians_done
     sta num
@@ -387,29 +325,21 @@ LoadRoomGuardians
     sta guardian_index
 
 load_guardian_loop
-    ldy #0
-    lda (stream_ptr),y
+    jsr LoadByteFromStream
     sta hx
-    iny
-    lda (stream_ptr),y
+    jsr LoadByteFromStream
     sta hy
-    iny
-    lda (stream_ptr),y
+    jsr LoadByteFromStream
     sta hl
-    iny
-    lda (stream_ptr),y
+    jsr LoadByteFromStream
     sta hr
-    iny
-    lda (stream_ptr),y
+    jsr LoadByteFromStream
     sta hd
-    iny
-    lda (stream_ptr),y
+    jsr LoadByteFromStream
     sta hc
-    iny
-    lda (stream_ptr),y
+    jsr LoadByteFromStream
     sta guard_axis
-    iny
-    lda (stream_ptr),y
+    jsr LoadByteFromStream
     sta mov                     ; set_idx
 
     jsr LookupGuardianSet
@@ -418,13 +348,6 @@ load_guardian_loop
     sta g_frame
     jsr WriteGuardianRuntimeRecord
 
-    lda #8
-    clc
-    adc stream_ptr
-    sta stream_ptr
-    bcc +
-    inc stream_ptr_hi
-+
     inc guardian_index
     dec num
     bne load_guardian_loop
@@ -473,13 +396,10 @@ WriteGuardianRuntimeRecord
 SkipBytes
     sta mov
     beq SkipBytesDone
-SkipBytesLoop
-    inc stream_ptr
-    bne +
-    inc stream_ptr_hi
-+
+-
+    jsr LoadByteFromStream
     dec mov
-    bne SkipBytesLoop
+    bne -
 SkipBytesDone
     rts
 
