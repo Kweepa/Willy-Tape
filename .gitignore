@@ -13,6 +13,7 @@ catalogue.map
 bake/.tmp/
 bake/*.bin
 tools/vice_test.log
+_vice_out.png
 AcmeLabelSorter.exe
 
 # Python caching
