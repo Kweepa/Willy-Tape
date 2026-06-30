@@ -7,7 +7,7 @@
 room17_data
 ; --- title ---
 ; "On the Battlements"
-    !pet "On the Battlements", 0
+    !byte 15, 40, 63, 46, 34, 31, 63, 2, 27, 46, 46, 38, 31, 39, 31, 40, 46, 45, 0
 
 ; --- meta8 ---
 ; conn N E S W

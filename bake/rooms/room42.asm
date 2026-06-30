@@ -7,7 +7,7 @@
 room42_data
 ; --- title ---
 ; "Under the Roof"
-    !pet "Under the Roof", 0
+    !byte 21, 40, 30, 31, 44, 63, 46, 34, 31, 63, 18, 41, 41, 32, 0
 
 ; --- meta8 ---
 ; conn N E S W

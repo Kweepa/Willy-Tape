@@ -17,6 +17,7 @@ from mkcatalogue import (  # noqa: E402
     FLAG_NASTY,
     FLAG_RAMP,
 )
+from font_glyph import decode_title_glyphs  # noqa: E402
 from udg_pool import UDG_INDEX_BYTES  # noqa: E402
 from mkroom import TILE_CHR_BASE, TILEMAP_ROWS, WIDTH, parse_room  # noqa: E402
 
@@ -51,7 +52,7 @@ def parse_record(blob: bytes, off: int) -> dict:
     return {
         "meta": meta,
         "tile_colors": blob[meta_off + 8 : meta_off + 14],
-        "title": blob[off:title_end].decode("ascii"),
+        "title": decode_title_glyphs(blob[off:title_end + 1]),
         "types": cells,
         "next": pos,
     }

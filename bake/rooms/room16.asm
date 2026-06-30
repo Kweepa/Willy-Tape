@@ -7,7 +7,7 @@
 room16_data
 ; --- title ---
 ; "A Quirkafleeg"
-    !pet "A Quirkafleeg", 0
+    !byte 1, 63, 17, 47, 35, 44, 37, 27, 32, 38, 31, 31, 33, 0
 
 ; --- meta8 ---
 ; conn N E S W

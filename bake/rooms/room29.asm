@@ -7,7 +7,7 @@
 room29_data
 ; --- title ---
 ; "The Nightmare Room"
-    !pet "The Nightmare Room", 0
+    !byte 20, 34, 31, 63, 14, 35, 33, 34, 46, 39, 27, 44, 31, 63, 18, 41, 41, 39, 0
 
 ; --- meta8 ---
 ; conn N E S W

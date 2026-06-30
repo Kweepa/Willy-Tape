@@ -21,8 +21,8 @@
 ;   $D6-$DB   (gap) — arrow_x_zp $D6 in arrow rooms; rope block unused there
 ;   $DC-$E1   cell_off_2x3 — util.asm (PRG)
 ;   $E2-$E7   lr_touch_a/b/c — willy_collide.asm (PRG)
-;   $E8-$ED   draw_vguard_chrs — guardians.asm (PRG)
-;   $EE-$F6   ingame_tune_pitch — ingame_tune.asm (PRG)
+;   $E8-$F0   stringwidth..stringrow — font.asm (load-time title print)
+;   draw_vguard_chrs / ingame_tune_pitch are PRG labels, not ZP
 ;   $37-$3C   draw_player_offsets — willy_draw.asm (PRG)
 ;   $3D-$42   draw_player_chrs — willy_draw.asm (PRG)
 ;   $33-$35   title scroll/hold scratch (title only)
@@ -211,3 +211,13 @@ up_down_ctr     = $47
 
 player_overlap  = $a0
 player_touch    = $a6
+
+stringwidth     = $e8
+stringindex     = $e9
+stringstart     = $ea
+stringxdiv      = $eb
+stringxmod      = $ec
+stringcur       = $ed
+stringleft      = $ee
+stringright     = $ef
+stringrow       = $f0

@@ -7,7 +7,7 @@
 room26_data
 ; --- title ---
 ; "East Wall Base"
-    !pet "East Wall Base", 0
+    !byte 5, 27, 45, 46, 63, 23, 27, 38, 38, 63, 2, 27, 45, 31, 0
 
 ; --- meta8 ---
 ; conn N E S W

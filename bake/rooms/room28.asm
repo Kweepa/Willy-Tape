@@ -7,7 +7,7 @@
 room28_data
 ; --- title ---
 ; "First Landing"
-    !pet "First Landing", 0
+    !byte 6, 35, 44, 45, 46, 63, 12, 27, 40, 30, 35, 40, 33, 0
 
 ; --- meta8 ---
 ; conn N E S W

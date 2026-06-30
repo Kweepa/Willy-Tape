@@ -135,9 +135,11 @@ def format_tile_colors(data: bytes) -> list[str]:
 
 
 def format_title(data: bytes) -> list[str]:
-    text = data[:-1].decode("ascii", errors="replace")
-    escaped = text.replace("\\", "\\\\").replace('"', '\\"')
-    return [f'; "{text}"', f'    !pet "{escaped}", 0']
+    from font_glyph import decode_title_glyphs
+
+    text = decode_title_glyphs(data)
+    body = ", ".join(str(b) for b in data)
+    return [f'; "{text}"', f"    !byte {body}"]
 
 
 def format_rle(data: bytes) -> list[str]:

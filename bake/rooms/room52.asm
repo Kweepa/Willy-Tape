@@ -7,7 +7,7 @@
 room52_data
 ; --- title ---
 ; "Back Stairway"
-    !pet "Back Stairway", 0
+    !byte 2, 27, 29, 37, 63, 19, 46, 27, 35, 44, 49, 27, 51, 0
 
 ; --- meta8 ---
 ; conn N E S W

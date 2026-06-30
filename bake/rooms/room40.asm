@@ -7,7 +7,7 @@
 room40_data
 ; --- title ---
 ; "Dr Jones' dream"
-    !pet "Dr Jones' dream", 0
+    !byte 4, 44, 63, 10, 41, 40, 31, 45, 65, 63, 30, 44, 31, 27, 39, 0
 
 ; --- meta8 ---
 ; conn N E S W

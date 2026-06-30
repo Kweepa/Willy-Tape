@@ -7,7 +7,7 @@
 room03_data
 ; --- title ---
 ; "Foot of Megatree"
-    !pet "Foot of Megatree", 0
+    !byte 6, 41, 41, 46, 63, 41, 32, 63, 13, 31, 33, 27, 46, 44, 31, 31, 0
 
 ; --- meta8 ---
 ; conn N E S W

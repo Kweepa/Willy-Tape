@@ -25,6 +25,7 @@ low_bank_end = *
 !source "decompress.asm"
 !source "catalogue_reader.asm"
 !source "loader.asm"
+!source "font.asm"
 !source "ingame_tune.asm"
 !source "willy_draw.asm"
 !source "util.asm"

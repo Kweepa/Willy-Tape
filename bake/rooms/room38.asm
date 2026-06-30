@@ -7,7 +7,7 @@
 room38_data
 ; --- title ---
 ; "Priests' Hole"
-    !pet "Priests' Hole", 0
+    !byte 16, 44, 35, 31, 45, 46, 45, 65, 63, 8, 41, 38, 31, 0
 
 ; --- meta8 ---
 ; conn N E S W

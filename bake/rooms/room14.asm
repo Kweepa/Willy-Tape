@@ -7,7 +7,7 @@
 room14_data
 ; --- title ---
 ; "Rescue Esmerelda"
-    !pet "Rescue Esmerelda", 0
+    !byte 18, 31, 45, 29, 47, 31, 63, 5, 45, 39, 31, 44, 31, 38, 30, 27, 0
 
 ; --- meta8 ---
 ; conn N E S W

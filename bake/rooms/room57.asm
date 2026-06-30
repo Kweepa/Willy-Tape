@@ -7,7 +7,7 @@
 room57_data
 ; --- title ---
 ; "Above W Bedroom"
-    !pet "Above W Bedroom", 0
+    !byte 1, 28, 41, 48, 31, 63, 23, 63, 2, 31, 30, 44, 41, 41, 39, 0
 
 ; --- meta8 ---
 ; conn N E S W

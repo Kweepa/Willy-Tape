@@ -7,7 +7,7 @@
 room27_data
 ; --- title ---
 ; "The Chapel"
-    !pet "The Chapel", 0
+    !byte 20, 34, 31, 63, 3, 34, 27, 42, 31, 38, 0
 
 ; --- meta8 ---
 ; conn N E S W

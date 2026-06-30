@@ -123,22 +123,20 @@ ReadTileColors
     rts
 
 ReadTitle
-    ; write to screen
-    ldx #0
+    lda stream_ptr
+    sta title_ptr
+    lda stream_ptr_hi
+    sta title_ptr+1
 -
-    inx
     jsr LoadByteFromStream
-    sta $117f,x
     bne -
 
-    ; pad with spaces
-    lda #0
--
-    inx
-    sta $117f,x
-    cpx #18
-    bne -
-    rts
+    lda title_ptr
+    sta arr
+    lda title_ptr+1
+    sta arr+1
+    ldy #0
+    jmp PrintSpecFontString
 
 ApplyRoomOverlays
     jsr LoadByteFromStream

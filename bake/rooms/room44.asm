@@ -7,7 +7,7 @@
 room44_data
 ; --- title ---
 ; "Top of the house"
-    !pet "Top of the house", 0
+    !byte 20, 41, 42, 63, 41, 32, 63, 46, 34, 31, 63, 34, 41, 47, 45, 31, 0
 
 ; --- meta8 ---
 ; conn N E S W

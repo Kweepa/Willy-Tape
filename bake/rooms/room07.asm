@@ -7,7 +7,7 @@
 room07_data
 ; --- title ---
 ; "Cuckoo's Nest"
-    !pet "Cuckoo's Nest", 0
+    !byte 3, 47, 29, 37, 41, 41, 65, 45, 63, 14, 31, 45, 46, 0
 
 ; --- meta8 ---
 ; conn N E S W

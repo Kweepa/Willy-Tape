@@ -7,7 +7,7 @@
 room08_data
 ; --- title ---
 ; "Inside MegaTrunk"
-    !pet "Inside MegaTrunk", 0
+    !byte 9, 40, 45, 35, 30, 31, 63, 13, 31, 33, 27, 20, 44, 47, 40, 37, 0
 
 ; --- meta8 ---
 ; conn N E S W

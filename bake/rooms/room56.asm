@@ -7,7 +7,7 @@
 room56_data
 ; --- title ---
 ; "West Wing Roof"
-    !pet "West Wing Roof", 0
+    !byte 23, 31, 45, 46, 63, 23, 35, 40, 33, 63, 18, 41, 41, 32, 0
 
 ; --- meta8 ---
 ; conn N E S W

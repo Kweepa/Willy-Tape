@@ -7,7 +7,7 @@
 room15_data
 ; --- title ---
 ; "Looks familiar..."
-    !pet "Looks familiar...", 0
+    !byte 12, 41, 41, 37, 45, 63, 32, 27, 39, 35, 38, 35, 27, 44, 67, 67, 67, 0
 
 ; --- meta8 ---
 ; conn N E S W

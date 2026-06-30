@@ -7,7 +7,7 @@
 room00_data
 ; --- title ---
 ; "The Off Licence"
-    !pet "The Off Licence", 0
+    !byte 20, 34, 31, 63, 15, 32, 32, 63, 12, 35, 29, 31, 40, 29, 31, 0
 
 ; --- meta8 ---
 ; conn N E S W

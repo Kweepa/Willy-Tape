@@ -7,7 +7,7 @@
 room34_data
 ; --- title ---
 ; "Top Landing"
-    !pet "Top Landing", 0
+    !byte 20, 41, 42, 63, 12, 27, 40, 30, 35, 40, 33, 0
 
 ; --- meta8 ---
 ; conn N E S W

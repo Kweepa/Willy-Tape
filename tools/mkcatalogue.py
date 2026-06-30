@@ -446,9 +446,11 @@ def pack_meta8(room: dict, *, flags: int) -> bytes:
 
 
 def pack_room_title(room: dict) -> bytes:
-    """Null-terminated HUD title (max 18 chars, same as stamp_hud_title)."""
-    text = room["title"].encode("ascii", errors="replace")[:HUD_TITLE_COLS]
-    return text + b"\x00"
+    """Null-terminated HUD title as 1-based proportional-font glyph bytes."""
+    from font_glyph import pack_title_glyphs
+
+    text = room["title"].encode("ascii", errors="replace").decode("ascii")[:HUD_TITLE_COLS]
+    return pack_title_glyphs(text)
 
 
 def room_record_flags(room: dict) -> int:

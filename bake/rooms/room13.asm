@@ -7,7 +7,7 @@
 room13_data
 ; --- title ---
 ; "Out on a limb"
-    !pet "Out on a limb", 0
+    !byte 15, 47, 46, 63, 41, 40, 63, 27, 63, 38, 35, 39, 28, 0
 
 ; --- meta8 ---
 ; conn N E S W

@@ -7,7 +7,7 @@
 room55_data
 ; --- title ---
 ; "West Bedroom"
-    !pet "West Bedroom", 0
+    !byte 23, 31, 45, 46, 63, 2, 31, 30, 44, 41, 41, 39, 0
 
 ; --- meta8 ---
 ; conn N E S W

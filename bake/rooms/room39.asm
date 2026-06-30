@@ -7,7 +7,7 @@
 room39_data
 ; --- title ---
 ; "Emergency Dynamo"
-    !pet "Emergency Dynamo", 0
+    !byte 5, 39, 31, 44, 33, 31, 40, 29, 51, 63, 4, 51, 40, 27, 39, 41, 0
 
 ; --- meta8 ---
 ; conn N E S W

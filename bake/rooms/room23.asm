@@ -7,7 +7,7 @@
 room23_data
 ; --- title ---
 ; "The Kitchen"
-    !pet "The Kitchen", 0
+    !byte 20, 34, 31, 63, 11, 35, 46, 29, 34, 31, 40, 0
 
 ; --- meta8 ---
 ; conn N E S W

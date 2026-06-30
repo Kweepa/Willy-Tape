@@ -7,7 +7,7 @@
 room04_data
 ; --- title ---
 ; "The Drive"
-    !pet "The Drive", 0
+    !byte 20, 34, 31, 63, 4, 44, 35, 48, 31, 0
 
 ; --- meta8 ---
 ; conn N E S W

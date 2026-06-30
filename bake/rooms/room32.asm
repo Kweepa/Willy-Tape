@@ -7,7 +7,7 @@
 room32_data
 ; --- title ---
 ; "Halfway up E Wall"
-    !pet "Halfway up E Wall", 0
+    !byte 8, 27, 38, 32, 49, 27, 51, 63, 47, 42, 63, 5, 63, 23, 27, 38, 38, 0
 
 ; --- meta8 ---
 ; conn N E S W

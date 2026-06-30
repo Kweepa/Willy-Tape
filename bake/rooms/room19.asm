@@ -7,7 +7,7 @@
 room19_data
 ; --- title ---
 ; "Forgotten Abbey"
-    !pet "Forgotten Abbey", 0
+    !byte 6, 41, 44, 33, 41, 46, 46, 31, 40, 63, 1, 28, 28, 31, 51, 0
 
 ; --- meta8 ---
 ; conn N E S W

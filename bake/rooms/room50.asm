@@ -7,7 +7,7 @@
 room50_data
 ; --- title ---
 ; "Watch Tower"
-    !pet "Watch Tower", 0
+    !byte 23, 27, 46, 29, 34, 63, 20, 41, 49, 31, 44, 0
 
 ; --- meta8 ---
 ; conn N E S W

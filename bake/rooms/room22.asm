@@ -7,7 +7,7 @@
 room22_data
 ; --- title ---
 ; "Main Stairway"
-    !pet "Main Stairway", 0
+    !byte 13, 27, 35, 40, 63, 19, 46, 27, 35, 44, 49, 27, 51, 0
 
 ; --- meta8 ---
 ; conn N E S W

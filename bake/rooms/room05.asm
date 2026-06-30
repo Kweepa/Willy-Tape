@@ -7,7 +7,7 @@
 room05_data
 ; --- title ---
 ; "The Security Guard"
-    !pet "The Security Guard", 0
+    !byte 20, 34, 31, 63, 19, 31, 29, 47, 44, 35, 46, 51, 63, 7, 47, 27, 44, 30, 0
 
 ; --- meta8 ---
 ; conn N E S W

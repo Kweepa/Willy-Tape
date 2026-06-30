@@ -7,7 +7,7 @@
 room31_data
 ; --- title ---
 ; "Swimming Pool"
-    !pet "Swimming Pool", 0
+    !byte 19, 49, 35, 39, 39, 35, 40, 33, 63, 16, 41, 41, 38, 0
 
 ; --- meta8 ---
 ; conn N E S W

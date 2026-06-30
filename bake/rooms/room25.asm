@@ -7,7 +7,7 @@
 room25_data
 ; --- title ---
 ; "Cold Store"
-    !pet "Cold Store", 0
+    !byte 3, 41, 38, 30, 63, 19, 46, 41, 44, 31, 0
 
 ; --- meta8 ---
 ; conn N E S W

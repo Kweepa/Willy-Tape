@@ -7,7 +7,7 @@
 room48_data
 ; --- title ---
 ; "Nomen Luni"
-    !pet "Nomen Luni", 0
+    !byte 14, 41, 39, 31, 40, 63, 12, 47, 40, 35, 0
 
 ; --- meta8 ---
 ; conn N E S W

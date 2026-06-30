@@ -7,7 +7,7 @@
 room30_data
 ; --- title ---
 ; "The Banyan Tree"
-    !pet "The Banyan Tree", 0
+    !byte 20, 34, 31, 63, 2, 27, 40, 51, 27, 40, 63, 20, 44, 31, 31, 0
 
 ; --- meta8 ---
 ; conn N E S W

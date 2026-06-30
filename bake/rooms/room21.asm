@@ -7,7 +7,7 @@
 room21_data
 ; --- title ---
 ; "Ballroom West"
-    !pet "Ballroom West", 0
+    !byte 2, 27, 38, 38, 44, 41, 41, 39, 63, 23, 31, 45, 46, 0
 
 ; --- meta8 ---
 ; conn N E S W

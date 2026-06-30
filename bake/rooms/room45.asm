@@ -7,7 +7,7 @@
 room45_data
 ; --- title ---
 ; "Under the Drive"
-    !pet "Under the Drive", 0
+    !byte 21, 40, 30, 31, 44, 63, 46, 34, 31, 63, 4, 44, 35, 48, 31, 0
 
 ; --- meta8 ---
 ; conn N E S W

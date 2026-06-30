@@ -7,7 +7,7 @@
 room02_data
 ; --- title ---
 ; "Under the MegaTree"
-    !pet "Under the MegaTree", 0
+    !byte 21, 40, 30, 31, 44, 63, 46, 34, 31, 63, 13, 31, 33, 27, 20, 44, 31, 31, 0
 
 ; --- meta8 ---
 ; conn N E S W

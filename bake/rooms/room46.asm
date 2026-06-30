@@ -7,7 +7,7 @@
 room46_data
 ; --- title ---
 ; "Tree Root"
-    !pet "Tree Root", 0
+    !byte 20, 44, 31, 31, 63, 18, 41, 41, 46, 0
 
 ; --- meta8 ---
 ; conn N E S W

@@ -7,7 +7,7 @@
 room36_data
 ; --- title ---
 ; "A bit of tree"
-    !pet "A bit of tree", 0
+    !byte 1, 63, 28, 35, 46, 63, 41, 32, 63, 46, 44, 31, 31, 0
 
 ; --- meta8 ---
 ; conn N E S W

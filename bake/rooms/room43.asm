@@ -7,7 +7,7 @@
 room43_data
 ; --- title ---
 ; "Conservatory Roof"
-    !pet "Conservatory Roof", 0
+    !byte 3, 41, 40, 45, 31, 44, 48, 27, 46, 41, 44, 51, 63, 18, 41, 41, 32, 0
 
 ; --- meta8 ---
 ; conn N E S W

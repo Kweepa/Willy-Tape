@@ -7,7 +7,7 @@
 room49_data
 ; --- title ---
 ; "The Wine Cellar"
-    !pet "The Wine Cellar", 0
+    !byte 20, 34, 31, 63, 23, 35, 40, 31, 63, 3, 31, 38, 38, 27, 44, 0
 
 ; --- meta8 ---
 ; conn N E S W

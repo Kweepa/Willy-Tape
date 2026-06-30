@@ -7,7 +7,7 @@
 room18_data
 ; --- title ---
 ; "On the Roof"
-    !pet "On the Roof", 0
+    !byte 15, 40, 63, 46, 34, 31, 63, 18, 41, 41, 32, 0
 
 ; --- meta8 ---
 ; conn N E S W

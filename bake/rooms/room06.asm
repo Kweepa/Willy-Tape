@@ -7,7 +7,7 @@
 room06_data
 ; --- title ---
 ; "Entrance to Hades"
-    !pet "Entrance to Hades", 0
+    !byte 5, 40, 46, 44, 27, 40, 29, 31, 63, 46, 41, 63, 8, 27, 30, 31, 45, 0
 
 ; --- meta8 ---
 ; conn N E S W

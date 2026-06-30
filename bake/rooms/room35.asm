@@ -7,7 +7,7 @@
 room35_data
 ; --- title ---
 ; "Master Bedroom"
-    !pet "Master Bedroom", 0
+    !byte 13, 27, 45, 46, 31, 44, 63, 2, 31, 30, 44, 41, 41, 39, 0
 
 ; --- meta8 ---
 ; conn N E S W

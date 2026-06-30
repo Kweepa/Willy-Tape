@@ -7,7 +7,7 @@
 room09_data
 ; --- title ---
 ; "Over the Drive"
-    !pet "Over the Drive", 0
+    !byte 15, 48, 31, 44, 63, 46, 34, 31, 63, 4, 44, 35, 48, 31, 0
 
 ; --- meta8 ---
 ; conn N E S W

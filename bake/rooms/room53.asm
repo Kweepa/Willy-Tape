@@ -7,7 +7,7 @@
 room53_data
 ; --- title ---
 ; "Back Door"
-    !pet "Back Door", 0
+    !byte 2, 27, 29, 37, 63, 4, 41, 41, 44, 0
 
 ; --- meta8 ---
 ; conn N E S W

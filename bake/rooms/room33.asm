@@ -7,7 +7,7 @@
 room33_data
 ; --- title ---
 ; "The Bathroom"
-    !pet "The Bathroom", 0
+    !byte 20, 34, 31, 63, 2, 27, 46, 34, 44, 41, 41, 39, 0
 
 ; --- meta8 ---
 ; conn N E S W

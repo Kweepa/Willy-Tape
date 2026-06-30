@@ -7,7 +7,7 @@
 room24_data
 ; --- title ---
 ; "West of Kitchen"
-    !pet "West of Kitchen", 0
+    !byte 23, 31, 45, 46, 63, 41, 32, 63, 11, 35, 46, 29, 34, 31, 40, 0
 
 ; --- meta8 ---
 ; conn N E S W

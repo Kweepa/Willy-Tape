@@ -7,7 +7,7 @@
 room60_data
 ; --- title ---
 ; "The Bow"
-    !pet "The Bow", 0
+    !byte 20, 34, 31, 63, 2, 41, 49, 0
 
 ; --- meta8 ---
 ; conn N E S W
