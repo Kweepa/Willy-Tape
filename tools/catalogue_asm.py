@@ -156,10 +156,16 @@ def format_rle(data: bytes) -> list[str]:
 
 
 def format_pickup(data: bytes, *, rid: int, extra: Mapping[str, Any]) -> list[str]:
-    offset = struct.unpack("<H", data)[0]
-    if offset == PICKUP_NONE:
+    addr = struct.unpack("<H", data)[0]
+    if addr == PICKUP_NONE:
         return ["; no pickup", "    !word $ffff"]
-    return [f"    !word screen_base + {offset}"]
+    offset = addr - SCREEN_BASE
+    x = offset % 24
+    y = offset // 24
+    return [
+        f"; screen ${addr:04x} x={x} y={y}",
+        f"    !word ${addr:04x}",
+    ]
 
 
 def _udg_block(chunk: bytes, name: str) -> list[str]:

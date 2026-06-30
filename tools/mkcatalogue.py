@@ -485,7 +485,8 @@ def pack_pickup_bytes(pickup: tuple[int, int] | None) -> bytes:
     if pickup:
         col, row = pickup
         offset = row * SCREEN_WIDTH + col
-        return struct.pack("<H", offset)
+        addr = SCREEN_BASE + offset
+        return struct.pack("<H", addr)
     return struct.pack("<H", PICKUP_NONE)
 
 

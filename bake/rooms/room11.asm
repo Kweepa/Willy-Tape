@@ -47,7 +47,8 @@ room11_data
     !byte (3<<3)|0, (1<<3)|3, (7<<3)|0, (31<<3)|2, (17<<3)|2
 
 ; --- pickup ---
-    !word screen_base + 226
+; screen $10e2 x=10 y=9
+    !word $10e2
 
 ; --- ramp ---
 ; x=1 y=8 len=6 dir=0

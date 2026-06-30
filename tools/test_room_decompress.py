@@ -40,7 +40,7 @@ def parse_record(blob: bytes, off: int) -> dict:
         val = tok & 7
         cells.extend([val] * run)
         pos += 1
-    pos += 2  # pickup screen offset word ($ffff = none)
+    pos += 2  # pickup absolute screen word ($ffff = none)
     if flags & FLAG_RAMP:
         pos += 2
     if flags & FLAG_CONVEYOR:

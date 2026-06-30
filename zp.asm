@@ -80,7 +80,7 @@
 ;
 ; Stack page ($100-$1FF) — tape port:
 ;   $100-$13D  pickup_got
-;   $13E-$1A5  meta_content_src (104 B; pickup_scr @ +102; guardian_data @ +39)
+;   $13E-$1A5  meta_content_src (104 B; guardian_data @ +39)
 ;   $1A6-$1BF  free
 ;   $01C0-$01FF CPU stack
 ; Disk only (WarmStart copies to $140+): x24rowtab, jumptab, jumpnotes — tape reads from PRG.
@@ -171,6 +171,8 @@ safe_map        = $65          ; room of last grounded position
 willy_hidden    = $66          ; 1 = ending sequence; skip player erase/input/draw
 rope_grab_cooldown  = $67
 arrow_x_zp      = $d6          ; flying arrow column (@arrow rooms; not rope rooms)
+pickup_scr      = $da          ; 2 B screen addr; hi bit 7 set = no pickup
+pickup_col      = $dc          ; 2 B matching colour RAM addr
 
 ramp_tmp        = $54
 ramp_y          = $55

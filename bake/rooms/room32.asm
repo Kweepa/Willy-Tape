@@ -53,7 +53,8 @@ room32_data
     !byte (12<<3)|0
 
 ; --- pickup ---
-    !word screen_base + 108
+; screen $106c x=12 y=4
+    !word $106c
 
 ; --- ramp ---
 ; x=6 y=2 len=6 dir=0

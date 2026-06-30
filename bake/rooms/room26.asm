@@ -53,7 +53,8 @@ room26_data
     !byte (2<<3)|2, (12<<3)|0
 
 ; --- pickup ---
-    !word screen_base + 273
+; screen $1111 x=9 y=11
+    !word $1111
 
 ; --- guardians ---
 ; count, then 8 B per guardian:

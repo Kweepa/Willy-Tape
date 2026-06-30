@@ -68,7 +68,6 @@ DecompressRoom
     jsr LoadRoomUdgs
     jsr RleUnpack
     jsr ApplyRoomOverlays
-    jsr PaintPickup
     jsr StampHudRow
     jsr LoadRoomGuardians
     rts
@@ -165,25 +164,19 @@ title_done
 ApplyRoomOverlays
     ldy #0
     lda (stream_ptr),y
-    sta meta_content_pickup_scr
+    sta pickup_scr
     iny
     lda (stream_ptr),y
-    sta meta_content_pickup_scr+1
-    lda meta_content_pickup_scr+1
-    cmp #$ff
-    bne fix_pickup_addr
-    lda meta_content_pickup_scr
-    cmp #$ff
-    beq pickup_addr_done
-fix_pickup_addr
-    lda meta_content_pickup_scr
+    sta pickup_scr+1
+    lda pickup_scr+1
+    bmi pickup_col_done
+    lda pickup_scr
+    sta pickup_col
+    lda pickup_scr+1
     clc
-    adc #<screen_base
-    sta meta_content_pickup_scr
-    lda meta_content_pickup_scr+1
-    adc #>screen_base
-    sta meta_content_pickup_scr+1
-pickup_addr_done
+    adc #>(color_base - screen_base)
+    sta pickup_col+1
+pickup_col_done
     jsr Skip2
 
     lda meta_content_record_flags
@@ -196,28 +189,6 @@ pickup_addr_done
     beq +
     jsr ApplyConveyor
 +
-    rts
-
-PaintPickup
-    lda meta_content_pickup_scr+1
-    cmp #$ff
-    beq paint_pickup_done
-    lda meta_content_pickup_scr
-    sta arr
-    lda meta_content_pickup_scr+1
-    sta arr+1
-    lda #ITEM_CHR
-    ldy #0
-    sta (arr),y
-    lda arr
-    sta col_ptr
-    lda arr+1
-    clc
-    adc #>(color_base - screen_base)
-    sta col_ptr+1
-    lda tile_color_src + TILE_ITEM
-    sta (col_ptr),y
-paint_pickup_done
     rts
 
 Skip3
@@ -533,8 +504,8 @@ TapeInitMeta
     lda #8
     sta meta_content_border
     lda #$ff
-    sta meta_content_pickup_scr
-    sta meta_content_pickup_scr+1
+    sta pickup_scr
+    sta pickup_scr+1
     lda #RAMP_BOUNDS_NONE
     sta meta_content_ramp_rx1
     sta meta_content_ramp_rx2

@@ -51,7 +51,6 @@ meta_content_guardian_data = meta_content_src + 39
 meta_content_has_arrow = meta_content_src + 99
 meta_content_spare = meta_content_src + 100
 meta_content_record_flags = meta_content_spare + 1
-meta_content_pickup_scr = meta_content_src + 102   ; 2 B screen addr; hi=$FF = none
 ending_pending = meta_content_spare
 guardian_data_base = meta_content_guardian_data
 tail_base = meta_content_src

@@ -48,7 +48,8 @@ room25_data
     !byte (2<<3)|0, (4<<3)|2, (20<<3)|0, (4<<3)|2, (20<<3)|0, (4<<3)|2, (20<<3)|1, (4<<3)|2
 
 ; --- pickup ---
-    !word screen_base + 196
+; screen $10c4 x=4 y=8
+    !word $10c4
 
 ; --- guardians ---
 ; count, then 8 B per guardian:

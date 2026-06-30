@@ -18,6 +18,8 @@ SIZE_OVERRIDES: dict[str, int] = {
     "arr3": 2,
     "scr_ptr": 2,
     "col_ptr": 2,
+    "pickup_scr": 2,
+    "pickup_col": 2,
     "map_ptr": 2,
     "udg_ptr": 2,
     "play_udg": 2,

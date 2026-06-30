@@ -49,7 +49,8 @@ room56_data
     !byte (1<<3)|2, (16<<3)|1, (2<<3)|0, (2<<3)|1
 
 ; --- pickup ---
-    !word screen_base + 244
+; screen $10f4 x=4 y=10
+    !word $10f4
 
 ; --- arrow ---
 ; x=80 y=42 v=1 sound=115

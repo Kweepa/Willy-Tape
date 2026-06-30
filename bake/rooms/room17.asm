@@ -53,7 +53,8 @@ room17_data
     !byte (3<<3)|2, (1<<3)|3, (2<<3)|0, (2<<3)|2, (1<<3)|3, (2<<3)|0, (26<<3)|2
 
 ; --- pickup ---
-    !word screen_base + 119
+; screen $1077 x=23 y=4
+    !word $1077
 
 ; --- conveyor ---
 ; x=11 y=9 len=3 belt=-1
