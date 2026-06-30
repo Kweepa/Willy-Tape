@@ -53,6 +53,7 @@ TAPE_UDG_BASE = 0x1800
 TAPE_UDG_END = 0x19FF
 TAPE_LOW_BANK_END = 0x17FF
 TAPE_HIGH_BANK = 0x1A00
+TAPE_MEM_TOP = 0x6000
 
 # PRG segments: (name, start_label, end_label). Order must match link layout.
 TAPE_PRG_SEGMENTS = [
@@ -71,6 +72,46 @@ def parse_labels(lbl: Path) -> dict[str, int]:
         if m:
             labels[m.group(2)] = int(m.group(1), 16)
     return labels
+
+
+def print_tape_free_memory(labels: dict[str, int], *, prg_end: int | None = None) -> None:
+    """Report slack before udg_base, slack before mem_top, and their sum."""
+    udg = labels.get("udg_base", TAPE_UDG_BASE)
+    low_end = labels.get("low_bank_end")
+    if prg_end is None:
+        prg_end = labels.get("prg_end")
+
+    if low_end is not None and low_end < udg:
+        gap_low = udg - low_end
+        print(
+            f"  gap {gap_low} B between low bank code and udg_base "
+            f"(${low_end:04X}-${udg - 1:04X})"
+        )
+    elif low_end is not None:
+        print(
+            f"  *** low bank code extends past udg_base "
+            f"(low_bank_end ${low_end:04X}, udg_base ${udg:04X})"
+        )
+        gap_low = 0
+    else:
+        gap_low = 0
+
+    if prg_end is not None and prg_end < TAPE_MEM_TOP:
+        gap_high = TAPE_MEM_TOP - prg_end
+        print(
+            f"  gap {gap_high} B between high bank code and mem_top "
+            f"(${prg_end:04X}-${TAPE_MEM_TOP - 1:04X})"
+        )
+    elif prg_end is not None and prg_end >= TAPE_MEM_TOP:
+        print(
+            f"  *** PRG end ${prg_end:04X} at or past mem_top ${TAPE_MEM_TOP:04X}"
+        )
+        gap_high = 0
+    else:
+        gap_high = 0
+
+    if gap_low or gap_high:
+        print(f"  free memory: {gap_low + gap_high} B")
 
 
 def check_tape_layout(labels: dict[str, int], *, end: int) -> int:
@@ -129,9 +170,14 @@ def check_tape_layout(labels: dict[str, int], *, end: int) -> int:
                 f"{n2} starts ${s2:04X} ({overlap} bytes)"
             )
             errors += 1
-        elif s2 - e1 - 1 > 0:
+        elif s2 - e1 - 1 > 0 and {
+            segments[i][0],
+            n2,
+        } != {"low bank code", "high bank code"}:
             gap = s2 - e1 - 1
             print(f"  gap {gap} B between {segments[i][0]} and {n2} (${e1 + 1:04X}-${s2 - 1:04X})")
+
+    print_tape_free_memory(labels, prg_end=end + 1)
 
     low_end = labels.get("low_bank_end")
     if low_end is not None and low_end > TAPE_LOW_BANK_END:

@@ -146,7 +146,7 @@ def build_regions(labels: dict[str, int]) -> tuple[list[Region], list[str]]:
     return regions, warnings
 
 
-def check_prg_segment_adjacency(segs: list[Region]) -> list[str]:
+def check_prg_segment_adjacency(segs: list[Region], labels: dict[str, int]) -> list[str]:
     errors: list[str] = []
     ordered = sorted(segs, key=lambda r: r.start)
     for i in range(len(ordered) - 1):
@@ -158,12 +158,19 @@ def check_prg_segment_adjacency(segs: list[Region]) -> list[str]:
                 f"{a.name} (${a.start:04X}-${a.end:04X}) vs "
                 f"{b.name} (${b.start:04X}-${b.end:04X})"
             )
-        elif b.start - a.end - 1 > 0:
+        elif b.start - a.end - 1 > 0 and {a.name, b.name} != {
+            "low bank code",
+            "high bank code",
+        }:
             gap = b.start - a.end - 1
             print(
                 f"  gap {gap} B between {a.name} and {b.name} "
                 f"(${a.end + 1:04X}-${b.start - 1:04X})"
             )
+
+    from memmap import print_tape_free_memory
+
+    print_tape_free_memory(labels)
     return errors
 
 
@@ -227,7 +234,7 @@ def main() -> int:
     ram = [r for r in regions if r.kind == "ram"]
 
     errors: list[str] = []
-    errors.extend(check_prg_segment_adjacency(prg_segs))
+    errors.extend(check_prg_segment_adjacency(prg_segs, labels))
     errors.extend(check_hole_vs_prg(prg_segs))
 
     sprites = next((r for r in prg_segs if r.name == "catalogue sprites"), None)
