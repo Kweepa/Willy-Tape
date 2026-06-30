@@ -24,10 +24,10 @@ main_loop
     beq +
     jsr arrow_update
 +
+    jsr FlickerItem             ; repaint pickup after ErasePlayer, before coll_check
     jsr Collide
     jsr DrawHud
     jsr CheckEndingTeleport
-    jsr FlickerItem             ; baked per room at image_base
     jsr AnimateConveyors
     jsr WaitForRaster
     +BorderDebugColor 8
