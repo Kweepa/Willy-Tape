@@ -54,8 +54,8 @@ room35_data
     !word $ffff
 
 ; --- ramp ---
-; x=13 y=13 len=2 dir=0
-    !byte $1d, $0d
+; x=13 y=13 len=2 dir=1
+    !byte $1d, $8d
 
 ; --- conveyor ---
 ; x=2 y=12 len=3 belt=0

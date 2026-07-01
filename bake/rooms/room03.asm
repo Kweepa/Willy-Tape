@@ -60,8 +60,8 @@ room03_data
     !word $10f4
 
 ; --- ramp ---
-; x=10 y=10 len=3 dir=0
-    !byte $2a, $0a
+; x=10 y=10 len=3 dir=1
+    !byte $2a, $8a
 
 ; --- guardians ---
 ; count, then 8 B per guardian:

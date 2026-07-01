@@ -8,7 +8,8 @@ python tools\mkcatalogue.py --rooms rooms --out catalogue.bin --map catalogue.ma
 if errorlevel 1 exit /b 1
 
 echo [2/3] Assembling jsw.prg...
-\app\acme\acme -o jsw.prg --vicelabels jsw.lbl jsw.asm
+for /f %%i in ('python tools\mkroom.py --count-items rooms') do set ENDGAME_ITEMS=%%i
+\app\acme\acme -o jsw.prg --vicelabels jsw.lbl -DENDGAME_ITEMS_REQUIRED=%ENDGAME_ITEMS% jsw.asm
 if errorlevel 1 exit /b 1
 AcmeLabelSorter jsw.lbl jsws.lbl
 python tools\lbloverlap.py jsws.lbl

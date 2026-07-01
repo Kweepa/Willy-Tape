@@ -51,8 +51,8 @@ room11_data
     !word $10e2
 
 ; --- ramp ---
-; x=1 y=8 len=6 dir=0
-    !byte $58, $01
+; x=1 y=8 len=6 dir=1
+    !byte $58, $81
 
 ; --- arrow ---
 ; x=40 y=34 v=-1 sound=36

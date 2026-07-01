@@ -53,8 +53,8 @@ room45_data
     !word $1089
 
 ; --- ramp ---
-; x=1 y=5 len=10 dir=0
-    !byte $95, $01
+; x=1 y=5 len=10 dir=1
+    !byte $95, $81
 
 ; --- conveyor ---
 ; x=12 y=10 len=12 belt=-1

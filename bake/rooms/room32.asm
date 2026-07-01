@@ -57,8 +57,8 @@ room32_data
     !word $106c
 
 ; --- ramp ---
-; x=6 y=2 len=6 dir=0
-    !byte $52, $06
+; x=6 y=2 len=6 dir=1
+    !byte $52, $86
 
 ; --- guardians ---
 ; count, then 8 B per guardian:

@@ -51,8 +51,8 @@ room04_data
     !word $10aa
 
 ; --- ramp ---
-; x=3 y=8 len=7 dir=0
-    !byte $68, $03
+; x=3 y=8 len=7 dir=1
+    !byte $68, $83
 
 ; --- conveyor ---
 ; x=0 y=13 len=2 belt=1

@@ -51,8 +51,8 @@ room21_data
     !word $10fe
 
 ; --- ramp ---
-; x=0 y=11 len=3 dir=0
-    !byte $2b, $00
+; x=0 y=11 len=3 dir=1
+    !byte $2b, $80
 
 ; --- conveyor ---
 ; x=11 y=13 len=10 belt=1

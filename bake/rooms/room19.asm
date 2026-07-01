@@ -53,8 +53,8 @@ room19_data
     !word $1049
 
 ; --- ramp ---
-; x=2 y=13 len=2 dir=0
-    !byte $1d, $02
+; x=2 y=13 len=2 dir=1
+    !byte $1d, $82
 
 ; --- conveyor ---
 ; x=4 y=7 len=16 belt=-1

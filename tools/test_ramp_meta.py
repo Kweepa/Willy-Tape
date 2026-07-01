@@ -10,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from audit_room_compress import pack_ramp2, strip_overlays, tile_grid  # noqa: E402
 from mkcatalogue import FLAG_RAMP  # noqa: E402
 from mkroom import (  # noqa: E402
     RAMP_UP_LEFT,
@@ -20,6 +21,7 @@ from mkroom import (  # noqa: E402
     WIDTH,
     derive_ramp_params,
     infer_ramp_from_tilemap,
+    parse_room,
     ramp_surface_abs,
 )
 from udg_pool import UDG_INDEX_BYTES  # noqa: E402
@@ -101,7 +103,35 @@ def find_ramp_bytes(blob: bytes, off: int) -> tuple[int, int] | None:
     return blob[pos], blob[pos + 1]
 
 
+def test_ramp_direction_from_tilemap() -> None:
+    """strip_overlays must preserve / vs \\ direction via row_step geometry."""
+    rooms_dir = ROOT / "rooms"
+    up_left = parse_room(
+        (rooms_dir / "room05.txt").read_text(encoding="utf-8"),
+        source=rooms_dir / "room05.txt",
+    )
+    up_right = parse_room(
+        (rooms_dir / "room37.txt").read_text(encoding="utf-8"),
+        source=rooms_dir / "room37.txt",
+    )
+    _, ramp_left, _, _ = strip_overlays(tile_grid(up_left["tilemap"]))
+    _, ramp_right, _, _ = strip_overlays(tile_grid(up_right["tilemap"]))
+    assert ramp_left is not None and ramp_right is not None
+
+    assert ramp_left["direction"] == 1, "room05 \\ ramp should be up-left"
+    assert ramp_right["direction"] == 0, "room37 / ramp should be up-right"
+
+    b_left = pack_ramp2(ramp_left)
+    b_right = pack_ramp2(ramp_right)
+    assert b_left[1] & 0x80, "room05 pack bit7 must be set for up-left"
+    assert not (b_right[1] & 0x80), "room37 pack bit7 must be clear for up-right"
+    assert b_left == bytes([0x70, 0x81]), f"room05 bytes {b_left.hex()}"
+    assert b_right[0] == 0x77 and b_right[1] == 0x02, f"room37 bytes {b_right.hex()}"
+
+
 def main() -> None:
+    test_ramp_direction_from_tilemap()
+
     cat_path = ROOT / "catalogue.bin"
     if not cat_path.is_file():
         print("catalogue.bin not found — run make.bat first")

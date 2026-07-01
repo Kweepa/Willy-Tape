@@ -80,8 +80,18 @@ def strip_overlays(grid: list[int]) -> tuple[list[int], dict | None, dict | None
     return base, ramp_info, conv_info, pickup
 
 
+def _ramp_tilemap_from_cells(cells: list[tuple[int, int]], ramp_type: int) -> list[str]:
+    """Build minimal tilemap with / or \\ at ramp cells for derive_ramp_bounds."""
+    ch = "/" if ramp_type == RAMP_UP_RIGHT else "\\"
+    lines = [" " * WIDTH for _ in range(TILEMAP_ROWS)]
+    for col, row in cells:
+        row_chars = list(lines[row])
+        row_chars[col] = ch
+        lines[row] = "".join(row_chars)
+    return lines
+
+
 def extract_ramp_overlay(grid: list[int]) -> dict | None:
-    ramp_type = RAMP_NONE
     cells: list[tuple[int, int]] = []
     for i, t in enumerate(grid):
         if t != TILE_RAMP:
@@ -90,11 +100,25 @@ def extract_ramp_overlay(grid: list[int]) -> dict | None:
         cells.append((col, row))
     if not cells:
         return None
-    # Infer direction from original tilemap chars — use bounds helper via fake tilemap
-    tilemap = grid_to_tilemap(grid)
-    from mkroom import infer_ramp_from_tilemap
 
-    ramp_type = infer_ramp_from_tilemap(tilemap)
+    by_col = {col: row for col, row in cells}
+    col_start = min(by_col)
+    col_end = max(by_col)
+    row_start = by_col[col_start]
+    if col_end == col_start:
+        ramp_type = RAMP_UP_RIGHT
+    else:
+        row_step_geom = by_col[col_start + 1] - row_start
+        if row_step_geom == -1:
+            ramp_type = RAMP_UP_RIGHT
+        elif row_step_geom == 1:
+            ramp_type = RAMP_UP_LEFT
+        else:
+            raise ValueError(
+                f"invalid ramp row step {row_step_geom} at col {col_start}"
+            )
+
+    tilemap = _ramp_tilemap_from_cells(cells, ramp_type)
     col_start, col_end, row_start, row_step = derive_ramp_bounds(tilemap, ramp_type)
     length = col_end - col_start + 1
     direction = 0 if ramp_type == RAMP_UP_RIGHT else 1

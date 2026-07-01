@@ -90,8 +90,7 @@ hud_items_col = color_base + hud_row_off + 22
 
 ROPE_ANCHOR_SCR = screen_base + ROPE_ANCHOR_COL
 ROPE_FIRST_UDG_ADDRESS = udg_base + ROPE_FIRST_UDG * 8
-master_bed_hook = guardian_udgs + 48
-master_bed_hook_bytes = 240
+; master_bed_hook — label in master_bedroom_tape.asm (disk build splices bake/master_bedroom.asm)
 
 pickup_got = $100
 pickup_got_last = pickup_got + $3d

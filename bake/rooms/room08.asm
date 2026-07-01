@@ -59,8 +59,8 @@ room08_data
     !word $10be
 
 ; --- ramp ---
-; x=20 y=5 len=2 dir=0
-    !byte $15, $14
+; x=20 y=5 len=2 dir=1
+    !byte $15, $94
 
 ; --- guardians ---
 ; count, then 8 B per guardian:

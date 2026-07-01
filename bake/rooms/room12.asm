@@ -55,8 +55,8 @@ room12_data
     !word $103c
 
 ; --- ramp ---
-; x=11 y=13 len=2 dir=0
-    !byte $1d, $0b
+; x=11 y=13 len=2 dir=1
+    !byte $1d, $8b
 
 ; --- arrow ---
 ; x=40 y=66 v=-1 sound=36

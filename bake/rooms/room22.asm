@@ -53,8 +53,8 @@ room22_data
     !word $1095
 
 ; --- ramp ---
-; x=12 y=0 len=12 dir=0
-    !byte $b0, $0c
+; x=12 y=0 len=12 dir=1
+    !byte $b0, $8c
 
 ; --- conveyor ---
 ; x=10 y=8 len=2 belt=-1

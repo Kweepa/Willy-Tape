@@ -55,8 +55,8 @@ room29_data
     !word $10ec
 
 ; --- ramp ---
-; x=2 y=12 len=3 dir=0
-    !byte $2c, $02
+; x=2 y=12 len=3 dir=1
+    !byte $2c, $82
 
 ; --- conveyor ---
 ; x=21 y=8 len=1 belt=-1

@@ -53,8 +53,8 @@ room24_data
     !word $10e9
 
 ; --- ramp ---
-; x=1 y=8 len=7 dir=0
-    !byte $68, $01
+; x=1 y=8 len=7 dir=1
+    !byte $68, $81
 
 ; --- conveyor ---
 ; x=16 y=12 len=4 belt=-1

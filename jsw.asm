@@ -32,6 +32,7 @@ low_bank_end = *
 !source "input.asm"
 !source "guardians.asm"
 !source "endgame.asm"
+!source "master_bedroom_tape.asm"
 !source "music.asm"
 
 !set ROPE_TEST = 0
