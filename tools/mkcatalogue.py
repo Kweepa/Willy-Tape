@@ -46,14 +46,36 @@ SCREEN_WIDTH = 24
 SCREEN_BASE = 0x1000
 PICKUP_NONE = 0xFFFF
 
-# meta8 byte 6 — feature flags (optional overlays + UDG chunks)
-FLAG_NASTY = 0x01
-FLAG_RAMP = 0x02
-FLAG_CONVEYOR = 0x04
-FLAG_ROPE = 0x08
-FLAG_ARROW = 0x10
+# meta8 byte 6 — bits 0-5 = UDG chr 1-6; bits 6-7 = rope / arrow
+FLAG_FLOOR = 0x01
+FLAG_WALL = 0x02
+FLAG_NASTY = 0x04
+FLAG_RAMP = 0x08
+FLAG_CONVEYOR = 0x10
+FLAG_ITEM = 0x20
+FLAG_ROPE = 0x40
+FLAG_ARROW = 0x80
 
-UDG_FIXED_BYTES = 24  # floor + wall + item (8 B each)
+FLAG_UDG_ALWAYS = FLAG_FLOOR | FLAG_WALL | FLAG_ITEM
+UDG_CHR_ORDER = (1, 2, 3, 4, 5, 6)
+UDG_FLAG_BY_CHR = {
+    1: FLAG_FLOOR,
+    2: FLAG_WALL,
+    3: FLAG_NASTY,
+    4: FLAG_RAMP,
+    5: FLAG_CONVEYOR,
+    6: FLAG_ITEM,
+}
+UDG_NAME_BY_CHR = {
+    1: "floor",
+    2: "wall",
+    3: "nasty",
+    4: "ramp",
+    5: "belt",
+    6: "pickup",
+}
+
+UDG_FIXED_BYTES = 24  # min floor + wall + item (8 B each); max 48 B (all six)
 
 
 SAW_LINE = re.compile(r"\bsaw\b", re.IGNORECASE)
@@ -483,7 +505,7 @@ def pack_room_title(room: dict) -> bytes:
 def room_record_flags(room: dict) -> int:
     grid = tile_grid(room["tilemap"])
     base, ramp, conv, _pickup = strip_overlays(grid)
-    flags = 0
+    flags = FLAG_UDG_ALWAYS
     if TILE_HAZARD in base:
         flags |= FLAG_NASTY
     if ramp:
@@ -494,30 +516,16 @@ def room_record_flags(room: dict) -> int:
 
 
 def pack_room_udg(room: dict, flags: int) -> bytes:
-    """floor + wall + item always; nasty/ramp/belt UDG when flag set."""
-    chunks = [
-        bytes(room["tileudg"][1][:8]),
-        bytes(room["tileudg"][2][:8]),
-        bytes(room["tileudg"][6][:8]),
-    ]
-    if flags & FLAG_NASTY:
-        chunks.append(bytes(room["tileudg"][3][:8]))
-    if flags & FLAG_RAMP:
-        chunks.append(bytes(room["tileudg"][4][:8]))
-    if flags & FLAG_CONVEYOR:
-        chunks.append(bytes(room["tileudg"][5][:8]))
+    """UDG chunks in chr order 1-6; 8 B per set flag bit."""
+    chunks: list[bytes] = []
+    for chr_id in UDG_CHR_ORDER:
+        if flags & UDG_FLAG_BY_CHR[chr_id]:
+            chunks.append(bytes(room["tileudg"][chr_id][:8]))
     return b"".join(chunks)
 
 
 def udg_blob_size(flags: int) -> int:
-    size = UDG_FIXED_BYTES
-    if flags & FLAG_NASTY:
-        size += 8
-    if flags & FLAG_RAMP:
-        size += 8
-    if flags & FLAG_CONVEYOR:
-        size += 8
-    return size
+    return (flags & 0x3F).bit_count() * 8
 
 
 def pack_arrow(room: dict) -> bytes:
@@ -564,7 +572,7 @@ def build_room_record(
     grid = tile_grid(room["tilemap"])
     base, ramp, conv, pickup = strip_overlays(grid)
 
-    flags = 0
+    flags = FLAG_UDG_ALWAYS
     if TILE_HAZARD in base:
         flags |= FLAG_NASTY
     if ramp:
@@ -661,9 +669,12 @@ def build_room_record(
 
 def flags_desc(flags: int) -> str:
     bits = (
+        (FLAG_FLOOR, "floor"),
+        (FLAG_WALL, "wall"),
         (FLAG_NASTY, "nasty"),
         (FLAG_RAMP, "ramp"),
         (FLAG_CONVEYOR, "conveyor"),
+        (FLAG_ITEM, "item"),
         (FLAG_ROPE, "rope"),
         (FLAG_ARROW, "arrow"),
     )

@@ -118,32 +118,18 @@ StampHudRow
     rts
 
 LoadRoomUdgs
-
-    lda #TILE_PLATFORM          ; floor chr 1
-    jsr LoadOneUdgChr
-    lda #TILE_SOLID             ; wall chr 2
-    jsr LoadOneUdgChr
-    lda #ITEM_CHR               ; pickup chr 6
-    jsr LoadOneUdgChr
-
     lda meta_content_record_flags
-    and #FLAG_NASTY
-    beq +
-    lda #TILE_HAZARD
+    sta tmp
+    ldx #1
+-
+    lsr tmp
+    bcc +
+    txa
     jsr LoadOneUdgChr
 +
-    lda meta_content_record_flags
-    and #FLAG_RAMP
-    beq +
-    lda #TILE_RAMP
-    jsr LoadOneUdgChr
-+
-    lda meta_content_record_flags
-    and #FLAG_CONVEYOR
-    beq +
-    lda #TILE_CONVEYOR
-    jsr LoadOneUdgChr
-+
+    inx
+    cpx #7
+    bne -
     rts
 
 LoadRoomArrow

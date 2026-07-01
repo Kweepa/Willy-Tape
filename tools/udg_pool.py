@@ -35,7 +35,7 @@ UDG_POOL_ORDER = (
     TILE_PICKUP,
 )
 
-UDG_INDEX_ORDER = (TILE_FLOOR, TILE_WALL, TILE_PICKUP, TILE_NASTY, TILE_RAMP, TILE_BELT)
+UDG_INDEX_ORDER = (TILE_FLOOR, TILE_WALL, TILE_NASTY, TILE_RAMP, TILE_BELT, TILE_PICKUP)
 
 UDG_INDEX_BYTES = 6  # per-room canonical indices (fixed)
 
@@ -393,13 +393,13 @@ class UdgPool:
         out = bytearray()
         for tile_type in UDG_INDEX_ORDER:
             if tile_type in (TILE_NASTY, TILE_RAMP, TILE_BELT):
-                if tile_type == TILE_NASTY and not (flags & 0x01):
+                if tile_type == TILE_NASTY and not (flags & 0x04):
                     out.append(0)
                     continue
-                if tile_type == TILE_RAMP and not (flags & 0x02):
+                if tile_type == TILE_RAMP and not (flags & 0x08):
                     out.append(0)
                     continue
-                if tile_type == TILE_BELT and not (flags & 0x04):
+                if tile_type == TILE_BELT and not (flags & 0x10):
                     out.append(0)
                     continue
             out.append(self.assignment.get((rid, tile_type), 0) & 0xFF)

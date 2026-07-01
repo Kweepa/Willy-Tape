@@ -19,11 +19,14 @@ SCREEN_BASE = 0x1000
 PICKUP_NONE = 0xFFFF
 UDG_FIXED_BYTES = 24
 
-FLAG_NASTY = 0x01
-FLAG_RAMP = 0x02
-FLAG_CONVEYOR = 0x04
-FLAG_ROPE = 0x08
-FLAG_ARROW = 0x10
+FLAG_FLOOR = 0x01
+FLAG_WALL = 0x02
+FLAG_NASTY = 0x04
+FLAG_RAMP = 0x08
+FLAG_CONVEYOR = 0x10
+FLAG_ITEM = 0x20
+FLAG_ROPE = 0x40
+FLAG_ARROW = 0x80
 
 VIC_COLOR_NAMES: dict[int, str] = {
     0: "BLK",
@@ -76,12 +79,18 @@ def flags_binary(flags: int) -> str:
 
 def flags_asm(flags: int) -> str:
     parts = []
+    if flags & FLAG_FLOOR:
+        parts.append("FLAG_FLOOR")
+    if flags & FLAG_WALL:
+        parts.append("FLAG_WALL")
     if flags & FLAG_NASTY:
         parts.append("FLAG_NASTY")
     if flags & FLAG_RAMP:
         parts.append("FLAG_RAMP")
     if flags & FLAG_CONVEYOR:
         parts.append("FLAG_CONVEYOR")
+    if flags & FLAG_ITEM:
+        parts.append("FLAG_ITEM")
     if flags & FLAG_ROPE:
         parts.append("FLAG_ROPE")
     if flags & FLAG_ARROW:
@@ -103,9 +112,12 @@ def format_meta8(data: bytes) -> list[str]:
     bg = (vic >> 4) & 0x0F
     vic_expr = (bg << 4) | border
     flag_bits = (
+        (FLAG_FLOOR, "floor"),
+        (FLAG_WALL, "wall"),
         (FLAG_NASTY, "nasty"),
         (FLAG_RAMP, "ramp"),
         (FLAG_CONVEYOR, "conveyor"),
+        (FLAG_ITEM, "item"),
         (FLAG_ROPE, "rope"),
         (FLAG_ARROW, "arrow"),
     )
@@ -176,17 +188,17 @@ def _udg_block(chunk: bytes, name: str) -> list[str]:
 def format_udg(data: bytes, extra: Mapping[str, Any]) -> list[str]:
     flags = int(extra.get("flags", 0))
     lines = [
-        "; types 1 floor, 2 wall, 6 pickup always; 3 nasty / 4 ramp / 5 belt when flagged",
+        "; chr 1-6 in order: floor, wall, nasty, ramp, belt, pickup — 8 B per set flag",
         "; type 0 empty is always zero — not stored",
     ]
     pos = 0
-    for name in ("floor", "wall", "pickup"):
-        lines.extend(_udg_block(data[pos : pos + 8], name))
-        pos += 8
     optional = (
+        (FLAG_FLOOR, "floor"),
+        (FLAG_WALL, "wall"),
         (FLAG_NASTY, "nasty"),
         (FLAG_RAMP, "ramp"),
         (FLAG_CONVEYOR, "belt"),
+        (FLAG_ITEM, "pickup"),
     )
     for bit, name in optional:
         if flags & bit:

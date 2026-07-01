@@ -15,13 +15,17 @@ udg_base = $1800
 ; Read in place. Tile colours are 6 B inline in each room record.
 
 ; Room record flags (meta8 byte 6 — see bake/room_record.asm)
-FLAG_NASTY    = $01
-FLAG_RAMP     = $02
-FLAG_CONVEYOR = $04
-FLAG_ROPE     = $08
-FLAG_ARROW    = $10
+; bits 0-5 = UDG chr 1-6; bits 6-7 = rope / arrow
+FLAG_FLOOR    = $01
+FLAG_WALL     = $02
+FLAG_NASTY    = $04
+FLAG_RAMP     = $08
+FLAG_CONVEYOR = $10
+FLAG_ITEM     = $20
+FLAG_ROPE     = $40
+FLAG_ARROW    = $80
 
-UDG_FIXED_BYTES = 24           ; per-room floor + wall + item (optional +8 each)
+UDG_FIXED_BYTES = 24           ; min floor + wall + item (8 B each); max 48 B (all six)
 
 ; Runtime room meta (104 B) on stack page after pickup_got; guardian AoS at +39 in-place.
 meta_content_src = $13e

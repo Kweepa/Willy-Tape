@@ -10,7 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from audit_room_compress import strip_overlays, tile_grid  # noqa: E402
-from mkcatalogue import FLAG_CONVEYOR, FLAG_NASTY, FLAG_RAMP, gameplay_room_paths  # noqa: E402
+from mkcatalogue import FLAG_CONVEYOR, FLAG_NASTY, FLAG_RAMP, FLAG_UDG_ALWAYS, gameplay_room_paths  # noqa: E402
 from mkroom import TILE_HAZARD, parse_room  # noqa: E402
 from udg_pool import (  # noqa: E402
     TILE_BELT,
@@ -58,7 +58,7 @@ DEFAULT_OVERRIDES = (
 def room_flags(room: dict) -> int:
     grid = tile_grid(room["tilemap"])
     base, ramp, conv, _pickup = strip_overlays(grid)
-    flags = 0
+    flags = FLAG_UDG_ALWAYS
     if TILE_HAZARD in base:
         flags |= FLAG_NASTY
     if ramp:
