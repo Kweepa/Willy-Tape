@@ -10,7 +10,6 @@ hud_udg_men
 hud_udg_item
     !byte 4, 4, 174, 174, 162, 66, 66, 238
 
-
 !if arrow_udg_ltr <> high_bank {
 !error "arrow_udg_ltr must be at high_bank ($1A00)"
 }

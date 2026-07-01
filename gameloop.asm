@@ -142,7 +142,7 @@ erase_player_done
 
 DrawHud
     lda items_collected
-    ldy #$b0
+    ldy #DIGIT_0_CHR
 -
     cmp #10
     bcc +
@@ -152,12 +152,12 @@ DrawHud
 +
     sty hud_items_scr
     clc
-    adc #$b0
+    adc #DIGIT_0_CHR
     sta hud_items_scr+1
 
     lda men
     clc
-    adc #$b0
+    adc #DIGIT_0_CHR
     sta hud_men_count_scr
     rts
 

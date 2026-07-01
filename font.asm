@@ -1,16 +1,12 @@
 ;
 ; Proportional font — ported from Miner-main/font.asm.
 ; Title strings in catalogue use 1-based compact glyph bytes (0 = end; N = glyph N-1).
-; fontchars table: bake/fontchars.asm (subset of tools/fontchars_full.asm).
-; Composite canvas: UDG chr propfont_first .. propfont_first+PROPFONT_COLS-1.
+; Glyph patterns: font_glyphs @ $1A20 (arrow_udgs.asm). Composite canvas: chr 7–21.
 ;
 
 !zone font
 
-fontchars
-        !source "bake/fontchars.asm"
-
-; A = compact glyph index -> arr2 = fontchars + index*8
+; A = compact glyph index -> arr2 = font_glyphs + index*8
 GetCharDefAddr
         ldx #0
         stx arr2+1
@@ -20,10 +16,10 @@ GetCharDefAddr
         rol arr2+1
         asl
         rol arr2+1
-        adc #<fontchars
+        adc #<font_glyphs
         sta arr2
         lda arr2+1
-        adc #>fontchars
+        adc #>font_glyphs
         sta arr2+1
         rts
 
@@ -98,7 +94,7 @@ PutFontUDGsOnScreen
 -
         sta screen_base + hud_row_off,x
         inx
-        cpx #18
+        cpx #19
         bne -
         rts
 

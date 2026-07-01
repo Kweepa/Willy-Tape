@@ -80,9 +80,10 @@ conveyor_prefix_bytes = 19
 do_belt_prefix_bytes = 26
 tile_color_bytes = 6
 
-hud_men_scr = screen_base + hud_row_off + 18
-hud_men_col = color_base + hud_row_off + 18
-hud_men_count_scr = screen_base + hud_row_off + 19
+hud_men_scr = screen_base + hud_row_off + 19
+hud_men_col = color_base + hud_row_off + 19
+hud_men_count_scr = screen_base + hud_row_off + 20
+hud_men_count_col = color_base + hud_row_off + 20
 hud_item_scr = screen_base + hud_row_off + 21
 hud_item_col = color_base + hud_row_off + 21
 hud_items_scr = screen_base + hud_row_off + 22

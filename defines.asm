@@ -18,6 +18,8 @@ TILE_ITEM = 6                   ; map-only marker for pickup cell (not in author
 ITEM_CHR = 6                    ; pickup (TILE_ITEM)
 MEN_CHR = 66                    ; HUD men icon
 HUD_ITEM_CHR = 67               ; HUD items icon
+FONT_CHR = 68                   ; resident propfont glyphs @ $1A20 (arrow_udgs.asm)
+!source "bake/font_equates.inc"
 PROPFONT_CHR = 7
 PROPFONT_COLS = 15
 ; propfont_udg label kept for PutFontUDGsOnScreen clear loop (HUD @ PROPFONT_CHR).
@@ -29,7 +31,7 @@ ARROW_CHR_RTL = 65
 
 udg_base = $1800
 UDG_CHAR_SLOTS = 64
-high_bank = udg_base + UDG_CHAR_SLOTS * 8   ; $1A00 — arrow UDGs chr 64–65, then code
+high_bank = udg_base + UDG_CHAR_SLOTS * 8   ; $1A00 — arrow/men/item UDGs, font @ $1A20
 guardian_udgs = udg_base + GUARDIAN_CHR*8
 player_udg = udg_base + PLAY_CHR*8
 ; Arrow glyph addresses — labels in arrow_udgs.asm @ high_bank
