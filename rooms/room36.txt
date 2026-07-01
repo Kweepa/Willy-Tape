@@ -2,7 +2,7 @@
 @playable
 @title A bit of tree
 @conn 42 255 30 37
-@spawn 48 104
+@spawn 28 56
 @border CYN
 @belt 0
 @arrow y=73 x=40 v=-1 sound=36
@@ -35,7 +35,7 @@ FFFF      WWFF         *
 
 @guardians
 y=16 x=1(0..9) v=-1 yellow bird
-x=5 y=48(40..80) v=2 purple chip
+x=5 y=48(40..80) v=1 purple chip
 
 @floorudg 173,82,41,0,1,2,0,0
 @walludg 214,107,102,219,105,107,217,109
