@@ -123,8 +123,7 @@ Collide
     beq collide_active
     rts
 collide_active
-    lda meta_content_room_has_rope ; skip if !(rope && holding)
-    and rope_willy_is_holding
+    lda rope_willy_is_holding
     beq collide_body
     jsr RopePlayerInput          ; climb / descend / jump / fall-off
     lda rope_willy_is_holding
