@@ -54,10 +54,18 @@ MoveGuardian
     adc #1
     sta hd
 +
+    lda guard_axis
+    bne maybe_advance_vframe
+    beq advance_g_frame
+maybe_advance_vframe
+    lda vguard_anim
+    beq MoveGuardianDone
+advance_g_frame
     inc g_frame
     lda g_frame
     and g_fctl
     sta g_frame
+MoveGuardianDone
     rts
 
 DrawGuardian

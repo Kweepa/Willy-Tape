@@ -29,6 +29,9 @@ WarmStart
     dey
     bpl -
 
+    lda #1
+    sta vguard_anim
+
     jmp start_game
 
     ; horizontal centering, vertical centering,

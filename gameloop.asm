@@ -134,6 +134,9 @@ erase_player_done
 	bpl +
 	lda #2
     sta up_down_ctr
+    lda vguard_anim
+    eor #1
+    sta vguard_anim
 +
     rts
 

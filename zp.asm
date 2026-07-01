@@ -156,6 +156,7 @@ last_py         = $4e
 belt_active     = $4f
 
 align_tmp       = $58
+vguard_anim     = $5a          ; 1 = advance vertical g_frame this up_down cycle
 safe_transition_count = $59      ; room changes since last grounded safe snapshot
 safe_px         = $5d          ; last grounded position (fall-death respawn only)
 safe_py         = $5e
