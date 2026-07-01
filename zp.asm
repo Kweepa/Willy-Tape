@@ -25,8 +25,7 @@
 ;   $E8-$F0   stringwidth..stringrow — font.asm (load-time title print)
 ;   $F1       propfont_first — font.asm (first composite UDG chr)
 ;   draw_vguard_chrs / ingame_tune_pitch are PRG labels, not ZP
-;   $37-$3C   draw_player_offsets — willy_draw.asm (PRG)
-;   $3D-$42   draw_player_chrs — willy_draw.asm (PRG)
+;   $37-$3A   stickleft/stickright/stickup/stickfire — input.asm (ScanJoystick)
 ;   $33-$35   title scroll/hold scratch (title only)
 ;   $D7-$D9   title_scroll_ctr / title_music_step / title_mpack (title only)
 ;   $4d       music_key_prev (last ADGJL scan mask; 0 = released)
@@ -143,6 +142,11 @@ title_mpack         = $d9
 totalinairtime  = $51
 
 rasterline      = $36
+
+stickleft       = $37
+stickright      = $38
+stickup         = $39          ; read but unused (Miner parity)
+stickfire       = $3a
 
 music_index     = $43
 music_delay     = $44

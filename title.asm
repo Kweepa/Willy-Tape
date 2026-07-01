@@ -1,4 +1,4 @@
-; Title screen — propfont credits, wait for SPACE release.
+; Title screen — propfont credits, wait for SPACE or FIRE release.
 ; Layout: 20-byte table (5×4) — tweak row/col/firstudg/colour/offset until happy.
 ; String blob: bake/title_strings.inc (tools/gen_title_strings.py).
 
@@ -16,12 +16,27 @@ TitleScreen
     jsr WaitForRaster
     ldx #$ef                      ; space bar row
     jsr ScanKeyRow
-    beq .title_loop
+    bne .title_exit_keyboard
+    jsr .stick_fire_pressed
+    bne .title_exit_fire
+    jmp .title_loop
 
-.title_exit
+.title_exit_keyboard
     ldx #$ef
     jsr ScanKeyRow
-    bne .title_exit               ; wait for release
+    bne .title_exit_keyboard      ; wait for release
+    rts
+
+.title_exit_fire
+    jsr .stick_fire_pressed
+    bne .title_exit_fire          ; wait for release
+    rts
+
+; Z set = no fire, Z clear = fire pressed (bit 5 of $9111 active-low)
+.stick_fire_pressed
+    lda $9111
+    and #$20
+    eor #$20
     rts
 
 .draw_titles
@@ -87,9 +102,9 @@ TitleScreen
 title_line_y
     !byte 4, 5, 8, 13
 title_line_x
-    !byte 7, 7, 6, 8
+    !byte 7, 7, 6, 6
 title_line_length
-    !byte 10, 10, 12, 8
+    !byte 10, 10, 12, 13
 title_line_firstudg
     !byte 1, 16, 32, 48
 title_line_text_offset
