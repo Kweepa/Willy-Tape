@@ -19,8 +19,6 @@ def h8_sprite_key(room):
 
 
 for p in sorted(ROOMS.glob("room*.txt")):
-    if p.name == "room62.txt":
-        continue
     room = parse_room(p.read_text(), p)
     h8 = [g for g in room["guardians"] if g["axis"] == 0 and g["fctl"] == 1]
     if len(h8) < 2:

@@ -4,9 +4,6 @@ SHOW_TITLE = 0
 
 !if SHOW_TITLE {
 
-    lda #ROOM_TITLE
-    sta map
-    jsr LoadRoom
     jsr TitleScreen
 }
 

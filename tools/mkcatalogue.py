@@ -146,7 +146,7 @@ class GuardianPool:
 
 def gameplay_room_paths(rooms_dir: Path) -> list[Path]:
     paths = sorted(rooms_dir.glob("room*.txt"))
-    return [p for p in paths if p.name not in ("room62.txt", "room47.txt")]
+    return [p for p in paths if p.name != "room47.txt"]
 
 
 def _entity_block_count(ent_id: int, page: int, sprite: int, fr_hint: str | None) -> int:

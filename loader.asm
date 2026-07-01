@@ -9,19 +9,12 @@ LoadRoom
 
     jsr SetColors
 
-    lda map
-    cmp #ROOM_TITLE
-    beq LoadRoomDone
-
     jsr FindRoomRecord
     jsr DecompressRoom
     jsr TapePaintMap
-    jsr InitPlayerState
 
-LoadRoomDone
-    rts
+    ; init player state
 
-InitPlayerState
     ldx #0
     stx belt_active
     stx is_on_ramp

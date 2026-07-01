@@ -101,7 +101,7 @@ Measured build: ~8.6 KB room records + sets + pool ≈ **17 KB** file; pool RAM 
 
 ## Title and audio
 
-- **Title** in main binary (`title.asm`) — not baked into room 62
+- **Title** in main binary (`title.asm`) — not a catalogue room
 - **Font** from Miner-main (`font.asm`, `PrintSpecFontString`)
 - **Music** from Miner-main (`music.asm`, dual/triple voice + vibrato)
 

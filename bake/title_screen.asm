@@ -1,4 +1,4 @@
-; Title screen loop + scrolling HUD message — baked into r62 @ image_base.
+; Title screen loop + scrolling HUD message — standalone bake (title.asm path).
 ; CLI: -DORG=$1A05 -DSCANKEYROW=… -DWAITFORRASTER=… -DSETCOLORS=… -DLOADROOM=…
 ;      -DHUD_SCR=… -DHUD_COL=… -DMSG_LEN=… -DHOLD_FRAMES=150 -DSCROLL_FRAMES=6
 ;      -DSLOT_BYTES=510 -DTITLE_BAR_COUNT=28

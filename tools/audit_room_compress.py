@@ -331,11 +331,11 @@ def summarize(values: list[int]) -> str:
 
 
 def main() -> None:
-    rows = [analyze_room(p) for p in ROOMS if p.name != "room62.txt"]
+    rows = [analyze_room(p) for p in ROOMS]
     n = len(rows)
 
     print("=== JSW room tilemap compression audit ===")
-    print(f"Rooms analysed: {n} (excluding room62 logo stub)")
+    print(f"Rooms analysed: {n}")
     print(f"Gameplay cells per room: {CELLS} ({WIDTH}x{TILEMAP_ROWS})")
     print()
 
@@ -379,7 +379,7 @@ def main() -> None:
     print()
 
     # Title table: 61 unique titles
-    titles = sorted({parse_room(p.read_text(), p)["title"] for p in ROOMS if p.name != "room62.txt"})
+    titles = sorted({parse_room(p.read_text(), p)["title"] for p in ROOMS})
     title_table = sum(len(t) + 1 for t in titles)  # null-terminated
     print(f"Shared title string table: {title_table} bytes ({len(titles)} titles)")
     print()

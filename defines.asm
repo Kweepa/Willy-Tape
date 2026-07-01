@@ -56,7 +56,6 @@ ROOM_BATHROOM = 33
 ; to test rope: room 31 (swimming pool)
 ; to test arrow: room 36 (a bit of tree)
 ROOM_START = 36
-ROOM_TITLE = 62
 
 ; RJY.prg overlay at GetPlayerInput; keyboard slot padded with $EA to this size (62 B).
 GETPLAYERINPUT_PATCH_BYTES = 62
