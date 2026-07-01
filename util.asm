@@ -73,7 +73,13 @@ ConvertTileXYToScreenAddr
 
 GetPlayerFrameAddr
     pha
+    lda map
+    cmp #ROOM_NIGHTMARE
+    beq +
     lda #player_sprite_set_idx
+    bne ++
++   lda #nightmare_player_sprite_set_idx
+++
     asl
     tax
     lda sprite_set_metadata,x

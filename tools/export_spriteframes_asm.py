@@ -26,11 +26,12 @@ ROOT = Path(__file__).resolve().parent.parent
 # Skool interleaved .txt -> column-major at export (same as mkroom @guardiansprites).
 CUSTOM_SPRITES: dict[str, Path] = {
     "maria": ROOT / "maria.txt",
-    "toilet": ROOT / "toilet.txt",
     "barrel": ROOT / "barrel.txt",
 }
 
-# VIC composite — passthrough (not Skool L,R pairs).
+# toilet.txt holds 4 frames: 0-1 normal guardian, 2-3 endgame sequence.
+TOILET_SPRITE = ROOT / "toilet.txt"
+
 FOOT_SPRITE = ("foot", ROOT / "foot.txt")
 
 
@@ -54,7 +55,7 @@ def build_sprite_source_asm(root: Path) -> str:
     """All sprite types — consumed by mkcatalogue.py, embedded via catalogue_sprites.asm."""
     gfx = load_gfx()
     out: list[str] = _header() + [
-        "; demonA/B/C and foot: VIC composite passthrough (not deinterleaved).",
+        "; demonA/B/C: VIC composite passthrough (not deinterleaved).",
         "",
     ]
 
@@ -81,15 +82,35 @@ def build_sprite_source_asm(root: Path) -> str:
             raise ValueError(f"no frames in {path}")
         out.extend(render_type(label, frames, comment=f"{label} ({path.name})"))
 
+    toilet_frames = [
+        guardian_frame_column_major(fr) for fr in read_sprite_txt(TOILET_SPRITE)
+    ]
+    if len(toilet_frames) != 4:
+        raise ValueError(f"{TOILET_SPRITE.name}: expected 4 frames, got {len(toilet_frames)}")
+    out.extend(
+        render_type(
+            "toilet",
+            toilet_frames[:2],
+            comment=f"toilet ({TOILET_SPRITE.name} frames 0-1)",
+        )
+    )
+    out.extend(
+        render_type(
+            "toilet_end",
+            toilet_frames[2:],
+            comment=f"toilet_end ({TOILET_SPRITE.name} frames 2-3)",
+        )
+    )
+
     foot_label, foot_path = FOOT_SPRITE
-    foot_frames = read_sprite_txt(foot_path)
+    foot_frames = [guardian_frame_column_major(fr) for fr in read_sprite_txt(foot_path)]
     if not foot_frames:
         raise ValueError(f"no frames in {foot_path}")
     out.extend(
         render_type(
             foot_label,
             foot_frames,
-            comment=f"{foot_label} ({foot_path.name}) — VIC composite passthrough",
+            comment=f"{foot_label} ({foot_path.name})",
         )
     )
 

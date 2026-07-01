@@ -67,10 +67,9 @@ DrawPlayerBody
     and #$03
     sta tmp
     lda lastxmove
-    bpl +
+    bmi +
     lda tmp
-    clc
-    adc #4
+    eor #4                      ; bidir pool: 0-3 left, 4-7 right (same as guardians)
     sta tmp
 +
     lda tmp

@@ -1610,7 +1610,9 @@ def load_player_bmp_file(path: Path) -> bytes:
 
 
 def load_default_player_bmp() -> bytes:
-    return load_player_bmp_file(DEFAULT_PLAYER_BMP_PATH)
+    from guardian_sprite_types import read_willy_txt
+
+    return b"".join(read_willy_txt(DEFAULT_PLAYER_BMP_PATH))
 
 
 def player_bmp_for_room(room: dict) -> bytes:

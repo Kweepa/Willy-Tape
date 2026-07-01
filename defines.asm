@@ -40,7 +40,7 @@ RASTERLINE_NTSC     = $62
 GUARDIAN_HORIZONTAL = 0
 GUARDIAN_VERTICAL = 1
 
-; player frames 0-7 via player_sprite_set_idx in catalogue sprite pool; GetPlayerFrameAddr
+; player frames 0-3 left / 4-7 right (guardian bidir order); GetPlayerFrameAddr
 
 RAMP_NONE = 0
 RAMP_UP_RIGHT = 1

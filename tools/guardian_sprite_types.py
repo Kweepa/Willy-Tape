@@ -54,7 +54,8 @@ CUSTOM_COUNTS: dict[str, int] = {
     "demonc": 2,
     "maria": 4,
     "foot": 1,
-    "toilet": 4,
+    "toilet": 2,
+    "toilet_end": 2,
     "barrel": 2,
 }
 
@@ -160,7 +161,11 @@ def read_sprite_txt(path: Path) -> list[bytes]:
 
 def read_willy_txt(path: Path) -> list[bytes]:
     """Load willy.txt (Skool interleaved L,R pairs) as column-major frames."""
-    return [deinterleave_frame(fr) for fr in read_sprite_txt(path)]
+    frames = [deinterleave_frame(fr) for fr in read_sprite_txt(path)]
+    if len(frames) == 8:
+        # Skool order is right 0-3 / left 4-7; pool uses guardian bidir order (left / right).
+        return frames[4:] + frames[:4]
+    return frames
 
 
 def read_demon_txt(path: Path) -> dict[str, list[bytes]]:

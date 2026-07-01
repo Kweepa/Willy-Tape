@@ -88,6 +88,10 @@ class EntityBlock:
     block_fmax: int
 
 
+# Runtime hooks reference these sets without a room guardian (see endgame.asm).
+RUNTIME_POOL_SPRITES: tuple[str, ...] = ("toilet_end",)
+
+
 @dataclass
 class GuardianPool:
     """Build-time pool: one entry per distinct guardian sprite name."""
@@ -95,6 +99,30 @@ class GuardianPool:
     _flat: list[bytes] = field(default_factory=list)
     _by_name: dict[str, int] = field(default_factory=dict)
     sets: list[tuple[int, int, str]] = field(default_factory=list)  # start, count, name
+    _toilet_pool_base: int | None = field(default=None, init=False)
+
+    def _register_toilet_pair(self) -> int:
+        """Append toilet frames 0-1 and 2-3 once; return pool index of frame 0."""
+        if self._toilet_pool_base is not None:
+            return self._toilet_pool_base
+
+        normal = sprite_frames("toilet")
+        ending = sprite_frames("toilet_end")
+        if len(normal) != 2 or len(ending) != 2:
+            raise ValueError(
+                f"toilet/toilet_end: expected 2 frames each, got "
+                f"{len(normal)}/{len(ending)}"
+            )
+        for label, frames in (("toilet", normal), ("toilet_end", ending)):
+            for fr in frames:
+                if len(fr) != 32:
+                    raise ValueError(f"{label!r}: frame must be 32 bytes, got {len(fr)}")
+
+        start = len(self._flat)
+        self._flat.extend(normal)
+        self._flat.extend(ending)
+        self._toilet_pool_base = start
+        return start
 
     def set_index(self, name: str) -> int:
         """Return set index for sprite name; append frames on first use."""
@@ -103,6 +131,14 @@ class GuardianPool:
             raise ValueError("guardian missing sprite name")
         if key in self._by_name:
             return self._by_name[key]
+
+        if key in ("toilet", "toilet_end"):
+            base = self._register_toilet_pair()
+            start = base if key == "toilet" else base + 2
+            idx = len(self.sets)
+            self.sets.append((start, 2, key))
+            self._by_name[key] = idx
+            return idx
 
         frames = sprite_frames(key)
         for fr in frames:
@@ -663,7 +699,11 @@ def build_catalogue(rooms_dir: Path) -> tuple[bytes, dict]:
         all_warnings.extend(rb.stats.get("guardian_warnings", []))
         room_builds.append(rb)
 
+    for name in RUNTIME_POOL_SPRITES:
+        pool.set_index(name)
+
     player_sprite_set_idx = pool.set_index("willy")
+    nightmare_player_sprite_set_idx = pool.set_index("bat")
 
     sets_blob = pool.sets_blob()
     pool_blob = pool.frames_blob()
@@ -700,6 +740,7 @@ def build_catalogue(rooms_dir: Path) -> tuple[bytes, dict]:
             "pool_frames": pool.frame_count,
             "pool_ram_bytes": pool.pool_ram_bytes,
             "player_sprite_set_idx": player_sprite_set_idx,
+            "nightmare_player_sprite_set_idx": nightmare_player_sprite_set_idx,
         },
     )
 
