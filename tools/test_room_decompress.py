@@ -11,14 +11,14 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from audit_room_compress import rle_pack, rle_unpack, strip_overlays, tile_grid  # noqa: E402
+from font_glyph import decode_title_glyphs  # noqa: E402
 from mkcatalogue import (  # noqa: E402
     FLAG_ARROW,
     FLAG_CONVEYOR,
     FLAG_NASTY,
     FLAG_RAMP,
+    udg_blob_size,
 )
-from font_glyph import decode_title_glyphs  # noqa: E402
-from udg_pool import UDG_INDEX_BYTES  # noqa: E402
 from mkroom import TILE_CHR_BASE, TILEMAP_ROWS, WIDTH, parse_room  # noqa: E402
 
 HEADER = 2
@@ -30,8 +30,7 @@ def parse_record(blob: bytes, off: int) -> dict:
     meta_off = title_end + 1
     meta = blob[meta_off : meta_off + 8]
     flags = meta[6]
-    pos = meta_off + 8 + 6  # meta8 + tile_colors
-    pos += UDG_INDEX_BYTES
+    pos = meta_off + 8 + 6 + udg_blob_size(flags)
     rle_start = pos
     pos = rle_start
     cells: list[int] = []

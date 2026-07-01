@@ -10,7 +10,7 @@ hud_row_off = 384                 ; row 16 * 24
 ; Character RAM @ $1800 — 64 slots (chr 0-63); room tiles 0-6, HUD 13-14, guardians 22+
 udg_base = $1800
 
-; Room catalogue in PRG (catalogue_data.asm): catalogue_rooms.asm, catalogue_udgs.asm,
+; Room catalogue in PRG (catalogue_data.asm): catalogue_rooms.asm,
 ; catalogue_sprites.asm (sprite_set_metadata, sprite_frames, player_sprite_set_idx).
 ; Read in place. Tile colours are 6 B inline in each room record.
 
@@ -23,7 +23,7 @@ FLAG_ARROW    = $10
 
 title_ptr       = $39          ; 2 B pointer into catalogue record title
 
-UDG_INDEX_BYTES = 6              ; per-room canonical pool indices
+UDG_FIXED_BYTES = 24           ; per-room floor + wall + item (optional +8 each)
 
 ; Runtime room meta (104 B) on stack page after pickup_got; guardian AoS at +39 in-place.
 meta_content_src = $13e
@@ -95,7 +95,14 @@ ROPE_FIRST_UDG_ADDRESS = udg_base + ROPE_FIRST_UDG * 8
 pickup_got = $100
 pickup_got_last = pickup_got + $3d
 
-ROPE_SEGMENT_Y = $33c
+ROPE_SEGMENT_Y = $034c
+rope_xadd = rope_xadd_table
+
+; Cassette buffer island 1 only (IRQ vector $0314-$0315 is not reloc storage)
+RELOC_LO1_BASE = $0200
+RELOC_LO1_LIMIT = $0314
+RELOC_LO1_MAX = RELOC_LO1_LIMIT - RELOC_LO1_BASE
+; $0316-$034B ROPE_XADD table lives in PRG (rope_xadd_table); $034C-$036B ROPE_SEGMENT_Y RAM
 
 ; Code / BASIC entry (Miner-main layout)
 basic_start = $1200

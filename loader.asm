@@ -85,44 +85,6 @@ ApplySpawnFromMeta
 +
     rts
 
-
-; A = next catalogue byte; advances stream_ptr ($52-$53).
-LoadByteFromStream
-    ldy #0
-    lda (stream_ptr),y
-    php
-    inc stream_ptr
-    bne +
-    inc stream_ptr_hi
-+
-    plp
-    rts
-
-ParseMeta8
-    jsr LoadByteFromStream
-    sta meta_content_conn
-    jsr LoadByteFromStream
-    sta meta_content_conn+1
-    jsr LoadByteFromStream
-    sta meta_content_conn+2
-    jsr LoadByteFromStream
-    sta meta_content_conn+3
-    jsr LoadByteFromStream
-    sta meta_content_spawn_px
-    jsr LoadByteFromStream
-    sta meta_content_spawn_py
-    jsr LoadByteFromStream
-    sta meta_content_record_flags
-    lda meta_content_record_flags
-    and #FLAG_ROPE
-    sta meta_content_room_has_rope
-    lda meta_content_record_flags
-    and #FLAG_ARROW
-    sta meta_content_has_arrow
-    jsr LoadByteFromStream
-    sta meta_content_border
-    rts
-
 ReadTileColors
     ldx #0
 -
@@ -186,112 +148,47 @@ LoadRoomUdgs
     ldx #7
     lda #0
 -
-    sta udg_base,x              ; chr 0 empty — always zero
+    sta udg_base,x              ; chr 0 empty — always zero, not in catalogue
     dex
     bpl -
 
-    jsr LoadByteFromStream
-    tax
-    lda #<udg_pool_floor
-    sta scr_ptr
-    lda #>udg_pool_floor
-    sta scr_ptr+1
-    lda #TILE_PLATFORM
-    jsr LoadUdgFromPool
+    lda #TILE_PLATFORM          ; floor chr 1
+    jsr LoadOneUdgChr
+    lda #TILE_SOLID             ; wall chr 2
+    jsr LoadOneUdgChr
+    lda #ITEM_CHR               ; pickup chr 6
+    jsr LoadOneUdgChr
 
-    jsr LoadByteFromStream
-    tax
-    lda #<udg_pool_wall
-    sta scr_ptr
-    lda #>udg_pool_wall
-    sta scr_ptr+1
-    lda #TILE_SOLID
-    jsr LoadUdgFromPool
-
-    jsr LoadByteFromStream
-    tax
-    lda #<udg_pool_pickup
-    sta scr_ptr
-    lda #>udg_pool_pickup
-    sta scr_ptr+1
-    lda #ITEM_CHR
-    jsr LoadUdgFromPool
-
-    jsr LoadByteFromStream
-    tax
     lda meta_content_record_flags
     and #FLAG_NASTY
-    beq load_udg_skip_nasty
-    lda #<udg_pool_nasty
-    sta scr_ptr
-    lda #>udg_pool_nasty
-    sta scr_ptr+1
+    beq +
     lda #TILE_HAZARD
-    jsr LoadUdgFromPool
-load_udg_skip_nasty
-    jsr LoadByteFromStream
-    tax
+    jsr LoadOneUdgChr
++
     lda meta_content_record_flags
     and #FLAG_RAMP
-    beq load_udg_skip_ramp
-    lda #<udg_pool_ramp
-    sta scr_ptr
-    lda #>udg_pool_ramp
-    sta scr_ptr+1
+    beq +
     lda #TILE_RAMP
-    jsr LoadUdgFromPool
-load_udg_skip_ramp
-    jsr LoadByteFromStream
-    tax
+    jsr LoadOneUdgChr
++
     lda meta_content_record_flags
     and #FLAG_CONVEYOR
-    beq load_udg_skip_belt
-    lda #<udg_pool_belt
-    sta scr_ptr
-    lda #>udg_pool_belt
-    sta scr_ptr+1
+    beq +
     lda #TILE_CONVEYOR
-    jsr LoadUdgFromPool
-load_udg_skip_belt
-    jsr EnsureVicCharset
-    rts
-
-; A = VIC chr, X = pool index, scr_ptr = pool type base (contiguous ZP $05-$06).
-LoadUdgFromPool
-    stx ramp_tmp
-    pha
-    lda ramp_tmp
-    asl
-    asl
-    asl
-    clc
-    adc scr_ptr
-    sta scr_ptr
-    bcc +
-    inc scr_ptr+1
+    jsr LoadOneUdgChr
 +
-    pla
-    asl
-    asl
-    asl
-    clc
-    adc #<udg_base
-    sta udg_ptr
-    lda #>udg_base
-    adc #0
-    sta udg_ptr+1
-    ldy #0
--
-    lda (scr_ptr),y
-    sta (udg_ptr),y
-    iny
-    cpy #8
-    bne -
+    jsr LoadHudUdgs
     rts
 
-EnsureVicCharset
-    lda #$ce
-    sta $9005
+LoadHudUdgs
+    ldx #7
+-
+    lda hud_udg_men,x
+    sta udg_base + MEN_CHR * 8,x
+    lda hud_udg_item,x
+    sta udg_base + HUD_ITEM_CHR * 8,x
+    dex
+    bpl -
     rts
 
 LoadRoomArrow

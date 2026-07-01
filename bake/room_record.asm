@@ -7,5 +7,5 @@ FLAG_CONVEYOR = %00000100  ; conveyor overlay (2 B) follows pickup
 FLAG_ROPE     = %00001000  ; room has rope
 FLAG_ARROW    = %00010000  ; arrow block (5 B) before guardians
 
-; tile_udg block: 6 B canonical pool indices (floor wall pickup nasty ramp belt).
-; Type 0 empty UDG is always zero — lives in udg_canonical_pool (catalogue_udgs.asm).
+; tile_udg block: floor + wall + item (24 B); nasty/ramp/belt +8 B each when flagged.
+; Type 0 empty UDG is always zero — not stored.

@@ -3,8 +3,5 @@ CatalogueImage
 !source "bake/catalogue_rooms.asm"
 catalogue_rooms_end = *
 
-!source "bake/catalogue_udgs.asm"
-catalogue_udgs_end = *
-
 !source "bake/catalogue_sprites.asm"
 catalogue_sprites_end = *

@@ -18,17 +18,19 @@ low_bank_end = *
 !error "low bank overflow past $17FF"
 }
 
-; --- Warm boot @ $1800 (overwritten when UDGs load; charset RAM at runtime) ---
+; --- Warm boot + reloc island 1 source @ $1800 (padding until $1A00) ---
 *= udg_base
 !source "warm.asm"
-warm_boot_end = *
-!if warm_boot_end > high_bank {
-!error "warm boot overlaps high bank"
+!source "tape_reloc_lo1.asm"
+warm_reloc_end = *
+!if warm_reloc_end > high_bank {
+!error "warm boot / reloc pack overlaps high bank"
 }
 
 ; --- High bank $1A00+ ---
 *= high_bank
 !source "arrow_udgs.asm"
+!source "tape_residents.asm"
 
 !source "decompress.asm"
 !source "catalogue_reader.asm"

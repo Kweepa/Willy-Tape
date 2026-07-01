@@ -13,10 +13,9 @@ ROOT = Path(__file__).resolve().parent.parent
 # PRG segments: (name, start_label, end_label). end label is exclusive (*=).
 TAPE_PRG_SEGMENTS: list[tuple[str, str, str]] = [
     ("low bank code", "cold_start", "low_bank_end"),
-    ("warm boot", "WarmStart", "warm_boot_end"),
+    ("warm boot + reloc src", "WarmStart", "warm_reloc_end"),
     ("high bank code", "high_bank", "high_bank_code_end"),
     ("catalogue rooms", "CatalogueImage", "catalogue_rooms_end"),
-    ("catalogue tile UDGs", "udg_pool_counts", "catalogue_udgs_end"),
     ("catalogue sprites", "sprite_set_metadata", "catalogue_sprites_end"),
 ]
 
@@ -33,15 +32,29 @@ TAPE_PRG_BLOBS: list[tuple[str, str, str]] = [
 TAPE_RUNTIME_RAM: list[tuple[str, str | int, str | int, str]] = [
     ("pickup_got", "pickup_got", "pickup_got_last", "room pickup flags (inclusive last)"),
     ("meta_content_src", "meta_content_src", "tail_size", "runtime room meta"),
+    ("reloc island 1", 0x200, 0x114, "RleUnpack, Apply*, stream parsers"),
+    ("irq vector", 0x314, 2, "KERNAL $EB15"),
+    ("ROPE_SEGMENT_Y", 0x34C, 32, "rope segment Y (rope rooms)"),
     ("udg charset RAM", 0x1800, 512, "character RAM @ udg_base (runtime)"),
     ("screen_base", "screen_base", 408, "24x17 playfield"),
     ("color_base", "color_base", 408, "active colour RAM"),
     ("map_base", "map_base", 408, "ghost colour / collision map"),
-    ("ROPE_SEGMENT_Y", 0x33C, 32, "rope segment Y (rope rooms)"),
     ("INGAME_TUNE_SEQ", 0x97C0, 64, "optional tune index spare"),
 ]
 
 TAPE_UDG_HOLE = (0x1800, 0x19FF)
+
+TAPE_UDG_HOLE_PRG = frozenset({"low bank code", "warm boot", "warm boot + reloc src"})
+
+TAPE_PRG_GAP_OK = frozenset(
+    {
+        frozenset({"low bank code", "high bank code"}),
+        frozenset({"low bank code", "warm boot"}),
+        frozenset({"low bank code", "warm boot + reloc src"}),
+        frozenset({"warm boot", "high bank code"}),
+        frozenset({"warm boot + reloc src", "high bank code"}),
+    }
+)
 
 LABEL_RE = re.compile(r"al C:([0-9a-f]+) \.(.+)", re.I)
 
@@ -159,11 +172,7 @@ def check_prg_segment_adjacency(segs: list[Region], labels: dict[str, int]) -> l
                 f"{a.name} (${a.start:04X}-${a.end:04X}) vs "
                 f"{b.name} (${b.start:04X}-${b.end:04X})"
             )
-        elif b.start - a.end - 1 > 0 and {a.name, b.name} not in (
-            {"low bank code", "high bank code"},
-            {"low bank code", "warm boot"},
-            {"warm boot", "high bank code"},
-        ):
+        elif b.start - a.end - 1 > 0 and frozenset({a.name, b.name}) not in TAPE_PRG_GAP_OK:
             gap = b.start - a.end - 1
             print(
                 f"  gap {gap} B between {a.name} and {b.name} "

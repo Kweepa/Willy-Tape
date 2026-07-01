@@ -14,6 +14,8 @@ if errorlevel 1 exit /b 1
 AcmeLabelSorter jsw.lbl jsws.lbl
 python tools\lbloverlap.py jsws.lbl
 if errorlevel 1 exit /b 1
+python tools\reloc_smoke.py
+if errorlevel 1 exit /b 1
 
 echo [3/3] ZP map...
 python tools\zpmap.py --asm
@@ -25,4 +27,4 @@ if errorlevel 1 exit /b 1
 echo.
 echo Build OK: jsw.prg loads at $1201 (catalogue embedded at CatalogueImage)
 
-\app\vice3.10\bin\xvic -pal +basicload -autostart jsw.prg
+\app\vice3.10\bin\xvic -pal -memory 16k +basicload -autostart jsw.prg

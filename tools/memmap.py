@@ -22,7 +22,7 @@ MODULES = [
 
 DISK_RAM = [
     ("ROPE_SEGMENT_Y", 0x33C, 32, "rope segment Y (cassette buffer)"),
-    ("rope_xadd", 0x35C, 54, "copied at WarmStart (cassette buffer)"),
+    ("rope_xadd", 0x35C, 54, "rope horiz shift table (disk layout)"),
     ("FlickerItem", 0x1A05, 16, "baked per room; jsr FlickerItem"),
     ("AnimateConveyors", 0x1A05 + 16, 19, "baked per room; jsr AnimateConveyors"),
     ("DoBelt", 0x1A05 + 35, 26, "baked per room; jsr DoBelt"),
@@ -43,7 +43,9 @@ TAPE_RAM = [
     ("map_base", 0x9600, 408, "ghost colour RAM collision map"),
     ("udg_base", 0x1800, 512, "character RAM via 36869 OR $0E (64 slots)"),
     ("meta_content_src", 0x13E, 104, "runtime room meta; guardian AoS at +39 ($165)"),
-    ("ROPE_SEGMENT_Y", 0x33C, 32, "rope segment Y (cassette buffer)"),
+    ("reloc island 1", 0x200, 0x114, "RleUnpack, Apply*, LoadByteFromStream, ParseMeta8"),
+    ("irq vector", 0x314, 2, "KERNAL $EB15 — not reloc storage"),
+    ("ROPE_SEGMENT_Y", 0x34C, 32, "rope segment Y (cassette buffer)"),
     ("INGAME_TUNE_SEQ", 0x97C0, 64, "tune index table in map colour spare"),
 ]
 
@@ -55,13 +57,26 @@ TAPE_LOW_BANK_END = 0x17FF
 TAPE_HIGH_BANK = 0x1A00
 TAPE_MEM_TOP = 0x6000
 
+# PRG segments intentionally placed in or spanning the UDG charset hole ($1800-$19FF).
+TAPE_UDG_HOLE_PRG = frozenset({"low bank code", "warm boot", "warm boot + reloc src"})
+
+# Expected gaps between non-contiguous PRG segments (UDG hole layout).
+TAPE_PRG_GAP_OK = frozenset(
+    {
+        frozenset({"low bank code", "high bank code"}),
+        frozenset({"low bank code", "warm boot"}),
+        frozenset({"low bank code", "warm boot + reloc src"}),
+        frozenset({"warm boot", "high bank code"}),
+        frozenset({"warm boot + reloc src", "high bank code"}),
+    }
+)
+
 # PRG segments: (name, start_label, end_label). Order must match link layout.
 TAPE_PRG_SEGMENTS = [
     ("low bank code", "cold_start", "low_bank_end"),
-    ("warm boot", "WarmStart", "warm_boot_end"),
+    ("warm boot + reloc src", "WarmStart", "warm_reloc_end"),
     ("high bank code", "high_bank", "high_bank_code_end"),
     ("catalogue rooms", "CatalogueImage", "catalogue_rooms_end"),
-    ("catalogue tile UDGs", "udg_pool_counts", "catalogue_udgs_end"),
     ("catalogue sprites", "sprite_set_metadata", "catalogue_sprites_end"),
 ]
 
@@ -171,11 +186,7 @@ def check_tape_layout(labels: dict[str, int], *, end: int) -> int:
                 f"{n2} starts ${s2:04X} ({overlap} bytes)"
             )
             errors += 1
-        elif s2 - e1 - 1 > 0 and {segments[i][0], n2} not in (
-            {"low bank code", "high bank code"},
-            {"low bank code", "warm boot"},
-            {"warm boot", "high bank code"},
-        ):
+        elif s2 - e1 - 1 > 0 and frozenset({segments[i][0], n2}) not in TAPE_PRG_GAP_OK:
             gap = s2 - e1 - 1
             print(f"  gap {gap} B between {segments[i][0]} and {n2} (${e1 + 1:04X}-${s2 - 1:04X})")
 
@@ -190,7 +201,7 @@ def check_tape_layout(labels: dict[str, int], *, end: int) -> int:
 
     for name, start, seg_end in segments:
         if start <= TAPE_UDG_END and seg_end >= TAPE_UDG_BASE:
-            if name not in ("low bank code", "warm boot"):
+            if name not in TAPE_UDG_HOLE_PRG:
                 print(f"  *** {name} spans UDG charset hole (${TAPE_UDG_BASE:04X}-${TAPE_UDG_END:04X})")
                 errors += 1
 

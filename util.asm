@@ -41,37 +41,8 @@ try_fall_death
 +
     rts
 
-ConvertXYToScreenAddr
-    tya
-    lsr
-    lsr
-    and #$fe
-    tay
-    lda x24rowtab,y
-    sta scr_ptr
-    lda x24rowtab + 1,y
-    sta scr_ptr + 1
-    txa
-    lsr
-    lsr
-    clc
-    adc scr_ptr
-    sta scr_ptr
-    bcc +
-    inc scr_ptr + 1
-+
-    lda scr_ptr
-    sta map_ptr
-    sta col_ptr
-    lda scr_ptr + 1
-    clc
-    adc #>(map_base - screen_base)
-    sta map_ptr + 1
-    adc #>(color_base - map_base)
-    sta col_ptr + 1
-    rts
+; ConvertXYToScreenAddr and GetCollision relocated to island 2; ConvertTileXYToScreenAddr in hi-bank PRG.
 
-; X = tile col (0..23), Y = tile row (0..15) -> scr_ptr, map_ptr, col_ptr.
 ConvertTileXYToScreenAddr
     tya
     asl
@@ -100,29 +71,6 @@ ConvertTileXYToScreenAddr
     sta col_ptr + 1
     rts
 
-GetCollision
-    lda (map_ptr),y
-    and #$0f
-    rts
-
-GetSpriteFrameAddr
-    ldx #0
-    stx arr+1
-    ldx #5
--
-    asl
-    rol arr+1
-    dex
-    bne -
-    clc
-    adc #<sprite_frames
-    sta arr
-    lda arr+1
-    adc #>sprite_frames
-    sta arr+1
-    rts
-
-; A = Willy frame index 0-7 -> arr (willy set in catalogue sprite pool).
 GetPlayerFrameAddr
     pha
     lda #player_sprite_set_idx

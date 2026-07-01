@@ -24,7 +24,7 @@ from mkroom import (  # noqa: E402
     parse_room,
     ramp_surface_abs,
 )
-from udg_pool import UDG_INDEX_BYTES  # noqa: E402
+from mkcatalogue import FLAG_RAMP, udg_blob_size  # noqa: E402
 
 HEADER = 2
 INDEX_ENTRY = 4
@@ -92,7 +92,7 @@ def find_ramp_bytes(blob: bytes, off: int) -> tuple[int, int] | None:
     flags = blob[meta_off + 6]
     if not (flags & FLAG_RAMP):
         return None
-    pos = meta_off + 8 + 6 + UDG_INDEX_BYTES
+    pos = meta_off + 8 + 6 + udg_blob_size(flags)
     cells = 0
     while cells < 384:
         tok = blob[pos]

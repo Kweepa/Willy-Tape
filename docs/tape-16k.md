@@ -22,8 +22,9 @@ Screen at **`$1000`** flips the VIC colour pairing vs the disk build (`$1E00` sc
 |--------|---------|-----:|---------|
 | ZP + game state | `$02`+ | ~160 B | See `zp.asm` |
 | **meta_content_src** | **$13E** | **104 B** | Runtime room meta on stack page; guardian AoS at +39 |
-| Tape scratch | `$0200`–`$03FF` | ~512 B | Decompress staging; free after bulk load |
-| Rope tables | `$033C`+ | 86 B | Cassette buffer (`warm.asm`) |
+| **Reloc island 1** | **$0200**–**$0313** | **276 B** | Load-path routines copied at WarmStart |
+| **ROPE_SEGMENT_Y** | **$034C** | **32 B** | Rope rooms only; xadd table in PRG |
+| **Warm boot + reloc src** | **$1800**–**$19FF** | **512 B** | One-shot VIC init, copy loops, pseudopc source blobs |
 | **screen_base** | **$1000** | 408 B | 24×17 display |
 | **Engine + catalogue** | **$1200**+ | ~18 KB | Code then embedded `catalogue_data.asm` (flows by `!source`; read in place) |
 | **udg_base** | **$1800** | **512 B** | 64 character slots (chr 0–63) — runtime charset RAM, not PRG |
@@ -67,11 +68,9 @@ Tools: `tools/mkcatalogue.py`, `tools/audit_room_compress.py`, `tools/audit_guar
 
 | Region | Range | Contents |
 |--------|-------|----------|
-| Low bank | `$1201–$17FF` | Boot stub, gameloop, map, loader, ramp, `willy_collide.asm` |
-| UDG hole | `$1800–$19FF` | **No code** — charset RAM at runtime (64 chars) |
-| High bank | `$1A00+` | `willy_draw`, util, guardians, music, rope, `warm.asm` |
-
-Const tables live in the modules that use them (not a separate reloc file).
+| Low bank | `$1201–$17FF` | Boot stub, gameloop, map, ramp, `willy_collide.asm` |
+| UDG hole | `$1800–$19FF` | Warm boot, reloc source pack, then charset RAM at runtime |
+| High bank | `$1A00+` | Loader orchestration, draw, guardians, music, rope, catalogue |
 
 ### catalogue.bin format (version 6)
 

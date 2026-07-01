@@ -40,8 +40,7 @@
 ;   $90   ST       serial status (LOAD / IEC)
 ;   $93           load/verify flag (LOAD)
 ;   $AE-$AF       load end pointer (tape buffer end; used during LOAD)
-;   $033C-$35B  ROPE_SEGMENT_Y (32 B; cassette buffer, rope rooms only)
-;   boot_rope_xadd_pack — rope_draw.asm (PRG; disk copied to $35C at WarmStart)
+;   $034C-$036B  ROPE_SEGMENT_Y (32 B; cassette buffer, rope rooms only)
 ;   $B7   FNLEN    filename length (SETNAM)
 ;   $BB-$BC FNADR  filename pointer low/high (SETNAM)
 ;   $B8   LFN      logical file number (SETLFS)
@@ -84,7 +83,13 @@
 ;   $13E-$1A5  meta_content_src (104 B; guardian_data @ +39)
 ;   $1A6-$1BF  free
 ;   $01C0-$01FF CPU stack
-; Disk only (WarmStart copies to $140+): x24rowtab, jumptab, jumpnotes — tape reads from PRG.
+;
+; Pages 2–3 ($0200–$03FF) — cassette buffer; island 1 copied at WarmStart.
+;   $0200–$0313  reloc island 1 — RleUnpack, Apply*, LoadByteFromStream, ParseMeta8
+;   $0314–$0315  IRQ vector ($EB15) — never part of reloc image
+;   $0316–$034B  slack (rope xadd table is in PRG: rope_xadd_table)
+;   $034C–$036B  ROPE_SEGMENT_Y (32 B; rope rooms only)
+;   $036C–$03FF  slack
 
 tmp             = $02
 arr             = $03

@@ -1,9 +1,8 @@
-; One-shot boot @ $1800 (udg_base); VIC setup then straight into the game.
+; One-shot boot @ $1800 (udg_base); VIC setup, relocate leaf code, then start_game.
 ; Overwritten by room UDG load — only needed before first LoadRoom.
 ; Must not RTS here: txs clears the SYS return address on the stack.
 
 WarmStart
- 
     lda #$7f
     sta $911d                   ; VIA #2 IER - disable all enables
     sta $911e                   ; T2CL - preset timer 2 low
@@ -15,12 +14,6 @@ WarmStart
     jsr $fdf9                   ; IOINIT — keyboard matrix / VIA defaults
     sei
 
-    ; $eb15 is minimal no-op interrupt handler
-    lda #$15
-    sta $0314
-    lda #$eb
-    sta $0315
-
     ldy #9
 -
     ldx .vic_offset,y
@@ -31,6 +24,14 @@ WarmStart
 
     lda #1
     sta vguard_anim
+
+    jsr RelocateTapeBlocks
+
+    ; $eb15 is minimal no-op interrupt handler — after reloc (vector bytes not in image)
+    lda #$15
+    sta $0314
+    lda #$eb
+    sta $0315
 
     jmp start_game
 

@@ -4,7 +4,7 @@
 
 !source "equates.asm"
 
-ConvertXYToScreenAddr = $0392
+ConvertXYToScreenAddr = $1a70
 
 *= $0000
 arrow_init_bake

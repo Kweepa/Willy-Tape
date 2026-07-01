@@ -31,8 +31,7 @@ UDG_CHAR_SLOTS = 64
 high_bank = udg_base + UDG_CHAR_SLOTS * 8   ; $1A00 — arrow UDGs chr 64–65, then code
 guardian_udgs = udg_base + GUARDIAN_CHR*8
 player_udg = udg_base + PLAY_CHR*8
-arrow_udg_ltr = high_bank
-arrow_udg_rtl = high_bank + 8
+; Arrow glyph addresses — labels in arrow_udgs.asm @ high_bank
 
 ; Sync at row 15/16 boundary (below playfield, above HUD). $9001 positions 17-row screen.
 RASTERLINE_PAL      = $70
@@ -72,5 +71,6 @@ ROPE_ANCHOR_PY = 8
 ROPE_FIRST_UDG = GUARDIAN_CHR + 12
 ROPE_UDG_BYTES = 128
 ROPE_XADD_BYTES = 54
+ROPE_SEGMENT_Y_BYTES = 32
 ROPE_GRAB_COOLDOWN_MAX = 60
 ROPE_SEG_MAX = 31

@@ -11,9 +11,7 @@ ROPE_ANCHOR_PY = 8
 ROPE_FIRST_UDG = GUARDIAN_CHR + 12
 ROPE_UDG_BYTES = 128
 ROPE_XADD_BYTES = 54
-ROPE_SEGMENT_Y = $33c
-ROPE_XADD = $35c
-rope_xadd = ROPE_XADD
+ROPE_SEGMENT_Y = $034c
 
 rope_old_screen_pos = $68
 rope_udg            = $88
@@ -171,7 +169,7 @@ WarmStart
     ldx #boot_rope_xadd_size - 1
 -
     lda boot_rope_xadd_pack,x
-    sta ROPE_XADD,x
+    sta rope_xadd,x
     dex
     bpl -
 
@@ -399,3 +397,4 @@ DrawDebugHud
     rts
 
 !source "rope_xadd_boot.asm"
+rope_xadd = boot_rope_xadd_pack
