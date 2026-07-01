@@ -18,8 +18,8 @@ TILE_ITEM = 6                   ; map-only marker for pickup cell (not in author
 ITEM_CHR = 6                    ; pickup (TILE_ITEM)
 MEN_CHR = 66                    ; HUD men icon
 HUD_ITEM_CHR = 67               ; HUD items icon
-PROPFONT_CHR = 9
-PROPFONT_COLS = 13
+PROPFONT_CHR = 7
+PROPFONT_COLS = 15
 propfont_udg = udg_base + PROPFONT_CHR * 8
 GUARDIAN_CHR = 22
 PLAY_CHR = 58
@@ -53,9 +53,10 @@ RAMP_BOUNDS_NONE = 99
 ; Quick endgame test: make_test_endgame.bat (--endgame-items-required 2).
 ROOM_MASTER_BED = 35
 ROOM_BATHROOM = 33
+ROOM_NIGHTMARE = 29
 ; to test rope: room 31 (swimming pool)
 ; to test arrow: room 36 (a bit of tree)
-ROOM_START = 36
+ROOM_START = 33
 
 ; RJY.prg overlay at GetPlayerInput; keyboard slot padded with $EA to this size (62 B).
 GETPLAYERINPUT_PATCH_BYTES = 62

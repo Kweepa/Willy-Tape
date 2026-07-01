@@ -1,6 +1,6 @@
 @room 8
 @playable
-@title Inside MegaTrunk
+@title Inside the MegaTrunk
 @conn 12 7 3 9
 @spawn 48 104
 @border GRN
