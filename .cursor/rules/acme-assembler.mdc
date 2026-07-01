@@ -1,0 +1,63 @@
+---
+description: ACME assembler conventions, including short-branch style
+globs: **/*.asm
+alwaysApply: false
+---
+
+# ACME Assembler Style
+
+This project uses [ACME](https://sourceforge.net/projects/acme/) assembler syntax.
+
+## Short Branches
+
+Use ACME local-label short branches for nearby forward and backward jumps. Do **not** invent named labels when a short branch is sufficient.
+
+| Direction | Notation | Meaning |
+|-----------|----------|---------|
+| Backward  | `-`      | Previous local label |
+| Backward  | `--`     | Two labels back |
+| Backward  | `---`    | Three labels back |
+| Forward   | `+`      | Next local label |
+| Forward   | `++`     | Two labels ahead |
+| Forward   | `+++`    | Three labels ahead |
+
+Local labels are bare `+` or `-` on their own line. Count only local labels when choosing `-`, `--`, `+`, `++`, etc.
+
+```asm
+; ✅ GOOD — short branches for local control flow
+    cmp up_down_ctr
+    beq +
+    sec
+    sbc #3
+    cmp up_down_ctr
++
+    rts
+
+    cmp meta_content_guardians
+    bne -
+
+; ❌ BAD — named labels for trivial local jumps
+    cmp up_down_ctr
+    beq skip_sub
+    sec
+    sbc #3
+    cmp up_down_ctr
+skip_sub
+    rts
+```
+
+`jmp`, `jsr`, and all conditional branches (`beq`, `bne`, `bcc`, `bcs`, `bpl`, `bmi`, etc.) may use short-branch notation.
+
+## Other ACME Conventions
+
+- Use `!source`, `!byte`, `!word`, `!if` / `!warn`, and other ACME directives — not ca65/ld65 syntax.
+- Reserve named labels for subroutine entry points, loop heads referenced from a distance, and symbols referenced across routines.
+- Match surrounding indentation and naming in the file being edited.
+
+## Preserve Comments
+
+When tweaking or refactoring assembly routines, **do not strip existing comments** — block headers, inline field notes (e.g. byte layout), and loop section markers (`; read`, `; unpack`, `; draw`, `; advance the stream`).
+
+- Keep comments that document format, ZP aliases, or non-obvious bit packing.
+- Adapt comment placement if control flow changes, but retain the same information.
+- Do not delete comments just to shorten a diff.
