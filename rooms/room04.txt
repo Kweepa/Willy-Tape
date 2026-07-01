@@ -2,7 +2,7 @@
 @playable
 @title The Drive
 @conn 6 3 45 5
-@spawn 64 104
+@spawn 0 48
 @border PUR
 @belt 1
 
@@ -27,12 +27,12 @@ WW  WWWWWWFFFFFFWWFFFFFF
 @floorcolor YEL
 @wallcolor CYN
 @nastycolor GRN
-@rampcolor CYN
+@rampcolor WHT
 @beltcolor RED
 @itemcolor YEL
 
 @guardians
-y=40 x=5(0..6) v=-1 cyan bird
+y=40 x=3(0..8) v=1 cyan bird
 y=64 x=6(5..21) v=-1 yellow bird
 y=88 x=16(12..21) v=-1 green bird
 y=104 x=11(10..23) v=1 cyan egg
