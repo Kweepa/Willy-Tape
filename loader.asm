@@ -35,10 +35,6 @@ LoadRoom
     lda meta_content_spawn_py
     sta py
 +
-    lda meta_content_has_arrow
-    beq +
-    jsr arrow_init
-+
     jsr calculate_ramp_y
 
     lda #27
@@ -84,18 +80,14 @@ ReadTileColors
 
 ReadTitle
     lda stream_ptr
-    sta title_ptr
-    lda stream_ptr_hi
-    sta title_ptr+1
--
-    jsr LoadByteFromStream
-    bne -
-
-    lda title_ptr
     sta arr
-    lda title_ptr+1
+    lda stream_ptr+1
     sta arr+1
-    jmp PrintSpecFontString
+    jsr PrintSpecFontString
+-
+    jsr LoadByteFromStream ; skip over null terminated string
+    bne -
+    rts
 
 ApplyRoomOverlays
     jsr LoadByteFromStream
@@ -126,12 +118,6 @@ StampHudRow
     rts
 
 LoadRoomUdgs
-    ldx #7
-    lda #0
--
-    sta udg_base,x              ; chr 0 empty — always zero, not in catalogue
-    dex
-    bpl -
 
     lda #TILE_PLATFORM          ; floor chr 1
     jsr LoadOneUdgChr

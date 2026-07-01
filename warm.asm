@@ -38,6 +38,14 @@ WarmStart
     iny ; set to 0
     sty $9123   ; set data direction for $9121
 
+    ; chr 0 empty — always zero, not in catalogue
+    ldx #7
+    lda #0
+-
+    sta udg_base,x
+    dex
+    bpl -
+
     jmp start_game
 
     ; horizontal centering, vertical centering,

@@ -21,8 +21,6 @@ FLAG_CONVEYOR = $04
 FLAG_ROPE     = $08
 FLAG_ARROW    = $10
 
-title_ptr       = $39          ; 2 B pointer into catalogue record title
-
 UDG_FIXED_BYTES = 24           ; per-room floor + wall + item (optional +8 each)
 
 ; Runtime room meta (104 B) on stack page after pickup_got; guardian AoS at +39 in-place.

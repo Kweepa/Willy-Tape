@@ -19,19 +19,17 @@ LoadOneUdgChr
     asl
     asl
     asl
-    clc
-    adc #<udg_base
-    sta udg_ptr
+    sta udg_ptr ; udg_base is page aligned
+    ; when we do this it's always a udg < 32
     lda #>udg_base
-    adc #0
     sta udg_ptr+1
-    ldy #0
+    ldy #7
 -
     lda (stream_ptr),y
     sta (udg_ptr),y
-    iny
-    cpy #8
-    bne -
+    dey
+    bpl -
+
     lda #8
     clc
     adc stream_ptr
@@ -39,11 +37,6 @@ LoadOneUdgChr
     bcc +
     inc stream_ptr_hi
 +
-    rts
-
-GetCollision
-    lda (map_ptr),y
-    and #$0f
     rts
 
 ConvertXYToScreenAddr

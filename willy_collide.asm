@@ -1,7 +1,8 @@
 !zone willy_implementation
 
 try_touch
-    jsr GetCollision
+    lda (map_ptr),y
+    and #$0f
     cmp #TILE_SOLID
     beq do_block
     clc
@@ -11,7 +12,8 @@ do_block
     rts
 
 try_touch_below
-    jsr GetCollision
+    lda (map_ptr),y
+    and #$0f
     cmp #TILE_EMPTY
     beq no_hit
     cmp #TILE_ITEM

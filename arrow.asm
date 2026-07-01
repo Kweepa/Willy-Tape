@@ -2,9 +2,6 @@
 
 !zone arrow
 
-arrow_init
-    rts
-
 arrow_update
     ldx left_right_ctr
     beq +
