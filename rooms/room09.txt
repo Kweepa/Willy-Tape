@@ -6,7 +6,7 @@
 @border CYN
 @background BLU
 @belt 0
-@arrow y=34 x=80 v=1 sound=115
+@arrow y=34 v=1
 
 
 @tilemap

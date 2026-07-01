@@ -135,39 +135,26 @@ LoadRoomUdgs
 LoadRoomArrow
     lda meta_content_record_flags
     and #FLAG_ARROW
-    beq LoadRoomArrowDone
+    beq +
 
     jsr LoadByteFromStream
-    lsr
-    lsr
-    lsr
-    clc
-    adc #1
-    asl
-    asl
-    asl
     sta arrow_row_y
 
-    jsr LoadByteFromStream
-    sta arrow_x_zp
-
-    jsr LoadByteFromStream
-    cmp #1
-    beq arrow_is_rtl
-    lda #0
-    jmp arrow_rtl_done
-arrow_is_rtl
-    lda #1
-arrow_rtl_done
+    and #1
     sta arrow_rtl
-
-    jsr LoadByteFromStream
+    tax
+    lda arrow_start_x,x
+    sta arrow_x_zp
+    lda arrow_sound_tbl,x
     sta arrow_sound_x
 
-    jsr LoadByteFromStream
-
-LoadRoomArrowDone
++
     rts
+
+arrow_start_x
+    !byte ARROW_X_LTR, ARROW_X_RTL
+arrow_sound_tbl
+    !byte ARROW_SND_LTR, ARROW_SND_RTL
 
 LoadRoomGuardians
     jsr LoadByteFromStream
@@ -267,18 +254,6 @@ TapeInitMeta
     bne -
 
     lda #$ff
-    sta meta_content_conn
-    sta meta_content_conn+1
-    sta meta_content_conn+2
-    sta meta_content_conn+3
-    lda #44
-    sta meta_content_spawn_px
-    lda #104
-    sta meta_content_spawn_py
-    lda #8
-    sta meta_content_border
-    lda #$ff
-    sta pickup_scr
     sta pickup_scr+1
     lda #RAMP_BOUNDS_NONE
     sta meta_content_ramp_rx1

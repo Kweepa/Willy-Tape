@@ -46,7 +46,7 @@ def parse_record(blob: bytes, off: int) -> dict:
     if flags & FLAG_CONVEYOR:
         pos += 2
     if flags & FLAG_ARROW:
-        pos += 5
+        pos += 1
     pos += 1  # guardian count
     return {
         "meta": meta,

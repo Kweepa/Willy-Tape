@@ -5,7 +5,7 @@
 @spawn 44 104
 @border YEL
 @belt -1
-@arrow y=66 x=80 v=1 sound=115
+@arrow y=66 v=1
 
 
 @tilemap

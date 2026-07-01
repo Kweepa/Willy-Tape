@@ -8,6 +8,6 @@ FLAG_RAMP     = %00001000  ; chr 4 ramp UDG + 2 B ramp overlay after pickup
 FLAG_CONVEYOR = %00010000  ; chr 5 belt UDG + 2 B conveyor overlay after pickup
 FLAG_ITEM     = %00100000  ; chr 6 pickup UDG (always set)
 FLAG_ROPE     = %01000000  ; room has rope
-FLAG_ARROW    = %10000000  ; arrow block (5 B) before guardians
+FLAG_ARROW    = %10000000  ; arrow block (1 B) before guardians
 
 ; tile_udg block: 8 B per set flag in chr order 1-6; type 0 empty is always zero — not stored.

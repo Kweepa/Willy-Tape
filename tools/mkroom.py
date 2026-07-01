@@ -134,16 +134,10 @@ TILE_UDG_TAGS = {
 DEFAULT_ITEM_UDG = bytes([48, 72, 136, 144, 104, 4, 10, 4])
 DEFAULT_MEN_UDG = bytes([60, 60, 126, 52, 62, 60, 24, 60])
 DEFAULT_HUD_ITEM_UDG = bytes([4, 4, 174, 174, 162, 66, 66, 238])
-DEFAULT_ARROW_UDG_LTR = bytes([0, 0, 194, 127, 194, 0, 0, 0])
-DEFAULT_ARROW_UDG_RTL = bytes([0, 0, 67, 254, 67, 0, 0, 0])
 GUARDIAN_CHR = 22
-ARROW_CHR = 46
-ARROW_CODE_BYTES = 88
 META_OFF_HAS_ARROW = 99
 UDG_BASE = 0x1C00
 RUNTIME_UDG_PAD_BASE = 0x1CB0
-ARROW_UDG_ADDR = RUNTIME_UDG_PAD_BASE + (ARROW_CHR - GUARDIAN_CHR) * 8
-ARROW_CODE_ADDR = ARROW_UDG_ADDR + 8
 EMPTY_SCREEN_CHR = TILE_CHR_BASE + TILE_EMPTY
 ARROW_ENTITY_LTR = 60
 ARROW_ENTITY_RTL = 69
@@ -151,9 +145,9 @@ ARROW_TEMPLATE_X = {ARROW_ENTITY_LTR: 208, ARROW_ENTITY_RTL: 28}
 ARROW_TEMPLATE_SOUND = {ARROW_ENTITY_LTR: 244, ARROW_ENTITY_RTL: 44}
 ARROW_TAG_RE = re.compile(
     r"y\s*=\s*(\d+)\s+"
-    r"x\s*=\s*(\d+)\s+"
-    r"v\s*=\s*([-+]?\d+)\s+"
-    r"sound\s*=\s*(\d+)",
+    r"(?:x\s*=\s*(\d+)\s+)?"
+    r"v\s*=\s*([-+]?\d+)"
+    r"(?:\s+sound\s*=\s*(\d+))?",
     re.I,
 )
 
@@ -814,22 +808,20 @@ def parse_room(text: str, source: Path | str | None = None) -> dict:
                         room, f"{loc(line_no)}only one @arrow per room allowed"
                     )
                 if len(parts) < 2:
-                    raise room_error(room, f"{loc(line_no)}@arrow needs y/x/v/sound fields")
+                    raise room_error(room, f"{loc(line_no)}@arrow needs y and v fields")
                 m = ARROW_TAG_RE.match(line.split(None, 1)[1] if len(parts) > 1 else "")
                 if not m:
                     raise room_error(
                         room,
-                        f"{loc(line_no)}@arrow y=<py> x=<col> v=[-1|1] sound=<col>",
+                        f"{loc(line_no)}@arrow y=<py> v=[-1|1]",
                     )
-                y, x, v, sound = m.groups()
+                y, _x, v, _sound = m.groups()
                 v_i = int(v)
                 if v_i not in (-1, 1):
                     raise room_error(room, f"{loc(line_no)}@arrow v must be -1 or 1")
                 room["arrow"] = {
                     "y": int(y),
-                    "x": int(x),
                     "v": v_i,
-                    "sound": int(sound),
                 }
             elif tag == "arrowudg":
                 if room.get("arrow") is None:
@@ -1259,45 +1251,9 @@ def build_item_erase(room: dict) -> bytes:
     )
 
 
-def default_arrow_udg(velocity: int) -> bytes:
-    if velocity == 1:
-        return DEFAULT_ARROW_UDG_LTR
-    if velocity == -1:
-        return DEFAULT_ARROW_UDG_RTL
-    raise room_error(None, f"arrow v must be -1 or 1, got {velocity}")
-
-
 def arrow_convert_y(entity_y: int) -> int:
     """ConvertXYToScreenAddr row for a 1-row glyph on tile row entity_y >> 3."""
     return (((entity_y >> 3) + 1) << 3) & 0xFF
-
-
-def arrow_bake_defines(room: dict) -> dict[str, int]:
-    arrow = room["arrow"]
-    v = arrow["v"]
-    entity_y = arrow["y"] & 0xFF
-    return {
-        "COOKED_X": arrow["x"] & 0xFF,
-        "COOKED_Y": arrow_convert_y(entity_y),
-        "COOKED_SOUND_X": arrow["sound"] & 0xFF,
-        "ARROW_V": 1 if v == 1 else 0xFF,
-        "ARROW_TILE": ARROW_CHR,
-        "ARROW_CODE_BYTES": ARROW_CODE_BYTES,
-    }
-
-
-def build_arrow(room: dict) -> bytes:
-    code = assemble_room_code(
-        "arrow.asm",
-        arrow_bake_defines(room),
-        None,
-    )
-    if len(code) > ARROW_CODE_BYTES:
-        raise room_error(
-            room,
-            f"arrow.asm size {len(code)} exceeds {ARROW_CODE_BYTES} bytes",
-        )
-    return code
 
 
 def build_master_bed_hook(endgame_items_required: int) -> bytes:
@@ -1664,13 +1620,6 @@ def build_room_image(
     hud_udg = build_hud_udg()
     udg = build_udg(room)
     pad = bytearray(RUNTIME_UDG_PAD)
-    if room.get("arrow"):
-        off = (ARROW_CHR - GUARDIAN_CHR) * 8
-        arrow = room["arrow"]
-        udg_bytes = arrow.get("udg") or default_arrow_udg(arrow["v"])
-        pad[off : off + 8] = udg_bytes
-        code = build_arrow(room)
-        pad[off + 8 : off + 8 + len(code)] = code
     if room["id"] == ROOM_MASTER_BED:
         if rooms_dir is None:
             raise room_error(room, "rooms_dir required for master bedroom hook bake")
@@ -1847,8 +1796,7 @@ def print_arrow_report(indir: Path) -> None:
             continue
         title = room.get("title") or ""
         head = f"{src.name} — {title}" if title else src.name
-        print(f"arrow: {head} v={room['arrow']['v']} y={room['arrow']['y']} "
-              f"x={room['arrow']['x']} sound={room['arrow']['sound']}")
+        print(f"arrow: {head} v={room['arrow']['v']} y={room['arrow']['y']}")
 
 
 def print_playable_summary(indir: Path) -> None:

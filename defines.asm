@@ -28,6 +28,10 @@ GUARDIAN_CHR = 22
 PLAY_CHR = 58
 ARROW_CHR_LTR = 64
 ARROW_CHR_RTL = 65
+ARROW_X_LTR   = 80
+ARROW_X_RTL   = 40
+ARROW_SND_LTR = 115
+ARROW_SND_RTL = 36
 
 udg_base = $1800
 UDG_CHAR_SLOTS = 64
@@ -59,7 +63,7 @@ ROOM_BATHROOM = 33
 ROOM_NIGHTMARE = 29
 ; to test rope: room 31 (swimming pool)
 ; to test arrow: room 36 (a bit of tree)
-ROOM_START = 33
+ROOM_START = 36
 
 ; RJY.prg overlay at GetPlayerInput; keyboard slot padded with $EA to this size (62 B).
 GETPLAYERINPUT_PATCH_BYTES = 62

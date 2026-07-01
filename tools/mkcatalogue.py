@@ -29,6 +29,7 @@ from mkroom import (  # noqa: E402
     build_tile_colors,
     deinterleave_guardian_sprites,
     parse_room,
+    arrow_convert_y,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -530,15 +531,10 @@ def udg_blob_size(flags: int) -> int:
 
 def pack_arrow(room: dict) -> bytes:
     a = room["arrow"]
-    return bytes(
-        [
-            a["y"] & 0xFF,
-            a["x"] & 0xFF,
-            (a["v"] + 2) & 0x03,  # map -1/1 → 1/2
-            a["sound"] & 0xFF,
-            0,
-        ]
-    )
+    row = arrow_convert_y(a["y"])
+    if a["v"] == -1:
+        row |= 1
+    return bytes([row])
 
 
 def pack_pickup_bytes(pickup: tuple[int, int] | None) -> bytes:
@@ -630,10 +626,12 @@ def build_room_record(
     if room.get("arrow"):
         parts.append(pack_arrow(room))
         a = room["arrow"]
+        dir_name = "RTL" if a["v"] == -1 else "LTR"
+        packed = pack_arrow(room)[0]
         sections.append(
             RoomSection(
                 "arrow",
-                f"x={a['x']} y={a['y']} v={a['v']} sound={a['sound']}",
+                f"packed=${packed:02x} row_y={packed & 0xFE} dir={dir_name} (@y={a['y']})",
                 pack_arrow(room),
             )
         )

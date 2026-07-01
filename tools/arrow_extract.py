@@ -73,8 +73,8 @@ def drop_columns_for_room(rid: int) -> list[int]:
     return ji.choose_drop_columns(grid, vcols | ji.feature_columns(room))
 
 
-def format_arrow_line(y: int, x: int, v: int, sound: int) -> str:
-    return f"@arrow y={y} x={x} v={v} sound={sound}"
+def format_arrow_line(y: int, v: int) -> str:
+    return f"@arrow y={y} v={v}"
 
 
 def upsert_arrow_tag(path: Path, arrow_line: str) -> None:
@@ -119,12 +119,12 @@ def emit_arrows(rooms_dir: Path, *, dry_run: bool = False) -> None:
         ent_id, spec = pair
         drop = drop_columns_for_room(rid)
         y, x, v, sound = decode_arrow(rid, ent_id, spec, drop)
-        arrow_line = format_arrow_line(y, x, v, sound)
+        arrow_line = format_arrow_line(y, v)
         room = parse_room(text, source=path)
         if room.get("arrow"):
-            room["arrow"] = {"y": y, "x": x, "v": v, "sound": sound}
+            room["arrow"] = {"y": y, "v": v}
         else:
-            room["arrow"] = {"y": y, "x": x, "v": v, "sound": sound}
+            room["arrow"] = {"y": y, "v": v}
         if dry_run:
             print(f"would write {path.name}: {arrow_line}")
         else:

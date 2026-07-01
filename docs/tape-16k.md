@@ -42,7 +42,7 @@ No separate `$5C00` map (Miner-style) — ghost colour RAM reuse saves 512 B.
 | 13–14 | HUD icons |
 | 15–21 | Room tile variants (from canonical pool) |
 | 22–45 | Guardian UDGs |
-| 46–47 | Arrow |
+| 64–65 | Arrow (resident in PRG) |
 | 58–63 | Willy (6 frames) |
 
 ---

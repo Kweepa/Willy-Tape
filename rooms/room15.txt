@@ -6,7 +6,7 @@
 @border PUR
 @background BLU
 @belt 0
-@arrow y=50 x=40 v=-1 sound=36
+@arrow y=50 v=-1
 
 
 @tilemap
