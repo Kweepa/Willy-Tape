@@ -14,7 +14,5 @@ CheckEndingTeleport
     sta guardian_data_base + guardian_record_bytes + g_off_fmin
     lda #1
     sta guardian_data_base + guardian_record_bytes + g_off_fctl
-    lda #0
-    sta guardian_data_base + guardian_record_bytes + g_off_frame
 +
     rts

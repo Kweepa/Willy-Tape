@@ -55,7 +55,6 @@ TitleScreen
     bcc +
     inc arr+1
 +
-    ldy #0
     jmp PrintSpecFontStringBody
 
 .stamp_propfont_row

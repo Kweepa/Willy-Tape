@@ -151,13 +151,11 @@ DrawHud
     bne -
 +
     sty hud_items_scr
-    clc
-    adc #DIGIT_0_CHR
+    adc #DIGIT_0_CHR ; carry guaranteed 0
     sta hud_items_scr+1
 
     lda men
-    clc
-    adc #DIGIT_0_CHR
+    adc #DIGIT_0_CHR ; carry guaranteed 0
     sta hud_men_count_scr
     rts
 

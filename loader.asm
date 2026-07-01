@@ -95,7 +95,6 @@ ReadTitle
     sta arr
     lda title_ptr+1
     sta arr+1
-    ldy #0
     jmp PrintSpecFontString
 
 ApplyRoomOverlays

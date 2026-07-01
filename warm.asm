@@ -33,6 +33,11 @@ WarmStart
     lda #$eb
     sta $0315
 
+    ldy #$ff    ; restore DDR for VIA2
+    sty $9122
+    iny ; set to 0
+    sty $9123   ; set data direction for $9121
+
     jmp start_game
 
     ; horizontal centering, vertical centering,

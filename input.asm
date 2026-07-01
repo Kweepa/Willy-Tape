@@ -18,10 +18,6 @@
 !zone input_implementation
 
 ScanKeyRow
-    ldy #$ff    ; restore DDR for VIA2
-    sty $9122
-    iny ; set to 0
-    sty $9123   ; set data direction for $9121
     stx $9120   ; request row
     lda $9121   ; read
     eor #$ff    ; $ff is no keys pressed
@@ -62,9 +58,3 @@ GetPlayerInput
     sta jumpIsPressed ; just needs to be non-zero
 .player_input_done
     rts
-!if GETPLAYERINPUT_PATCH_BYTES > * - GetPlayerInput {
-!fill GETPLAYERINPUT_PATCH_BYTES - (* - GetPlayerInput), $ea
-}
-!if * - GetPlayerInput > GETPLAYERINPUT_PATCH_BYTES {
-!error "GetPlayerInput exceeds GETPLAYERINPUT_PATCH_BYTES"
-}

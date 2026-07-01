@@ -10,10 +10,12 @@
 GetCharDefAddr
         ldx #0
         stx arr2+1
+        ; multiply by 8. since there are less than 64
+        ; can shortcut the first two rols
         asl
-        rol arr2+1
+        ;rol arr2+1
         asl
-        rol arr2+1
+        ;rol arr2+1
         asl
         rol arr2+1
         adc #<font_glyphs
@@ -45,29 +47,6 @@ GetCharWidth
         lda #4
         rts
 
-; (arr) = 1-based glyph string; Y = start index -> stringwidth
-GetStringWidth
-        sty stringindex
-
-        lda #0
-        sta stringwidth
--
-        ldy stringindex
-        lda (arr),y
-        beq +
-        iny
-        sty stringindex
-        sec
-        sbc #1
-        jsr GetCharWidth
-        clc
-        adc stringwidth
-        sta stringwidth
-        bcc -
-+
-        lda stringwidth
-        rts
-
 PutFontUDGsOnScreen
         ; fill the characters with 0; 0 = normal video (eor below)
         ldx #(PROPFONT_COLS * 8)
@@ -77,15 +56,13 @@ PutFontUDGsOnScreen
         dex
         bne -
 
+        ; x is now 0
         ; write em to the screen
-        ldx #0
 -
         txa
         clc
         adc #PROPFONT_CHR
         sta screen_base + hud_row_off,x
-        lda #YELLOW
-        sta color_base + hud_row_off,x
         inx
         cpx #PROPFONT_COLS
         bne -
@@ -98,23 +75,21 @@ PutFontUDGsOnScreen
         bne -
         rts
 
-; (arr) = 1-based glyph string; Y = start index
+; (arr) = 1-based glyph string
 ; propfont_first = first composite UDG chr (PROPFONT_CHR for HUD titles).
 PrintSpecFontString
-        sty stringstart
         lda #PROPFONT_CHR
         sta propfont_first
         jsr PutFontUDGsOnScreen
-        ldy stringstart
         ; fall through
 
 ; Same render path; caller sets propfont_first and arr.
 PrintSpecFontStringBody
+        ldy #0
+        sty stringxdiv
         sty stringindex
-        lda #0
-        sta stringxdiv
-        lda #1                      ; 1 px gap before first glyph
-        sta stringxmod
+        iny                      ; 1 px gap before first glyph
+        sty stringxmod
         lda propfont_first
         asl
         asl
@@ -178,7 +153,6 @@ PrintSpecFontStringBody
         clc
         adc stringxmod
         sta stringxmod
-        lda stringxmod
         and #8
         clc
         adc stringxdiv
