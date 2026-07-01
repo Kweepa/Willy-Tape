@@ -42,6 +42,10 @@ InitPlayerState
     lda meta_content_spawn_py
     sta py
 +
+    lda meta_content_has_arrow
+    beq +
+    jsr arrow_init
++
     jsr calculate_ramp_y
 
     lda #27
@@ -62,6 +66,7 @@ DecompressRoom
     jsr RleUnpack
     jsr ApplyRoomOverlays
     jsr StampHudRow
+    jsr LoadRoomArrow
     jsr LoadRoomGuardians
     rts
 
@@ -289,13 +294,72 @@ EnsureVicCharset
     sta $9005
     rts
 
-LoadRoomGuardians
+LoadRoomArrow
     lda meta_content_record_flags
     and #FLAG_ARROW
+    beq LoadRoomArrowDone
+
+    jsr LoadByteFromStream
+    lsr
+    lsr
+    lsr
+    clc
+    adc #1
+    asl
+    asl
+    asl
+    sta arrow_row_y
+
+    jsr LoadByteFromStream
+    sta arrow_x_zp
+
+    jsr LoadByteFromStream
+    cmp #1
+    beq arrow_is_rtl
+    lda #0
+    jmp arrow_rtl_done
+arrow_is_rtl
+    lda #1
+arrow_rtl_done
+    sta arrow_rtl
+
+    jsr LoadByteFromStream
+    sta arrow_sound_x
+
+    jsr LoadByteFromStream
+
+    lda #<arrow_udg_addr
+    sta udg_ptr
+    lda #>arrow_udg_addr
+    sta udg_ptr+1
+    lda arrow_rtl
     beq +
-    lda #5
-    jsr SkipBytes
+    ldy #0
+-
+    lda arrow_udg_rtl,y
+    sta (udg_ptr),y
+    iny
+    cpy #8
+    bne -
+    jmp LoadRoomArrowDone
 +
+    ldy #0
+-
+    lda arrow_udg_ltr,y
+    sta (udg_ptr),y
+    iny
+    cpy #8
+    bne -
+
+LoadRoomArrowDone
+    rts
+
+arrow_udg_ltr
+    !byte 0, 0, 194, 127, 194, 0, 0, 0
+arrow_udg_rtl
+    !byte 0, 0, 67, 254, 67, 0, 0, 0
+
+LoadRoomGuardians
     jsr LoadByteFromStream
     sta meta_content_guardians
     lda meta_content_guardians

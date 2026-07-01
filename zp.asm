@@ -18,7 +18,8 @@
 ;   $96-$9F   rope draw temps + rope state scalars
 ;   $A0-$A5   player_overlap (6 B)
 ;   $A6-$D5   player_touch (48 B) — DrawPlayer clears $A0-$D5 each frame
-;   $D6-$DB   (gap) — arrow_x_zp $D6 in arrow rooms; rope block unused there
+;   $D6       arrow_x_zp (arrow rooms only)
+;   $DE-$E0   arrow_row_y / arrow_sound_x / arrow_rtl (arrow rooms only)
 ;   $DC-$E1   cell_off_2x3 — util.asm (PRG)
 ;   $E2-$E7   lr_touch_a/b/c — willy_collide.asm (PRG)
 ;   $E8-$F0   stringwidth..stringrow — font.asm (load-time title print)
@@ -172,6 +173,9 @@ safe_map        = $65          ; room of last grounded position
 willy_hidden    = $66          ; 1 = ending sequence; skip player erase/input/draw
 rope_grab_cooldown  = $67
 arrow_x_zp      = $d6          ; flying arrow column (@arrow rooms; not rope rooms)
+arrow_row_y     = $de          ; ConvertXYToScreenAddr row (arrow rooms only)
+arrow_sound_x   = $df
+arrow_rtl       = $e0          ; 0 = LTR (iny), 1 = RTL (dey)
 pickup_scr      = $da          ; 2 B screen addr; hi bit 7 set = no pickup
 pickup_col      = $dc          ; 2 B matching colour RAM addr
 

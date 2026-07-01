@@ -31,7 +31,7 @@ def parse_record_flags(blob: bytes, off: int) -> tuple[int, str]:
 
 
 def runtime_meta_from_flags(flags: int) -> tuple[int, int]:
-    """Mirror loader.asm ParseMeta8 tail of flag propagation."""
+    """Mirror loader.asm ParseMeta8: tail bytes hold FLAG_* bit values."""
     return (flags & FLAG_ROPE, flags & FLAG_ARROW)
 
 

@@ -39,6 +39,7 @@ warm_boot_end = *
 !source "util.asm"
 !source "input.asm"
 !source "guardians.asm"
+!source "arrow.asm"
 !source "endgame.asm"
 !source "master_bedroom_tape.asm"
 !source "music.asm"
