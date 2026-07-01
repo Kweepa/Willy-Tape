@@ -20,6 +20,7 @@ MEN_CHR = 66                    ; HUD men icon
 HUD_ITEM_CHR = 67               ; HUD items icon
 PROPFONT_CHR = 7
 PROPFONT_COLS = 15
+; propfont_udg label kept for PutFontUDGsOnScreen clear loop (HUD @ PROPFONT_CHR).
 propfont_udg = udg_base + PROPFONT_CHR * 8
 GUARDIAN_CHR = 22
 PLAY_CHR = 58
@@ -64,6 +65,9 @@ ENDING_TRIGGER_PX = 20
 
 ; 1 = emit border colour writes for raster timing bars; 0 = no code/size cost
 BORDER_DEBUG = 0
+
+; 1 = title screen (title.asm); 0 = skip to game start
+SHOW_TITLE = 0
 
 ; Rope constants (addresses in header.asm)
 ROPE_ANCHOR_COL = 12

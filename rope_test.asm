@@ -301,30 +301,19 @@ PrintDec3
 !source "rope_draw.asm"
 
 InitScreen
-    ; clear the empty char UDG
-    lda #0
-    ldy #7
--
-    sta udg_base + EMPTY_CHR*8,y
-    dey
-    bpl -
-
-    ; write empty char to the screen
-    lda #EMPTY_CHR
-    ldy #0
--
-    sta screen_base,y
-    sta screen_base+256,y
-    iny
-    bne -
-
+    jsr ClearScreen
 
     lda #1
     ldy #0
 -
     sta color_base,y
-    sta color_base+256,y
+    sta color_base+$100,y
     iny
+    bne -
+    ldx #152
+-
+    sta color_base+$100,y
+    dex
     bne -
 
     lda #(GREEN + 8)

@@ -1,7 +1,5 @@
 ResetGame
 
-SHOW_TITLE = 0
-
 !if SHOW_TITLE {
 
     jsr TitleScreen

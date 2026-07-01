@@ -32,6 +32,19 @@ SetColors
     bne -
     rts
 
+; Blank chr all UDGs and fill the 24x17 screen matrix with TILE_EMPTY.
+ClearScreen
+    lda #TILE_EMPTY ; 0
+    tay
+-
+    sta screen_base,y
+    sta screen_base+$100,y
+    sta udg_base,y
+    sta udg_base+$100,y
+    iny
+    bne -
+    rts
+
 try_fall_death
     lda inairtime
     cmp #70

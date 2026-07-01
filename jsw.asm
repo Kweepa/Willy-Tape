@@ -36,6 +36,9 @@ warm_reloc_end = *
 !source "catalogue_reader.asm"
 !source "loader.asm"
 !source "font.asm"
+!if SHOW_TITLE {
+!source "title.asm"
+}
 !source "ingame_tune.asm"
 !source "willy_draw.asm"
 !source "util.asm"

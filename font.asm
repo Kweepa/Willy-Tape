@@ -2,7 +2,7 @@
 ; Proportional font — ported from Miner-main/font.asm.
 ; Title strings in catalogue use 1-based compact glyph bytes (0 = end; N = glyph N-1).
 ; fontchars table: bake/fontchars.asm (subset of tools/fontchars_full.asm).
-; Composite canvas: UDG chr PROPFONT_CHR .. PROPFONT_CHR+PROPFONT_COLS-1.
+; Composite canvas: UDG chr propfont_first .. propfont_first+PROPFONT_COLS-1.
 ;
 
 !zone font
@@ -73,7 +73,7 @@ GetStringWidth
         rts
 
 PutFontUDGsOnScreen
-        ; fill the characters with 255 (inverse video with eor below); 0 = normal video
+        ; fill the characters with 0; 0 = normal video (eor below)
         ldx #(PROPFONT_COLS * 8)
         lda #0
 -
@@ -103,20 +103,31 @@ PutFontUDGsOnScreen
         rts
 
 ; (arr) = 1-based glyph string; Y = start index
+; propfont_first = first composite UDG chr (PROPFONT_CHR for HUD titles).
 PrintSpecFontString
         sty stringstart
-
+        lda #PROPFONT_CHR
+        sta propfont_first
         jsr PutFontUDGsOnScreen
+        ldy stringstart
+        ; fall through
 
+; Same render path; caller sets propfont_first and arr.
+PrintSpecFontStringBody
+        sty stringindex
         lda #0
         sta stringxdiv
         lda #1                      ; 1 px gap before first glyph
         sta stringxmod
-
-        ldy stringstart
-        sty stringindex
+        lda propfont_first
+        asl
+        asl
+        asl
+        sta udg_ptr
+        lda #>udg_base
+        adc #0
+        sta udg_ptr+1
 ---
-        ; read a char
         ldy stringindex
         lda (arr),y
         beq ++
@@ -149,13 +160,17 @@ PrintSpecFontString
         lda stringxdiv
         clc
         adc stringrow
-        tax
-        lda propfont_udg,x
+        tay
+        lda (udg_ptr),y
         eor stringleft
-        sta propfont_udg,x
-        lda propfont_udg+8,x
+        sta (udg_ptr),y
+        tya
+        clc
+        adc #8
+        tay
+        lda (udg_ptr),y
         eor stringright
-        sta propfont_udg+8,x
+        sta (udg_ptr),y
 
         inc stringrow
         ldy stringrow

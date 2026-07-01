@@ -23,6 +23,7 @@
 ;   $DC-$E1   cell_off_2x3 — util.asm (PRG)
 ;   $E2-$E7   lr_touch_a/b/c — willy_collide.asm (PRG)
 ;   $E8-$F0   stringwidth..stringrow — font.asm (load-time title print)
+;   $F1       propfont_first — font.asm (first composite UDG chr)
 ;   draw_vguard_chrs / ingame_tune_pitch are PRG labels, not ZP
 ;   $37-$3C   draw_player_offsets — willy_draw.asm (PRG)
 ;   $3D-$42   draw_player_chrs — willy_draw.asm (PRG)
@@ -231,3 +232,4 @@ stringcur       = $ed
 stringleft      = $ee
 stringright     = $ef
 stringrow       = $f0
+propfont_first  = $f1          ; first composite UDG chr (PrintSpecFontStringBody)

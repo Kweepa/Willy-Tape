@@ -19,6 +19,15 @@ from font_glyph import (  # noqa: E402
     parse_fontchars_asm,
     titles_glyph_set,
 )
+from title_strings import load_title_lines  # noqa: E402
+
+
+def title_screen_glyph_set() -> set[int]:
+    used: set[int] = set()
+    for line in load_title_lines():
+        for ch in line:
+            used.add(ascii_to_full_glyph(ch))
+    return used
 
 FULL_FONT_ASM = Path(__file__).resolve().parent / "fontchars_full.asm"
 BAKE_FONT = ROOT / "bake" / "fontchars.asm"
@@ -28,7 +37,7 @@ DIGIT_FULL_END = 61
 
 
 def subset_full_indices(rooms_dir: Path) -> list[int]:
-    used = titles_glyph_set(rooms_dir)
+    used = titles_glyph_set(rooms_dir) | title_screen_glyph_set()
     keep = used | set(range(DIGIT_FULL_START, DIGIT_FULL_END + 1))
     return sorted(keep)
 

@@ -4,6 +4,7 @@ rem JSW-Tape: single PRG build (16K expanded cassette port)
 echo [1/3] Catalogue...
 python tools\export_spriteframes_asm.py
 python tools\export_font_asm.py --rooms rooms
+python tools\gen_title_strings.py
 python tools\mkcatalogue.py --rooms rooms --out catalogue.bin --map catalogue.map
 if errorlevel 1 exit /b 1
 
