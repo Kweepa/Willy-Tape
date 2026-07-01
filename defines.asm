@@ -23,16 +23,16 @@ PROPFONT_COLS = 13
 propfont_udg = udg_base + PROPFONT_CHR * 8
 GUARDIAN_CHR = 22
 PLAY_CHR = 58
-ARROW_CHR = 46
+ARROW_CHR_LTR = 64
+ARROW_CHR_RTL = 65
 
 udg_base = $1800
 UDG_CHAR_SLOTS = 64
-high_bank = udg_base + UDG_CHAR_SLOTS * 8   ; $1A00 — code starts after charset RAM
+high_bank = udg_base + UDG_CHAR_SLOTS * 8   ; $1A00 — arrow UDGs chr 64–65, then code
 guardian_udgs = udg_base + GUARDIAN_CHR*8
 player_udg = udg_base + PLAY_CHR*8
-arrow_udg_addr = udg_base + ARROW_CHR*8
-arrow_init = arrow_udg_addr + 8
-arrow_update = arrow_init + 5
+arrow_udg_ltr = high_bank
+arrow_udg_rtl = high_bank + 8
 
 ; Sync at row 15/16 boundary (below playfield, above HUD). $9001 positions 17-row screen.
 RASTERLINE_PAL      = $70
@@ -56,7 +56,7 @@ ROOM_MASTER_BED = 35
 ROOM_BATHROOM = 33
 ; to test rope: room 31 (swimming pool)
 ; to test arrow: room 36 (a bit of tree)
-ROOM_START = 33
+ROOM_START = 36
 ROOM_TITLE = 62
 
 ; RJY.prg overlay at GetPlayerInput; keyboard slot padded with $EA to this size (62 B).

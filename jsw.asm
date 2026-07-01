@@ -28,8 +28,8 @@ warm_boot_end = *
 
 ; --- High bank $1A00+ ---
 *= high_bank
+!source "arrow_udgs.asm"
 
-; --- High bank $1A00+ ---
 !source "decompress.asm"
 !source "catalogue_reader.asm"
 !source "loader.asm"

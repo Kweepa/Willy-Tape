@@ -328,36 +328,8 @@ arrow_rtl_done
 
     jsr LoadByteFromStream
 
-    lda #<arrow_udg_addr
-    sta udg_ptr
-    lda #>arrow_udg_addr
-    sta udg_ptr+1
-    lda arrow_rtl
-    beq +
-    ldy #0
--
-    lda arrow_udg_rtl,y
-    sta (udg_ptr),y
-    iny
-    cpy #8
-    bne -
-    jmp LoadRoomArrowDone
-+
-    ldy #0
--
-    lda arrow_udg_ltr,y
-    sta (udg_ptr),y
-    iny
-    cpy #8
-    bne -
-
 LoadRoomArrowDone
     rts
-
-arrow_udg_ltr
-    !byte 0, 0, 194, 127, 194, 0, 0, 0
-arrow_udg_rtl
-    !byte 0, 0, 67, 254, 67, 0, 0, 0
 
 LoadRoomGuardians
     jsr LoadByteFromStream

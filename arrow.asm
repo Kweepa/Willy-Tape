@@ -1,4 +1,4 @@
-; Flying arrow — unified runtime (tape). UDG @ chr 46; params from room record at load.
+; Flying arrow — unified runtime (tape). UDG chr 64/65 @ $1A00; pick at draw time.
 
 !zone arrow
 
@@ -42,9 +42,14 @@ arrow_step_done
     sta $900e
 +
     cpy #24
-    bcs +
+    bcs ++
 
-    lda #ARROW_CHR
-    sta (scr_ptr),y
+    ldx #ARROW_CHR_LTR
+    lda arrow_rtl
+    beq +
+    inx
 +
+    txa
+    sta (scr_ptr),y
+++
     rts
