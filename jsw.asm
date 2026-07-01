@@ -1,5 +1,5 @@
 ; Jet Set Willy — 16K expanded tape port
-; PRG loads at $1201; screen RAM at $1000; UDG hole $1800-$19FF; high bank $1A00+
+; PRG loads at $1201; screen RAM at $1000; warm boot @ $1800; high bank $1A00+
 
 !source "zp.asm"
 !source "defines.asm"
@@ -18,7 +18,15 @@ low_bank_end = *
 !error "low bank overflow past $17FF"
 }
 
-; --- UDG charset RAM $1800-$19FF (64 chars): no code ---
+; --- Warm boot @ $1800 (overwritten when UDGs load; charset RAM at runtime) ---
+*= udg_base
+!source "warm.asm"
+warm_boot_end = *
+!if warm_boot_end > high_bank {
+!error "warm boot overlaps high bank"
+}
+
+; --- High bank $1A00+ ---
 *= high_bank
 
 ; --- High bank $1A00+ ---
@@ -40,7 +48,6 @@ low_bank_end = *
 !source "rope_interact.asm"
 
 !source "tape_runtime.asm"
-!source "warm.asm"
 
 high_bank_code_end = *
 !if high_bank_code_end > $17FF {

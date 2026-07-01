@@ -1,4 +1,5 @@
-; One-shot boot; VIC setup then straight into the game.
+; One-shot boot @ $1800 (udg_base); VIC setup then straight into the game.
+; Overwritten by room UDG load — only needed before first LoadRoom.
 ; Must not RTS here: txs clears the SYS return address on the stack.
 
 WarmStart

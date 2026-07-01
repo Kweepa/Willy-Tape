@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parent.parent
 # PRG segments: (name, start_label, end_label). end label is exclusive (*=).
 TAPE_PRG_SEGMENTS: list[tuple[str, str, str]] = [
     ("low bank code", "cold_start", "low_bank_end"),
+    ("warm boot", "WarmStart", "warm_boot_end"),
     ("high bank code", "high_bank", "high_bank_code_end"),
     ("catalogue rooms", "CatalogueImage", "catalogue_rooms_end"),
     ("catalogue tile UDGs", "udg_pool_counts", "catalogue_udgs_end"),
@@ -158,10 +159,11 @@ def check_prg_segment_adjacency(segs: list[Region], labels: dict[str, int]) -> l
                 f"{a.name} (${a.start:04X}-${a.end:04X}) vs "
                 f"{b.name} (${b.start:04X}-${b.end:04X})"
             )
-        elif b.start - a.end - 1 > 0 and {a.name, b.name} != {
-            "low bank code",
-            "high bank code",
-        }:
+        elif b.start - a.end - 1 > 0 and {a.name, b.name} not in (
+            {"low bank code", "high bank code"},
+            {"low bank code", "warm boot"},
+            {"warm boot", "high bank code"},
+        ):
             gap = b.start - a.end - 1
             print(
                 f"  gap {gap} B between {a.name} and {b.name} "

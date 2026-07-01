@@ -58,6 +58,7 @@ TAPE_MEM_TOP = 0x6000
 # PRG segments: (name, start_label, end_label). Order must match link layout.
 TAPE_PRG_SEGMENTS = [
     ("low bank code", "cold_start", "low_bank_end"),
+    ("warm boot", "WarmStart", "warm_boot_end"),
     ("high bank code", "high_bank", "high_bank_code_end"),
     ("catalogue rooms", "CatalogueImage", "catalogue_rooms_end"),
     ("catalogue tile UDGs", "udg_pool_counts", "catalogue_udgs_end"),
@@ -170,10 +171,11 @@ def check_tape_layout(labels: dict[str, int], *, end: int) -> int:
                 f"{n2} starts ${s2:04X} ({overlap} bytes)"
             )
             errors += 1
-        elif s2 - e1 - 1 > 0 and {
-            segments[i][0],
-            n2,
-        } != {"low bank code", "high bank code"}:
+        elif s2 - e1 - 1 > 0 and {segments[i][0], n2} not in (
+            {"low bank code", "high bank code"},
+            {"low bank code", "warm boot"},
+            {"warm boot", "high bank code"},
+        ):
             gap = s2 - e1 - 1
             print(f"  gap {gap} B between {segments[i][0]} and {n2} (${e1 + 1:04X}-${s2 - 1:04X})")
 
@@ -188,7 +190,7 @@ def check_tape_layout(labels: dict[str, int], *, end: int) -> int:
 
     for name, start, seg_end in segments:
         if start <= TAPE_UDG_END and seg_end >= TAPE_UDG_BASE:
-            if name != "low bank code":
+            if name not in ("low bank code", "warm boot"):
                 print(f"  *** {name} spans UDG charset hole (${TAPE_UDG_BASE:04X}-${TAPE_UDG_END:04X})")
                 errors += 1
 
