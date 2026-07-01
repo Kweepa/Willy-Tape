@@ -12,6 +12,7 @@ catalogue.map
 /rooms/out/
 bake/.tmp/
 bake/*.bin
+bake/rooms/*.asm
 tools/vice_test.log
 _vice_out.png
 AcmeLabelSorter.exe
