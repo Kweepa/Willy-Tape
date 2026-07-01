@@ -108,6 +108,12 @@ ParseMeta8
     sta meta_content_spawn_py
     jsr LoadByteFromStream
     sta meta_content_record_flags
+    lda meta_content_record_flags
+    and #FLAG_ROPE
+    sta meta_content_room_has_rope
+    lda meta_content_record_flags
+    and #FLAG_ARROW
+    sta meta_content_has_arrow
     jsr LoadByteFromStream
     sta meta_content_border
     rts
