@@ -59,7 +59,6 @@ DecompressRoom
     jsr TapeInitMeta
     jsr ReadTitle
     jsr ParseMeta8
-    jsr ApplyBorderFromMeta
     jsr ApplySpawnFromMeta
     jsr ReadTileColors
     jsr LoadRoomUdgs
@@ -68,11 +67,6 @@ DecompressRoom
     jsr StampHudRow
     jsr LoadRoomArrow
     jsr LoadRoomGuardians
-    rts
-
-ApplyBorderFromMeta
-    lda meta_content_border
-    sta $900f
     rts
 
 ApplySpawnFromMeta
@@ -114,15 +108,10 @@ ReadTitle
 ApplyRoomOverlays
     jsr LoadByteFromStream
     sta pickup_scr
+    sta pickup_col
     jsr LoadByteFromStream
     sta pickup_scr+1
-    lda pickup_scr+1
-    bmi pickup_col_done
-    lda pickup_scr
-    sta pickup_col
-    lda pickup_scr+1
-    clc
-    adc #>(color_base - screen_base)
+    ora #$84 ; add $84 to get from $10 to $94
     sta pickup_col+1
 pickup_col_done
     lda meta_content_record_flags
@@ -177,18 +166,6 @@ LoadRoomUdgs
     lda #TILE_CONVEYOR
     jsr LoadOneUdgChr
 +
-    jsr LoadHudUdgs
-    rts
-
-LoadHudUdgs
-    ldx #7
--
-    lda hud_udg_men,x
-    sta udg_base + MEN_CHR * 8,x
-    lda hud_udg_item,x
-    sta udg_base + HUD_ITEM_CHR * 8,x
-    dex
-    bpl -
     rts
 
 LoadRoomArrow

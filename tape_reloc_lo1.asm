@@ -165,7 +165,7 @@ ParseMeta8
     and #FLAG_ARROW
     sta meta_content_has_arrow
     jsr LoadByteFromStream
-    sta meta_content_border
+    sta $900f ; border/bg color
     rts
 
 }

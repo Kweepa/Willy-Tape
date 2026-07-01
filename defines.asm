@@ -16,8 +16,8 @@ TILE_CONVEYOR = 5
 TILE_ITEM = 6                   ; map-only marker for pickup cell (not in author tilemap)
 
 ITEM_CHR = 6                    ; pickup (TILE_ITEM)
-MEN_CHR = 7                     ; HUD men icon
-HUD_ITEM_CHR = 8                ; HUD items icon
+MEN_CHR = 66                    ; HUD men icon
+HUD_ITEM_CHR = 67               ; HUD items icon
 PROPFONT_CHR = 9
 PROPFONT_COLS = 13
 propfont_udg = udg_base + PROPFONT_CHR * 8

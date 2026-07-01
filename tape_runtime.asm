@@ -22,11 +22,6 @@ FlickerItem
 fi_done
     rts
 
-hud_udg_men
-    !byte 60, 60, 126, 52, 62, 60, 24, 60
-hud_udg_item
-    !byte 4, 4, 174, 174, 162, 66, 66, 238
-
 tile_color_src
     !byte 1, 5, 7, 3, 2, 6       ; WHT GRN YEL CYN RED BLU — types 0-5
 
