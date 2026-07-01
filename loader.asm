@@ -166,22 +166,14 @@ LoadRoomGuardians
     sta guardian_index
 
 load_guardian_loop
+    ldx #0
+-
     jsr LoadByteFromStream
-    sta hx
-    jsr LoadByteFromStream
-    sta hy
-    jsr LoadByteFromStream
-    sta hl
-    jsr LoadByteFromStream
-    sta hr
-    jsr LoadByteFromStream
-    sta hd
-    jsr LoadByteFromStream
-    sta hc
-    jsr LoadByteFromStream
-    sta guard_axis
-    jsr LoadByteFromStream
-    sta mov                     ; set_idx
+    ldy guardian_cat_zp,x
+    sta $00,y
+    inx
+    cpx #8
+    bne -
 
     jsr LookupGuardianSet
 
@@ -195,6 +187,9 @@ load_guardian_loop
 
 guardians_done
     rts
+
+guardian_cat_zp
+    !byte hx, hy, hl, hr, hd, hc, guard_axis, mov
 
 ; mov = set_idx -> ht = pool frame start, g_fctl from set metadata.
 LookupGuardianSet
@@ -232,16 +227,6 @@ WriteGuardianRuntimeRecord
     sta (arr),y
     dey
     bpl -
-    rts
-
-SkipBytes
-    sta mov
-    beq SkipBytesDone
--
-    jsr LoadByteFromStream
-    dec mov
-    bne -
-SkipBytesDone
     rts
 
 TapeInitMeta
