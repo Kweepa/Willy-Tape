@@ -32,9 +32,9 @@ FFFFFFFFFFFFFF  FFFFFFFF
 @itemcolor YEL
 
 @guardians
-x=4 y=32(16..104) v=+2 white razor
-x=9 y=16(16..48) v=+1 red barrel
-y=104 x=12(10..22) v=+1 cyan multitool
+x=4 y=32(16..104) v=2 white razor
+x=9 y=16(16..48) v=1 red barrel
+y=104 x=8(8..22) v=1 cyan multitool
 
 @floorudg 255,170,85,255,0,0,0,0	; Floor
 @walludg 105,144,144,105,150,105,105,150	; Wall
