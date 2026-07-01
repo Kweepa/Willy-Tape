@@ -63,7 +63,7 @@ ROOM_BATHROOM = 33
 ROOM_NIGHTMARE = 29
 ; to test rope: room 31 (swimming pool)
 ; to test arrow: room 36 (a bit of tree)
-ROOM_START = 36
+ROOM_START = 33
 
 ; RJY.prg overlay at GetPlayerInput; keyboard slot padded with $EA to this size (62 B).
 GETPLAYERINPUT_PATCH_BYTES = 62
@@ -73,7 +73,7 @@ ENDING_TRIGGER_PX = 20
 BORDER_DEBUG = 0
 
 ; 1 = title screen (title.asm); 0 = skip to game start
-SHOW_TITLE = 0
+SHOW_TITLE = 1
 
 ; Rope constants (addresses in header.asm)
 ROPE_ANCHOR_COL = 12
