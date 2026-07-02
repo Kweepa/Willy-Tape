@@ -111,7 +111,6 @@ TILE_CHAR_MAP = {
 ITEM_CHR = 15
 MEN_CHR = 13
 HUD_ITEM_CHR = 14
-HUD_TITLE_COLS = 20
 DEFAULT_TILE_COLORS = [0, 1, 3, 2, 5, 4]
 DEFAULT_EMPTY_COLOR = 1  # WHT
 TILE_COLOR_TAGS = {
@@ -901,7 +900,7 @@ def ascii_to_rom_screen(ch: str) -> int:
 
 
 def stamp_hud_title(tiles: bytearray, room: dict) -> None:
-    title = room["title"].upper().ljust(HUD_TITLE_COLS)[:HUD_TITLE_COLS]
+    title = room["title"].upper()
     base = (SCREEN_ROWS - 1) * WIDTH
     for i, ch in enumerate(title):
         tiles[base + i] = ascii_to_rom_screen(ch)

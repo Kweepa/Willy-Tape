@@ -1,4 +1,8 @@
-; Arrow glyphs @ chr 64–65 ($1A00) — PRG-resident, not copied per room load.
+; chr 64-65 @ $1A00 — runtime player UDG scratch (not PRG-resident).
+; Arrow glyphs @ chr 66-67 ($1A10) — PRG-resident, not copied per room load.
+
+resident_pad
+    !fill 16, 0
 
 arrow_udg_ltr
     !byte 0, 0, 194, 127, 194, 0, 0, 0
@@ -10,9 +14,9 @@ hud_udg_men
 hud_udg_item
     !byte 4, 4, 174, 174, 162, 66, 66, 238
 
-!if arrow_udg_ltr <> high_bank {
-!error "arrow_udg_ltr must be at high_bank ($1A00)"
+!if arrow_udg_ltr <> resident_base {
+!error "arrow_udg_ltr must be at resident_base ($1A10)"
 }
-!if arrow_udg_rtl <> high_bank + 8 {
-!error "arrow_udg_rtl must be chr 65 ($1A08)"
+!if arrow_udg_rtl <> resident_base + 8 {
+!error "arrow_udg_rtl must be chr 67 ($1A18)"
 }

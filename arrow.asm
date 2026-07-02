@@ -1,4 +1,4 @@
-; Flying arrow — unified runtime (tape). UDG chr 64/65 @ $1A00; pick at draw time.
+; Flying arrow — unified runtime (tape). UDG chr 66/67 @ $1A10; pick at draw time.
 
 !zone arrow
 

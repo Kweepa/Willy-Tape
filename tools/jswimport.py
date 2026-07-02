@@ -646,7 +646,7 @@ def write_room(
 
     lines = [
         f"@room {rid}",
-        f"@title {room['title'][:18]}",
+        f"@title {room['title']}",
         f"@conn {room['exits'][2]} {room['exits'][1]} {room['exits'][3]} {room['exits'][0]}",
         "@spawn 44 104",
         f"@border {border}",

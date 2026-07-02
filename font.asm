@@ -1,7 +1,7 @@
 ;
 ; Proportional font — ported from Miner-main/font.asm.
 ; Title strings in catalogue use 1-based compact glyph bytes (0 = end; N = glyph N-1).
-; Glyph patterns: font_glyphs @ $1A20 (arrow_udgs.asm). Composite canvas: chr 7–21.
+; Glyph patterns: font_glyphs @ $1A30 (arrow_udgs.asm). Composite canvas: chr 7–23.
 ;
 
 !zone font
@@ -25,7 +25,7 @@ GetCharDefAddr
         sta arr2+1
         rts
 
-; A = glyph index -> width in pixels (min 4)
+; A = glyph index -> width in pixels (min 2 for blank/space, else from bitmap)
 GetCharWidth
         jsr GetCharDefAddr
         ldy #7
@@ -44,7 +44,7 @@ GetCharWidth
         txa
         rts
 +
-        lda #4
+        lda #3                      ; space (blank glyph): 2 px narrower than default min
         rts
 
 PutFontUDGsOnScreen

@@ -59,7 +59,7 @@ def titles_glyph_set(rooms_dir: Path) -> set[int]:
         match = re.search(r"@title\s+(.+)", text, re.I)
         if not match:
             continue
-        for ch in match.group(1).strip()[:18]:
+        for ch in match.group(1).strip():
             used.add(ascii_to_full_glyph(ch))
     return used
 

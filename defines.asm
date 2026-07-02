@@ -16,18 +16,18 @@ TILE_CONVEYOR = 5
 TILE_ITEM = 6                   ; map-only marker for pickup cell (not in author tilemap)
 
 ITEM_CHR = 6                    ; pickup (TILE_ITEM)
-MEN_CHR = 66                    ; HUD men icon
-HUD_ITEM_CHR = 67               ; HUD items icon
-FONT_CHR = 68                   ; resident propfont glyphs @ $1A20 (arrow_udgs.asm)
+MEN_CHR = 68                    ; HUD men icon
+HUD_ITEM_CHR = 69               ; HUD items icon
+FONT_CHR = 70                   ; resident propfont glyphs @ $1A30 (arrow_udgs.asm)
 !source "bake/font_equates.inc"
 PROPFONT_CHR = 7
-PROPFONT_COLS = 15
+PROPFONT_COLS = 17
 ; propfont_udg label kept for PutFontUDGsOnScreen clear loop (HUD @ PROPFONT_CHR).
 propfont_udg = udg_base + PROPFONT_CHR * 8
-GUARDIAN_CHR = 22
-PLAY_CHR = 58
-ARROW_CHR_LTR = 64
-ARROW_CHR_RTL = 65
+GUARDIAN_CHR = 24
+PLAY_CHR = 60
+ARROW_CHR_LTR = 66
+ARROW_CHR_RTL = 67
 ARROW_X_LTR   = 80
 ARROW_X_RTL   = 40
 ARROW_SND_LTR = 115
@@ -35,10 +35,12 @@ ARROW_SND_RTL = 36
 
 udg_base = $1800
 UDG_CHAR_SLOTS = 64
-high_bank = udg_base + UDG_CHAR_SLOTS * 8   ; $1A00 — arrow/men/item UDGs, font @ $1A20
+high_bank = udg_base + UDG_CHAR_SLOTS * 8   ; $1A00 — pad, then residents @ $1A10+
+RESIDENT_CHR_PAD = 2                          ; chr 64-65 @ $1A00 (player scratch)
+resident_base = high_bank + RESIDENT_CHR_PAD * 8   ; $1A10 — arrow/men/item, font @ $1A30
 guardian_udgs = udg_base + GUARDIAN_CHR*8
 player_udg = udg_base + PLAY_CHR*8
-; Arrow glyph addresses — labels in arrow_udgs.asm @ high_bank
+; Arrow glyph addresses — labels in arrow_udgs.asm @ resident_base
 
 ; Sync at row 15/16 boundary (below playfield, above HUD). $9001 positions 17-row screen.
 RASTERLINE_PAL      = $70

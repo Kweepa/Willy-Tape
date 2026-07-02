@@ -1,6 +1,6 @@
 @room 16
 @playable
-@title A Quirkafleeg
+@title We must perform a Quirkafleeg
 @conn 50 15 0 17
 @spawn 1 56
 @border RED

@@ -30,7 +30,7 @@ warm_reloc_end = *
 ; --- High bank $1A00+ ---
 *= high_bank
 !source "arrow_udgs.asm"
-; Proportional font subset — chr FONT_CHR .. FONT_CHR+FONT_GLYPH_COUNT-1 @ $1A20
+; Proportional font subset — chr FONT_CHR .. FONT_CHR+FONT_GLYPH_COUNT-1 @ $1A30
 font_glyphs
 !source "bake/fontchars.asm"
 !source "tape_residents.asm"

@@ -23,7 +23,6 @@ from catalogue_asm import RoomSection, write_catalogue_asm  # noqa: E402
 from udg_pool import audit_unused_udg_definitions  # noqa: E402
 from mkroom import (  # noqa: E402
     GUARDIAN_HORIZONTAL,
-    HUD_TITLE_COLS,
     MAX_GUARDIANS,
     TILE_HAZARD,
     build_tile_colors,
@@ -499,7 +498,7 @@ def pack_room_title(room: dict) -> bytes:
     """Null-terminated HUD title as 1-based proportional-font glyph bytes."""
     from font_glyph import pack_title_glyphs
 
-    text = room["title"].encode("ascii", errors="replace").decode("ascii")[:HUD_TITLE_COLS]
+    text = room["title"].encode("ascii", errors="replace").decode("ascii")
     return pack_title_glyphs(text)
 
 

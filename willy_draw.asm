@@ -58,7 +58,9 @@ DrawPlayerBody
     clc
     adc #8
     sta play_udg
-
+    bcc +
+    inc play_udg+1
++
 	cpx #6
 	bne -
 
@@ -182,7 +184,7 @@ HandleOverlapChar
 
 +
 
-    ; hit a guardian (22-33) or rope UDG (34+). Guardians kill directly;
+    ; hit a guardian (24-35) or rope UDG (36+). Guardians kill directly;
     ; rope UDGs attach only when meta_content_room_has_rope (no pha — kill_player must
     ; not return with an extra byte on the stack).
     cmp #ROPE_FIRST_UDG

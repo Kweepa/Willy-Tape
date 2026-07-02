@@ -4,7 +4,7 @@
 
 ; rope_draw.asm ZP and layout (subset of zp.asm / defines.asm / header.asm)
 guardian_sprites_base = $1a58
-GUARDIAN_CHR = 22
+GUARDIAN_CHR = 24
 TILE_CHR_BASE = 16
 ROPE_ANCHOR_COL = 12
 ROPE_ANCHOR_PY = 8

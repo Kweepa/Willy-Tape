@@ -1,5 +1,5 @@
 # Title screen propfont lines — one string per line; # comments and blank lines ignored.
 Matthew Smith's
 JET-SET WILLY
-by Steve McCrea '26
+by Steve McCrea
 Press SPACE or FIRE

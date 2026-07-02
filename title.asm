@@ -102,12 +102,12 @@ TitleScreen
 title_line_y
     !byte 4, 5, 8, 13
 title_line_x
-    !byte 7, 7, 6, 6
+    !byte 7, 7, 7, 6
 title_line_length
-    !byte 10, 10, 12, 13
+    !byte 10, 10, 10, 13
 title_line_firstudg
     !byte 1, 16, 32, 48
 title_line_text_offset
-    !byte 0, 16, 30, 50
+    !byte 0, 16, 30, 46
 
 !source "bake/title_strings.inc"
