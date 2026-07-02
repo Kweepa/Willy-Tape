@@ -2,6 +2,8 @@
 ; Overwritten by room UDG load — only needed before first LoadRoom.
 ; Must not RTS here: txs clears the SYS return address on the stack.
 
+!zone warm
+
 WarmStart
     lda #$7f
     sta $911d                   ; VIA #2 IER - disable all enables
@@ -25,7 +27,31 @@ WarmStart
     lda #1
     sta vguard_anim
 
-    jsr RelocateTapeBlocks
+    ; Island 1 — 260 B via interleaved +4 pairs (inx 0..255)
+    ldx #0
+-
+    lda reloc_lo1_src,x
+    sta RELOC_LO1_BASE,x
+    lda reloc_lo1_src+4,x
+    sta RELOC_LO1_BASE+4,x
+    inx
+    bne -
+
+    ; rope_xadd table — boot pack to cassette buffer $0316
+    ldx #boot_rope_xadd_size - 1
+-
+    lda boot_rope_xadd_pack,x
+    sta ROPE_XADD,x
+    dex
+    bpl -
+
+    ; Island 2 — indexed copy (size <= RELOC_LO2_MAX)
+    ldx #reloc_lo2_size - 1
+-
+    lda reloc_lo2_src,x
+    sta RELOC_LO2_BASE,x
+    dex
+    bpl -
 
     ; $eb15 is minimal no-op interrupt handler — after reloc (vector bytes not in image)
     lda #$15
@@ -58,3 +84,5 @@ WarmStart
     !byte 0, 1, 2, 3, 5, $a, $b, $c, $d, $e
 .vic_val
     !byte 10, 50, 24, 17<<1, $ce, 0, 0, 0, 0, 10
+
+.warm_start_end

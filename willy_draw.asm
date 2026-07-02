@@ -1,3 +1,5 @@
+!zone willy_draw
+
 DrawPlayerEntry
     lda dead
     bne +

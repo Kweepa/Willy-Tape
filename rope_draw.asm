@@ -271,4 +271,3 @@ rope_loop_top
 ++
     rts
 
-rope_xadd = rope_xadd_table

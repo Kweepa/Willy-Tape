@@ -1,3 +1,5 @@
+!zone map
+
 ResetGame
 
 !if SHOW_TITLE {

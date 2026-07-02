@@ -1,6 +1,8 @@
 ; chr 64-65 @ $1A00 — runtime player UDG scratch (not PRG-resident).
 ; Arrow glyphs @ chr 66-67 ($1A10) — PRG-resident, not copied per room load.
 
+!zone arrow_udgs
+
 resident_pad
     !fill 16, 0
 

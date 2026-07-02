@@ -84,12 +84,14 @@
 ;   $1A6-$1BF  free
 ;   $01C0-$01FF CPU stack
 ;
-; Pages 2–3 ($0200–$03FF) — cassette buffer; island 1 copied at WarmStart.
+; Pages 2–3 ($0200–$03FF) — cassette buffer; copied at WarmStart.
 ;   $0200–$0313  reloc island 1 — RleUnpack, Apply*, LoadByteFromStream, ParseMeta8
 ;   $0314–$0315  IRQ vector ($EB15) — never part of reloc image
-;   $0316–$034B  slack (rope xadd table is in PRG: rope_xadd_table)
+;   $0316–$034B  ROPE_XADD (54 B; boot_rope_xadd_pack copied at WarmStart)
 ;   $034C–$036B  ROPE_SEGMENT_Y (32 B; rope rooms only)
-;   $036C–$03FF  slack
+;   $036C–$03FF  reloc island 2 — ConvertXY*, GetSpriteFrameAddr, CalcGuardian*
+
+!zone zp
 
 tmp             = $02
 arr             = $03

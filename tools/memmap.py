@@ -17,7 +17,7 @@ MODULES = [
     ("input", ["GetPlayerInput", "ScanKeyRow"]),
     ("guardians", ["CopyDownGuardianData", "MoveGuardians", "EraseGuardians"]),
     ("tape_runtime", ["FlickerItem", "AnimateConveyors", "DoBelt"]),
-    ("warm boot", ["WarmStart", "init24_val"]),
+    ("warm boot", ["WarmStart", "warm_reloc_end"]),
 ]
 
 DISK_RAM = [
@@ -49,7 +49,9 @@ TAPE_RAM = [
     ("meta_content_src", 0x13E, 104, "runtime room meta; guardian AoS at +39 ($165)"),
     ("reloc island 1", 0x200, 0x114, "RleUnpack, Apply*, LoadByteFromStream, ParseMeta8"),
     ("irq vector", 0x314, 2, "KERNAL $EB15 — not reloc storage"),
-    ("ROPE_SEGMENT_Y", 0x34C, 32, "rope segment Y (cassette buffer)"),
+    ("rope_xadd", 0x316, 54, "horiz shift table (copied at WarmStart)"),
+    ("ROPE_SEGMENT_Y", 0x34C, 32, "rope segment Y (rope rooms)"),
+    ("reloc island 2", 0x36C, 0x94, "ConvertXY*, GetSpriteFrameAddr, CalcGuardian*"),
     ("INGAME_TUNE_SEQ", 0x97C0, 64, "tune index table in map colour spare"),
 ]
 

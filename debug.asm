@@ -1,5 +1,7 @@
 ; Raster timing probes — toggle BORDER_DEBUG in defines.asm
 
+!zone debug
+
 !macro BorderDebugColor .byte {
 !if BORDER_DEBUG {
     lda #.byte

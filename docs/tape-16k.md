@@ -23,7 +23,9 @@ Screen at **`$1000`** flips the VIC colour pairing vs the disk build (`$1E00` sc
 | ZP + game state | `$02`+ | ~160 B | See `zp.asm` |
 | **meta_content_src** | **$13E** | **104 B** | Runtime room meta on stack page; guardian AoS at +39 |
 | **Reloc island 1** | **$0200**–**$0313** | **276 B** | Load-path routines copied at WarmStart |
-| **ROPE_SEGMENT_Y** | **$034C** | **32 B** | Rope rooms only; xadd table in PRG |
+| **rope_xadd** | **$0316**–**$034B** | **54 B** | Horiz shift table copied at WarmStart |
+| **ROPE_SEGMENT_Y** | **$034C** | **32 B** | Rope rooms only |
+| **Reloc island 2** | **$036C**–**$03FF** | **148 B** | ConvertXY*, GetSpriteFrameAddr, CalcGuardian* |
 | **Warm boot + reloc src** | **$1800**–**$19FF** | **512 B** | One-shot VIC init, copy loops, pseudopc source blobs |
 | **screen_base** | **$1000** | 408 B | 24×17 display |
 | **Engine + catalogue** | **$1200**+ | ~18 KB | Code then embedded `catalogue_data.asm` (flows by `!source`; read in place) |

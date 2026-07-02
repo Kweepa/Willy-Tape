@@ -1,5 +1,7 @@
 ; Rope player input, grab/attach, release. Callers gate on meta_content_room_has_rope.
 
+!zone rope_interact
+
 rope_near_key   !byte rightIsPressed, leftIsPressed  ; descend toward rope side (swing_side 0=right, 1=left)
 rope_far_key    !byte leftIsPressed, rightIsPressed  ; climb
 rope_jump_flip  !byte $fe, $00                      ; side 0 right: invert ±1; side 1 left: no-op

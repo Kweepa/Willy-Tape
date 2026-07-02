@@ -2,6 +2,8 @@
 ; Called at end of ApplyRamp: hx=col_start, mov=row_start, num=length,
 ; arr2 overlay byte bit7: 0=/ up-right, 1=\ up-left. Writes meta_content_ramp_*.
 
+!zone ramp
+
 BakeRampMeta
     lda arr2                  ; ramp_dirandx — preserve; ramp_surface_abs clobbers arr2
     sta arr3

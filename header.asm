@@ -98,14 +98,17 @@ ROPE_FIRST_UDG_ADDRESS = udg_base + ROPE_FIRST_UDG * 8
 pickup_got = $100
 pickup_got_last = pickup_got + $3d
 
+ROPE_XADD = $0316
+rope_xadd = ROPE_XADD
 ROPE_SEGMENT_Y = $034c
-rope_xadd = rope_xadd_table
 
-; Cassette buffer island 1 only (IRQ vector $0314-$0315 is not reloc storage)
+; Cassette buffer reloc islands (IRQ vector $0314-$0315 is not reloc storage)
 RELOC_LO1_BASE = $0200
 RELOC_LO1_LIMIT = $0314
 RELOC_LO1_MAX = RELOC_LO1_LIMIT - RELOC_LO1_BASE
-; $0316-$034B ROPE_XADD table lives in PRG (rope_xadd_table); $034C-$036B ROPE_SEGMENT_Y RAM
+RELOC_LO2_BASE = $036c
+RELOC_LO2_LIMIT = $0400
+RELOC_LO2_MAX = RELOC_LO2_LIMIT - RELOC_LO2_BASE
 
 ; Code / BASIC entry (Miner-main layout)
 basic_start = $1200

@@ -107,22 +107,45 @@ def main() -> None:
     if size > lo1_max:
         errors.append(f"reloc lo1 size {size} > {lo1_max}")
 
-    rope = prg_slice(prg, labels["rope_xadd_table"], 4)
+    lo2_run = labels["RELOC_LO2_BASE"]
+    lo2_src = labels["reloc_lo2_src"]
+    lo2_size = labels["reloc_lo2_size"]
+    lo2_max = labels["RELOC_LO2_LIMIT"] - labels["RELOC_LO2_BASE"]
+    if lo2_run + lo2_size > labels["RELOC_LO2_LIMIT"]:
+        errors.append(f"reloc lo2 spans past ${labels['RELOC_LO2_LIMIT']:04X}")
+    if lo2_size > lo2_max:
+        errors.append(f"reloc lo2 size {lo2_size} > {lo2_max}")
+    lo2_bytes = prg_slice(prg, lo2_src, lo2_size)
+    errors.extend(check_jsr_targets(lo2_bytes, lo2_run))
+
+    rope_src = labels["boot_rope_xadd_pack"]
+    rope = prg_slice(prg, rope_src, 4)
     if rope != bytes([0x01, 0x02, 0x03, 0x02]):
-        errors.append("rope_xadd_table missing in PRG")
+        errors.append("boot_rope_xadd_pack missing in PRG")
 
     gs_run = labels["GetSpriteFrameAddr"]
-    if gs_run < 0x1A00:
-        errors.append(f"GetSpriteFrameAddr at ${gs_run:04X} should live in high bank")
+    lo2_lo = labels["RELOC_LO2_BASE"]
+    lo2_hi = labels["RELOC_LO2_LIMIT"]
+    if gs_run < lo2_lo or gs_run >= lo2_hi:
+        errors.append(
+            f"GetSpriteFrameAddr at ${gs_run:04X} should live in island 2 "
+            f"(${lo2_lo:04X}-${lo2_hi - 1:04X})"
+        )
 
-    warm = prg_slice(prg, labels["WarmStart"], 0x50)
+    warm = prg_slice(prg, labels["WarmStart"], 0x70)
     if warm[0:2] != bytes([0xA9, 0x7F]):
         errors.append("WarmStart missing lda #$7f")
-    rtb = labels["RelocateTapeBlocks"]
-    if bytes([0x20, rtb & 0xFF, rtb >> 8]) not in warm:
-        errors.append("WarmStart missing jsr RelocateTapeBlocks")
+    lo1_sta = bytes([0x9D, run & 0xFF, run >> 8])
+    if lo1_sta not in warm:
+        errors.append("WarmStart missing inline reloc lo1 copy (sta RELOC_LO1_BASE,x)")
+    rope_sta = bytes([0x9D, labels["ROPE_XADD"] & 0xFF, labels["ROPE_XADD"] >> 8])
+    if rope_sta not in warm:
+        errors.append("WarmStart missing inline rope_xadd copy (sta ROPE_XADD,x)")
+    lo2_sta = bytes([0x9D, lo2_run & 0xFF, lo2_run >> 8])
+    if lo2_sta not in warm:
+        errors.append("WarmStart missing inline reloc lo2 copy (sta RELOC_LO2_BASE,x)")
     if bytes([0xA9, 0x15, 0x8D, 0x14, 0x03]) not in warm:
-        errors.append("WarmStart missing IRQ vector setup after RelocateTapeBlocks")
+        errors.append("WarmStart missing IRQ vector setup after reloc copies")
 
     dec = prg_slice(prg, labels["DecompressRoom"], 0x30)
     rle = labels["RleUnpack"]
@@ -139,7 +162,7 @@ def main() -> None:
         raise SystemExit(1)
 
     print(
-        f"reloc smoke OK — lo1 {size} B in page 2; residents in PRG; "
+        f"reloc smoke OK — lo1 {size} B, lo2 {lo2_size} B in cassette buffer; "
         f"room 33 paints {nonzero} cells, types {uniq}"
     )
 

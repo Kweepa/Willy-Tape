@@ -1,3 +1,5 @@
+!zone gameloop
+
 start_game
 	jsr ResetGame
 

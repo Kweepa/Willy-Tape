@@ -2,6 +2,8 @@
 ; Pitch: $900B values written by PlayInGameMusic (registers A/B/C map to 0/2/4 in index).
 ; Index: seq nybbles select pitch index 0-8; tape port reads pitch from PRG below.
 
+!zone ingame_tune
+
 ingame_tune_pitch_rom
 	!byte 135,159,163,175,179,183,187,191,195
 ingame_tune_pitch_rom_end = *

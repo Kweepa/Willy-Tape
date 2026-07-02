@@ -2,6 +2,8 @@
 ; WaitForRasterLine
 ;
 
+!zone util
+
 WaitForRaster
     ; wait for raster below sync band (inlined WaitForRasterLineLessThan)
 -
@@ -54,7 +56,8 @@ try_fall_death
 +
     rts
 
-; ConvertXYToScreenAddr and GetCollision relocated to island 2; ConvertTileXYToScreenAddr in hi-bank PRG.
+; ConvertXYToScreenAddr, GetSpriteFrameAddr, CalcGuardian* relocated to island 2 @ $036C;
+; ConvertTileXYToScreenAddr in hi-bank PRG.
 
 ConvertTileXYToScreenAddr
     tya
@@ -101,31 +104,6 @@ GetPlayerFrameAddr
     clc
     adc ht
     jmp GetSpriteFrameAddr
-
-CalcGuardianRecPtr
-    lda guardian_index
-    asl
-    asl
-    adc guardian_index
-    asl
-    adc #<guardian_data_base
-    sta arr
-    lda #>guardian_data_base
-    sta arr+1
-    rts
-
-CalcGuardianUDGAddr
-    lda guard_udg_off
-    asl
-    asl
-    asl
-    clc
-    adc #<guardian_udgs
-    sta arr2
-    lda #>guardian_udgs
-    adc #0
-    sta arr2+1
-    rts
 
 play_sound_at_default_volume
     sta $900c

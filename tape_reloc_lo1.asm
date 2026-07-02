@@ -1,4 +1,6 @@
-; Reloc island 1 source — lives in warm boot PRG zone ($1800+); copied to $0200.
+; Reloc island 1 source — high bank PRG; copied to $0200 at WarmStart.
+
+!zone tape_reloc_lo1
 
 reloc_lo1_src
 !pseudopc RELOC_LO1_BASE {
@@ -173,45 +175,3 @@ reloc_lo1_size = * - reloc_lo1_src
 !if reloc_lo1_size > RELOC_LO1_MAX {
 !error "reloc island 1 overflow"
 }
-
-RelocateTapeBlocks
-    ; Copy exactly reloc_lo1_size bytes (may exceed 255 — use 16-bit counter in tmp/arr)
-    lda #<reloc_lo1_src
-    sta tmp
-    lda #>reloc_lo1_src
-    sta arr
-    lda #<RELOC_LO1_BASE
-    sta arr2
-    lda #>RELOC_LO1_BASE
-    sta arr2+1
-    lda #<reloc_lo1_size
-    sta arr3
-    lda #>reloc_lo1_size
-    sta arr3+1
-    jsr .CopyLo1
-    rts
-
-.CopyLo1
--
-    lda arr3
-    ora arr3+1
-    beq .copy_done
-    ldy #0
-    lda (tmp),y
-    sta (arr2),y
-    inc tmp
-    bne +
-    inc arr
-+
-    inc arr2
-    bne +
-    inc arr2+1
-+
-    lda arr3
-    bne +
-    dec arr3+1
-+
-    dec arr3
-    jmp .CopyLo1
-.copy_done
-    rts

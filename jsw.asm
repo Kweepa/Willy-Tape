@@ -18,13 +18,15 @@ low_bank_end = *
 !error "low bank overflow past $17FF"
 }
 
-; --- Warm boot + reloc island 1 source @ $1800 (padding until $1A00) ---
+; --- Warm boot + reloc sources @ $1800 (UDG hole; overwritten by room UDG load) ---
 *= udg_base
 !source "warm.asm"
+!source "rope_xadd_boot.asm"
 !source "tape_reloc_lo1.asm"
+!source "tape_reloc_lo2.asm"
 warm_reloc_end = *
 !if warm_reloc_end > high_bank {
-!error "warm boot / reloc pack overlaps high bank"
+!error "warm boot / reloc pack overlaps high bank by", warm_reloc_end - high_bank
 }
 
 ; --- High bank $1A00+ ---

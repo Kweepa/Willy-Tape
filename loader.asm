@@ -2,6 +2,8 @@
 ; LoadRoom — decompress catalogue room to screen + colour/map RAM.
 ;
 
+!zone loader
+
 LoadRoom
     lda #0
     sta $900b

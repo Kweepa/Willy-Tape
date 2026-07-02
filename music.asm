@@ -1,3 +1,5 @@
+!zone music
+
 PlayInGameMusic
 
 	; stop last frame's sound effects (moved from gameloop to decrease body of gameloop)
