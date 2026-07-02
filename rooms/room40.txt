@@ -1,6 +1,6 @@
 @room 40
 @playable
-@title Dr Jones' dream
+@title Dr Jones will never believe it
 @conn 255 39 0 41
 @spawn 90 104
 @border BLU
@@ -28,7 +28,7 @@ WWWWWW<<<<<<<<<<<<<<<<WW
 @floorcolor RED
 @wallcolor PUR
 @nastycolor PUR
-@rampcolor CYN
+@rampcolor PUR
 @beltcolor GRN
 @itemcolor WHT
 

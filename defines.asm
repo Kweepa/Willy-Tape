@@ -65,7 +65,7 @@ ROOM_BATHROOM = 33
 ROOM_NIGHTMARE = 29
 ; to test rope: room 31 (swimming pool)
 ; to test arrow: room 36 (a bit of tree)
-ROOM_START = 16
+ROOM_START = 36
 
 ENDING_TRIGGER_PX = 20
 

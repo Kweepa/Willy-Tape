@@ -46,7 +46,7 @@ TitleScreen
     jsr .draw_one_line
     inc .title_line_index
     lda .title_line_index
-    cmp #4
+    cmp #5
     bne -
     rts
 
@@ -100,14 +100,14 @@ TitleScreen
     !byte 0
 
 title_line_y
-    !byte 4, 5, 8, 13
+    !byte 3, 4, 7, 10, 15
 title_line_x
-    !byte 7, 7, 7, 6
+    !byte 7, 7, 7, 2, 7
 title_line_length
-    !byte 10, 10, 10, 13
+    !byte 10, 10, 10, 20, 10
 title_line_firstudg
-    !byte 1, 16, 32, 48
+    !byte 1, 11, 21, 31, 51
 title_line_text_offset
-    !byte 0, 16, 30, 46
+    !byte 0, 16, 30, 46, 82
 
 !source "bake/title_strings.inc"
