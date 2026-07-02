@@ -3,7 +3,7 @@
 @title The Nightmare Room
 @conn 255 28 255 30
 @spawn 91 104
-@border GRN
+@border RED
 @belt -1
 
 @tilemap

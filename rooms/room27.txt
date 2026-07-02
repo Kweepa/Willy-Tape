@@ -3,7 +3,7 @@
 @title The Chapel
 @conn 255 255 21 28
 @spawn 1 96
-@border GRN
+@border RED
 @belt 0
 
 @tilemap

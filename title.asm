@@ -5,7 +5,7 @@
 !zone title
 
 TitleScreen
-    lda #10
+    lda #(8+BLU)
     sta $900f
     lda #YEL
     jsr SetColors

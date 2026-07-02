@@ -3,7 +3,7 @@
 @title The Bathroom
 @conn 255 255 255 34
 @spawn 64 104
-@border GRN
+@border RED
 @belt -1
 
 @vguard 0

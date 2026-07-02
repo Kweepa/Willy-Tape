@@ -3,7 +3,7 @@
 @title The Banyan Tree
 @conn 36 29 255 31
 @spawn 8 16
-@border PUR
+@border RED
 @belt 0
 
 @tilemap

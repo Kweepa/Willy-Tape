@@ -24,13 +24,8 @@ SetColors
     ldx #0
 -
     sta color_base,x
+    sta color_base+152,x
     inx
-    cpx #0
-    bne -
-    ldx #152
--
-    sta color_base+256,x
-    dex
     bne -
     rts
 

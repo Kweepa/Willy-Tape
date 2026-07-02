@@ -3,6 +3,7 @@ Miner-main/
 
 # VIC-20 Assembler & Emulator Build Outputs
 *.prg
+!jsw.prg
 *.lbl
 *.mon
 catalogue.bin

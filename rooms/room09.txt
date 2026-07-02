@@ -3,7 +3,7 @@
 @title On a Branch Over the Drive
 @conn 13 8 4 10
 @spawn 88 40
-@border CYN
+@border RED
 @background BLU
 @belt 0
 @arrow y=34 v=1

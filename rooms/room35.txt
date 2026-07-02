@@ -3,7 +3,7 @@
 @title Master Bedroom
 @conn 255 34 255 255
 @spawn 44 16
-@border PUR
+@border BLU
 @belt 0
 
 @tilemap
